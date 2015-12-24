@@ -14,9 +14,14 @@ const (
 	Version string = "0.1.0"
 )
 
+func setupFacade(ui *gocli.UI) *facade.Facade {
+	return facade.NewFacade(Name, Version, ui)
+}
+
 func main() {
 	ui := gocli.NewUI()
-	if rtn, err := facade.Run(os.Args[1:], Name, Version, ui); rtn != facade.ExitCodeOK {
+	fcd := setupFacade(ui)
+	if rtn, err := fcd.Run(os.Args[1:]); rtn != facade.ExitCodeOK {
 		if err != nil {
 			ui.OutputErrln(err)
 		}

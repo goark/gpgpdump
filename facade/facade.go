@@ -1,13 +1,14 @@
 package facade
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"path"
 
 	"github.com/spiegel-im-spiegel/gocli"
-	"github.com/spiegel-im-spiegel/gpgpdump/packets"
+	"github.com/spiegel-im-spiegel/gpgpdump/parse"
 )
 
 // Exit Code
@@ -16,11 +17,34 @@ const (
 	ExitCodeError int = iota
 )
 
-// Run Application
-func Run(args []string, appName, version string, ui *gocli.UI) (int, error) {
-	cmd := packets.Command(ui)
+// Errors
+var (
+	ErrFacadeTest = errors.New("facade test")
+)
 
-	flags := flag.NewFlagSet(appName, flag.ContinueOnError)
+// Facade of facade context
+type Facade struct {
+	// UI is Command line user interface
+	*gocli.UI
+	// Name of application
+	Name string
+	// Version of application
+	Version string
+	// command of application
+	command *parse.Context
+}
+
+// NewFacade returns a new Facade instance
+func NewFacade(appName, version string, ui *gocli.UI) *Facade {
+	return &Facade{UI: ui, Name: appName, Version: version}
+}
+
+// Run Application
+func (f *Facade) Run(args []string) (int, error) {
+	cmd := parse.Command(f.UI)
+	f.command = cmd
+
+	flags := flag.NewFlagSet(f.Name, flag.ContinueOnError)
 	flags.BoolVar(&cmd.Hflag, "h", false, "displays this help")
 	flags.BoolVar(&cmd.Vflag, "v", false, "displays version")
 	flags.BoolVar(&cmd.Aflag, "a", false, "accepts ASCII input only")
@@ -30,19 +54,20 @@ func Run(args []string, appName, version string, ui *gocli.UI) (int, error) {
 	flags.BoolVar(&cmd.Mflag, "m", false, "dumps marker packets")
 	flags.BoolVar(&cmd.Pflag, "p", false, "dumps private packets")
 	flags.BoolVar(&cmd.Uflag, "u", false, "displays UTC time")
+	ftest := flags.Bool("ftest", false, "facade test")
 	flags.Usage = func() {
-		showUsage(ui, appName, version)
+		f.showUsage()
 	}
 	// Parse commandline flag
 	if err := flags.Parse(args); err != nil {
 		return ExitCodeError, nil
 	}
 	if cmd.Hflag {
-		showUsage(ui, appName, version)
+		f.showUsage()
 		return ExitCodeOK, nil
 	}
 	if cmd.Vflag {
-		showVersion(ui, appName, version)
+		f.showVersion()
 		return ExitCodeOK, nil
 	}
 
@@ -55,10 +80,16 @@ func Run(args []string, appName, version string, ui *gocli.UI) (int, error) {
 		return ExitCodeError, os.ErrInvalid
 	}
 
-	return cmd.Run()
+	if *ftest { // for facade test
+		return ExitCodeOK, ErrFacadeTest
+	}
+	if err := cmd.Run(); err != nil {
+		return ExitCodeError, err
+	}
+	return ExitCodeOK, nil
 }
 
-func showUsage(ui *gocli.UI, name, version string) {
+func (f *Facade) showUsage() {
 	usageText := `
 USAGE:
    %s [options] [PGPfile]
@@ -77,10 +108,9 @@ OPTIONS:
    -p -- dumps private packets
    -u -- displays UTC time
 `
-	ui.OutputErrln(fmt.Sprintf(usageText, name, version))
+	f.OutputErrln(fmt.Sprintf(usageText, f.Name, f.Version))
 }
 
-func showVersion(ui *gocli.UI, name, version string) {
-	versionText := fmt.Sprintf("%s version %s", path.Base(name), version)
-	ui.OutputErrln(versionText)
+func (f *Facade) showVersion() {
+	f.OutputErrln(fmt.Sprintf("%s %s", path.Base(f.Name), f.Version))
 }
