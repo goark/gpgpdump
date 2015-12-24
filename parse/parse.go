@@ -1,8 +1,9 @@
 package parse
 
 import (
-	"fmt"
 	"io"
+
+	"github.com/spiegel-im-spiegel/gpgpdump/parse/packets"
 
 	"golang.org/x/crypto/openpgp/packet"
 )
@@ -26,9 +27,8 @@ func (c *Context) parse(body io.Reader) error {
 		if err != nil {
 			return err
 		}
+		c.Outputln(packets.TagName(packeType, int(oPacket.Tag), packetSize, 0))
 		_ = packet
-		c.Outputln(fmt.Sprintf("%s(%02x) Packet: Tag(%d) %d bytes", packeType, oPacket.Contents[0], oPacket.Tag, packetSize))
-
 	}
 	return nil
 }
