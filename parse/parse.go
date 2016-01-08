@@ -9,6 +9,17 @@ import (
 )
 
 func (c *Context) parse(body io.Reader) error {
+	cxt := &packets.Context{}
+	cxt.Hflag = c.Hflag
+	cxt.Vflag = c.Vflag
+	cxt.Aflag = c.Aflag
+	cxt.Gflag = c.Gflag
+	cxt.Iflag = c.Iflag
+	cxt.Lflag = c.Lflag
+	cxt.Mflag = c.Mflag
+	cxt.Pflag = c.Pflag
+	cxt.Uflag = c.Uflag
+
 	oReader := packet.NewOpaqueReader(body)
 	for {
 		oPacket, err := oReader.Next()
@@ -18,17 +29,20 @@ func (c *Context) parse(body io.Reader) error {
 			}
 			break
 		}
-		packetSize := len(oPacket.Contents)
-		packeType := "Old"
-		if (oPacket.Contents[0] & 0x40) != 0 {
-			packeType = "New"
+		cxt.OpaquePacket = oPacket
+		var content []string
+		switch oPacket.Tag {
+		case 11:
+			content, err = packets.Tag11(cxt, 0)
+		default:
+			content, err = packets.Unknown(cxt, 0)
 		}
-		packet, err := oPacket.Parse()
+		for _, line := range content {
+			c.Outputln(line)
+		}
 		if err != nil {
 			return err
 		}
-		c.Outputln(packets.TagName(packeType, int(oPacket.Tag), packetSize, 0))
-		_ = packet
 	}
 	return nil
 }

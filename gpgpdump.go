@@ -21,11 +21,11 @@ func setupFacade(ui *gocli.UI) *facade.Facade {
 func main() {
 	ui := gocli.NewUI()
 	fcd := setupFacade(ui)
-	if rtn, err := fcd.Run(os.Args[1:]); rtn != facade.ExitCodeOK {
+	if rtn, err := fcd.Run(os.Args[1:]); rtn != facade.ExitSuccess {
 		if err != nil {
 			ui.OutputErrln(err)
 		}
 		os.Exit(rtn)
 	}
-	os.Exit(facade.ExitCodeOK)
+	os.Exit(facade.ExitSuccess)
 }

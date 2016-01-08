@@ -1,0 +1,5 @@
+package: github.com/spiegel-im-spiegel/gpgpdump
+import:
+- package: github.com/spiegel-im-spiegel/gocli
+- package: golang.org/x/crypto/openpgp/armor
+- package: golang.org/x/crypto/openpgp/packet

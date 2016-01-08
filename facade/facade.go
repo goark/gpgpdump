@@ -11,10 +11,10 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/parse"
 )
 
-// Exit Code
+// Exit Status
 const (
-	ExitCodeOK    int = 0
-	ExitCodeError int = iota
+	ExitSuccess = iota
+	ExitFailure
 )
 
 // Errors
@@ -60,15 +60,15 @@ func (f *Facade) Run(args []string) (int, error) {
 	}
 	// Parse commandline flag
 	if err := flags.Parse(args); err != nil {
-		return ExitCodeError, nil
+		return ExitFailure, nil
 	}
 	if cmd.Hflag {
 		f.showUsage()
-		return ExitCodeOK, nil
+		return ExitSuccess, nil
 	}
 	if cmd.Vflag {
 		f.showVersion()
-		return ExitCodeOK, nil
+		return ExitSuccess, nil
 	}
 
 	switch flags.NArg() {
@@ -77,16 +77,16 @@ func (f *Facade) Run(args []string) (int, error) {
 	case 1:
 		cmd.InputFile = flags.Arg(0)
 	default:
-		return ExitCodeError, os.ErrInvalid
+		return ExitFailure, os.ErrInvalid
 	}
 
 	if *ftest { // for facade test
-		return ExitCodeOK, ErrFacadeTest
+		return ExitSuccess, ErrFacadeTest
 	}
 	if err := cmd.Run(); err != nil {
-		return ExitCodeError, err
+		return ExitFailure, err
 	}
-	return ExitCodeOK, nil
+	return ExitSuccess, nil
 }
 
 func (f *Facade) showUsage() {
