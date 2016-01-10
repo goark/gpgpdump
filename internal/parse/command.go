@@ -102,6 +102,8 @@ func (c *Context) parse(body io.Reader) error {
 		}
 		var content []string
 		switch oPacket.Tag {
+		case 2:
+			content, err = Tag02{Options: c.Options, OpaquePacket: oPacket}.Parse(0)
 		case 11:
 			content, err = Tag11{Options: c.Options, OpaquePacket: oPacket}.Parse(0)
 		default:
