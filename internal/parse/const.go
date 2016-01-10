@@ -1,26 +1,37 @@
-package packets
+package parse
 
-// Tags is tag name list
-var tagnames = []string{
+// Names is name list
+type Names []string
+
+// Get returns name
+func (n Names) Get(idx int) string {
+	if idx < 0 || len(n) < idx {
+		return "Unknown"
+	}
+	return n[idx]
+}
+
+// tagnames is tag name list
+var tagnames = Names{
 	"Reserved",
 	"Public-Key Encrypted Session Key Packet",
 	"Signature Packet",
 	"Symmetric-Key Encrypted Session Key Packet",
 	"One-Pass Signature Packet",
-	"Secret Key Packet",
-	"Public Key Packet",
-	"Secret Subkey Packet",
+	"Secret-Key Packet",
+	"Public-Key Packet",
+	"Secret-Subkey Packet",
 	"Compressed Data Packet",
 	"Symmetrically Encrypted Data Packet",
 	"Marker Packet",
 	"Literal Data Packet",
 	"Trust Packet",
 	"User ID Packet",
-	"Public Subkey Packet",
+	"Public-Subkey Packet",
 	"Unknown",
 	"Unknown",
 	"User Attribute Packet",
-	"Symmetrically Encrypted and MDC Packet",
+	"Sym. Encrypted and Integrity Protected Data Packet",
 	"Modification Detection Code Packet",
 	"Unknown",
 	"Unknown",
@@ -62,16 +73,8 @@ var tagnames = []string{
 	"Unknown",
 	"Unknown",
 	"Unknown",
-	"Private",
-	"Private",
-	"Private",
-	"Private",
-}
-
-// GetTagname returns tag name
-func GetTagname(tag int) string {
-	if len(tagnames) < tag {
-		return "Unknown"
-	}
-	return tagnames[tag]
+	"Private or Experimental Values",
+	"Private or Experimental Values",
+	"Private or Experimental Values",
+	"Private or Experimental Values",
 }

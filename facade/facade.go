@@ -8,7 +8,7 @@ import (
 	"path"
 
 	"github.com/spiegel-im-spiegel/gocli"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse"
 )
 
 // Exit Status
