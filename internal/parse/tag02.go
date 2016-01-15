@@ -89,7 +89,7 @@ func (t Tag02) parseSigV3(indent Indent) ([]string, error) {
 }
 
 func (t Tag02) ver() string {
-	return fmt.Sprintf("Ver - %v", t.version)
+	return fmt.Sprintf("Ver %v", t.version)
 }
 
 func (t Tag02) hashedMaterialSize(size byte) string {

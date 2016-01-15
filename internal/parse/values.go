@@ -94,11 +94,11 @@ func (v SigVer) IsNew() bool {
 func (v SigVer) String() string {
 	switch true {
 	case v.IsOld():
-		return fmt.Sprintf("%d - Old", byte(v))
+		return fmt.Sprintf("%d - old", byte(v))
 	case v.IsNew():
-		return fmt.Sprintf("%d - New", byte(v))
+		return fmt.Sprintf("%d - new", byte(v))
 	default:
-		return fmt.Sprintf("%d - Unknown", byte(v))
+		return fmt.Sprintf("%d - unknown", byte(v))
 	}
 }
 
