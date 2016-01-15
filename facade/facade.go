@@ -30,8 +30,6 @@ type Facade struct {
 	Name string
 	// Version of application
 	Version string
-	// command of application
-	command *parse.Context
 }
 
 // NewFacade returns a new Facade instance
@@ -42,7 +40,6 @@ func NewFacade(appName, version string, ui *gocli.UI) *Facade {
 // Run Application
 func (f *Facade) Run(args []string) (int, error) {
 	cmd := parse.Command(f.UI)
-	f.command = cmd
 
 	flags := flag.NewFlagSet(f.Name, flag.ContinueOnError)
 	flags.BoolVar(&cmd.Hflag, "h", false, "displays this help")

@@ -21,7 +21,7 @@ func GetMPI(reader io.Reader) (*MPI, error) {
 		return nil, err
 	}
 	mpi := &MPI{}
-	mpi.BitLength = (uint16(bitlength[0]) << 8) | uint16(bitlength[1])
+	mpi.BitLength = uint16(Octets2Int(bitlength[:]))
 	bytelength := (int(mpi.BitLength) + 7) / 8
 	mpi.Bytes = make([]byte, bytelength)
 	if _, err := io.ReadFull(reader, mpi.Bytes); err != nil {

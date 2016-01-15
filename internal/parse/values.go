@@ -263,6 +263,17 @@ func StringRFC3339(t time.Time, utc bool) string {
 	return t.Format(time.RFC3339)
 }
 
+// Octets2Int returns integer from two-octets data
+func Octets2Int(octets []byte) uint64 {
+	rtn := uint64(0)
+	if len(octets) <= 8 {
+		for _, o := range octets {
+			rtn = (rtn << 8) | uint64(o)
+		}
+	}
+	return rtn
+}
+
 // DumpByte returns string byte-data
 func DumpByte(data []byte) string {
 	sep := ""
