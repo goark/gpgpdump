@@ -106,6 +106,10 @@ func (c *Context) parse(body io.Reader) error {
 			content, err = Tag02{Options: c.Options, OpaquePacket: oPacket}.Parse(0)
 		case 11:
 			content, err = Tag11{Options: c.Options, OpaquePacket: oPacket}.Parse(0)
+		case 13:
+			content, err = Tag13{Options: c.Options, OpaquePacket: oPacket}.Parse(0)
+		case 17:
+			content, err = Tag17{Options: c.Options, OpaquePacket: oPacket}.Parse(0)
 		default:
 			content, err = Unknown{Options: c.Options, OpaquePacket: oPacket}.Parse(0)
 		}

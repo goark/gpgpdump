@@ -55,6 +55,24 @@ func (s SubpacketType) String() string {
 	return fmt.Sprintf("%s(sub %d)", name, s)
 }
 
+var subpacketNameUA = []string{
+	"Reserved",        //00
+	"Image Attribute", //01
+}
+
+// SubpacketTypeUA is sub-packet type for User Attribute Packet
+type SubpacketTypeUA byte
+
+func (s SubpacketTypeUA) String() string {
+	name := "Unknown"
+	if 100 <= s && s <= 110 {
+		name = "Private or experimental"
+	} else if int(s) < len(subpacketNameUA) {
+		name = subpacketNameUA[s]
+	}
+	return fmt.Sprintf("%s(sub %d)", name, s)
+}
+
 // ParseSubpacket is function value of parsing sub-packet
 type parseSubpacket func(*Subpackets, *packet.OpaqueSubpacket) []string
 
@@ -94,6 +112,11 @@ var parseSubpacketFunctions = []parseSubpacket{
 	parseSPType32,
 }
 
+var parseSubpacketFunctionsUA = []parseSubpacket{
+	parseSPReserved,
+	parseSPType01,
+}
+
 // Subpackets - Sub-Packets
 type Subpackets struct {
 	*Options
@@ -121,14 +144,60 @@ func (sp *Subpackets) Parse(indent Indent) []string {
 	return content
 }
 
+//ParseUA parsing sub-packets for User Attribute Packet
+func (sp *Subpackets) ParseUA(indent Indent) []string {
+	var content = make([]string, 0)
+	for _, pckt := range sp.OpaqueSubpackets {
+		st := SubpacketType(pckt.SubType)
+		content = append(content, indent.Fill(sp.infoUA(pckt)))
+		if int(st) < len(parseSubpacketFunctionsUA) {
+			strs := parseSubpacketFunctionsUA[st](sp, pckt)
+			if strs != nil {
+				for _, str := range strs {
+					content = append(content, (indent + 1).Fill(str))
+				}
+			}
+		}
+	}
+	return content
+}
+
 func (sp *Subpackets) info(op *packet.OpaqueSubpacket) string {
 	sptype := SubpacketType(op.SubType)
 	size := len(op.Contents)
 	return fmt.Sprintf("%s %v(%d bytes)", sp.Title, sptype, size)
 }
 
+func (sp *Subpackets) infoUA(op *packet.OpaqueSubpacket) string {
+	sptype := SubpacketTypeUA(op.SubType)
+	size := len(op.Contents)
+	return fmt.Sprintf("%s %v(%d bytes)", sp.Title, sptype, size)
+}
+
 func parseSPReserved(sp *Subpackets, op *packet.OpaqueSubpacket) []string {
 	return nil
+}
+
+//Signature Creation Time (for User Attribute Packet)
+func parseSPType01(sp *Subpackets, op *packet.OpaqueSubpacket) []string {
+	var content = make([]string, 0)
+	length := Octets2IntLE(op.Contents[0:2])
+	version := op.Contents[2]
+	if version == 1 {
+		content = append(content, fmt.Sprintf("Version of the image header - %d", version))
+		enc := op.Contents[3]
+		encName := "Unknown"
+		if enc == 0x01 {
+			encName = "JPEG"
+		}
+		content = append(content, fmt.Sprintf("Encoding format of the image - %s(enc %d)", encName, enc))
+	} else if 100 <= version && version <= 110 {
+		content = append(content, fmt.Sprintf("private or experimental use(ver %d)", version))
+	} else {
+		content = append(content, fmt.Sprintf("Unknown version of the image header(ver %d)", version))
+	}
+	content = append(content, fmt.Sprintf("Image data(%d bytes)", len(op.Contents)-int(length)))
+	return content
 }
 
 //Signature Creation Time

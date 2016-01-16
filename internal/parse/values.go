@@ -320,6 +320,15 @@ func Octets2Int(octets []byte) uint64 {
 	return rtn
 }
 
+// Octets2IntLE returns integer from two-octets data (by little endian)
+func Octets2IntLE(octets []byte) uint16 {
+	rtn := uint16(0)
+	if len(octets) == 2 {
+		rtn = (uint16(octets[1]) << 8) | uint16(octets[0])
+	}
+	return rtn
+}
+
 // DumpByte returns string byte-data
 func DumpByte(data []byte) string {
 	sep := ""
