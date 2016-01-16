@@ -92,9 +92,6 @@ func (f *Facade) showUsage() {
 USAGE:
    %s [options] [PGPfile]
 
-VERSION:
-   %s
-
 OPTIONS:
    -h -- displays this help
    -v -- displays version
@@ -106,7 +103,7 @@ OPTIONS:
    -p -- dumps private packets
    -u -- displays UTC time
 `
-	f.OutputErrln(fmt.Sprintf(strings.Trim(usageText, " \t\n\r"), f.Name, f.Version))
+	f.OutputErrln(fmt.Sprintf(strings.Trim(usageText, " \t\n\r"), f.Name))
 }
 
 func (f *Facade) showVersion() {

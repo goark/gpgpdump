@@ -11,7 +11,7 @@ const (
 	// Name of application
 	Name string = "gpgpdump"
 	// Version of application
-	Version string = "0.1.0"
+	Version string = "version 0.0.0\nCopyright (C) 2016 Spiegel\nLicensed under Apache License Version 2.0 <http://www.apache.org/licenses/>"
 )
 
 func setupFacade(ui *gocli.UI) *facade.Facade {
