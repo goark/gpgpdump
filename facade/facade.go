@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/spiegel-im-spiegel/gocli"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse"
@@ -105,7 +106,7 @@ OPTIONS:
    -p -- dumps private packets
    -u -- displays UTC time
 `
-	f.OutputErrln(fmt.Sprintf(usageText, f.Name, f.Version))
+	f.OutputErrln(fmt.Sprintf(strings.Trim(usageText, " \t\n\r"), f.Name, f.Version))
 }
 
 func (f *Facade) showVersion() {

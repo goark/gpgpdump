@@ -41,11 +41,11 @@ func (t Tag11) format(ld *packet.LiteralData) string {
 }
 
 func (t Tag11) filename(ld *packet.LiteralData) string {
-	return fmt.Sprintf("Filename - %s", ld.FileName)
+	return fmt.Sprintf("File name - %s", ld.FileName)
 }
 
 func (t Tag11) unixtime(ld *packet.LiteralData) string {
-	return fmt.Sprintf("File modified time - %s", StringRFC3339UNIX(ld.Time, t.Uflag))
+	return fmt.Sprintf("Modification time of a file - %s", StringRFC3339UNIX(ld.Time, t.Uflag))
 }
 
 func (t Tag11) body(ld *packet.LiteralData) string {
@@ -55,5 +55,5 @@ func (t Tag11) body(ld *packet.LiteralData) string {
 			dump = DumpByte(data)
 		}
 	}
-	return fmt.Sprintf("Literal - %s", dump)
+	return fmt.Sprintf("Literal data - %s", dump)
 }

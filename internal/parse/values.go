@@ -150,7 +150,7 @@ func (kid KeyID) String() string {
 }
 
 // PubAlg is Public-Key Algorithm ID
-type PubAlg uint8
+type PubAlg byte
 
 // IsRSA returns if RSA algorithm.
 func (pa PubAlg) IsRSA() bool {
@@ -197,39 +197,80 @@ func (pa PubAlg) String() string {
 	}
 }
 
+var symAlgNames = []string{
+	"Plaintext or unencrypted data",
+	"IDEA",
+	"TripleDES (168 bit key derived from 192)",
+	"CAST5",
+	"Blowfish",
+	"Reserved",
+	"Reserved",
+	"AES with 128-bit key",
+	"AES with 192-bit key",
+	"AES with 256-bit key",
+	"Twofish with 256-bit key",
+	"Camellia with 128-bit key",
+	"Camellia with 192-bit key",
+	"Camellia with 256-bit key",
+}
+
+//SymAlg is Symmetric-Key Algorithm ID
+type SymAlg byte
+
+func (s SymAlg) String() string {
+	name := "Unknown"
+	if int(s) < len(symAlgNames) {
+		name = symAlgNames[s]
+	} else if 100 <= s && s <= 110 {
+		name = "Private/Experimental algorithm"
+	}
+	return fmt.Sprintf("%s(sym %d)", name, s)
+}
+
+var hashAlgNames = []string{
+	"Unknown",
+	"MD5",
+	"SHA-1",
+	"RIPE-MD/160",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"SHA256",
+	"SHA384",
+	"SHA512",
+	"SHA224",
+}
+
 // HashAlg is Hash Algorithm ID
-type HashAlg uint8
+type HashAlg byte
 
 func (ha HashAlg) String() string {
-	if 100 <= ha && ha <= 110 {
-		return fmt.Sprintf("Private/Experimental algorithm(hash %d)", ha)
+	name := "Unknown"
+	if int(ha) < len(hashAlgNames) {
+		name = hashAlgNames[ha]
+	} else if 100 <= ha && ha <= 110 {
+		name = "Private/Experimental algorithm"
 	}
-	switch ha {
-	case 1:
-		return "MD5(hash 1)"
-	case 2:
-		return "SHA-1(hash 2)"
-	case 3:
-		return "RIPE-MD/160(hash 3)"
-	case 4:
-		return "Reserved(hash 4)"
-	case 5:
-		return "Reserved(hash 5)"
-	case 6:
-		return "Reserved(hash 6)"
-	case 7:
-		return "Reserved(hash 7)"
-	case 8:
-		return "SHA256(hash 8)"
-	case 9:
-		return "SHA384(hash 9)"
-	case 10:
-		return "SHA512(hash 10)"
-	case 11:
-		return "SHA224(hash 11)"
-	default:
-		return fmt.Sprintf("Unknown(hash %d)", ha)
+	return fmt.Sprintf("%s(hash %d)", name, ha)
+}
+
+var compAlgNames = []string{
+	"Uncompressed",
+	"ZIP",
+	"ZLIB",
+	"BZip2",
+}
+
+// CompAlg is Compression Algorithm ID
+type CompAlg byte
+
+func (ca CompAlg) String() string {
+	name := "Unknown"
+	if int(ca) < len(compAlgNames) {
+		name = compAlgNames[ca]
 	}
+	return fmt.Sprintf("%s(comp %d)", name, ca)
 }
 
 // LiteralFormat is format of literal data
@@ -250,9 +291,14 @@ func (l LiteralFormat) String() string {
 	}
 }
 
-// StringRFC3339UNIX returns time string from UNIX Time
+// StringRFC3339UNIX returns time string from UNIX Time (uint32)
 func StringRFC3339UNIX(u uint32, utc bool) string {
-	return StringRFC3339(time.Unix(int64(u), 0), utc)
+	return StringRFC3339UNIX64(int64(u), utc)
+}
+
+// StringRFC3339UNIX64 returns time string from UNIX Time (int64)
+func StringRFC3339UNIX64(u int64, utc bool) string {
+	return StringRFC3339(time.Unix(u, 0), utc)
 }
 
 // StringRFC3339 returns time string from UNIX Time

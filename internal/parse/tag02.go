@@ -59,25 +59,29 @@ func (t Tag02) parseSigV4(indent Indent) ([]string, error) {
 	sizeHS := Octets2Int(t.OpaquePacket.Contents[4:6])
 	sizeUS := Octets2Int(t.OpaquePacket.Contents[6+sizeHS : 6+sizeHS+2])
 	hasTag := t.OpaquePacket.Contents[8+sizeHS+sizeUS : 8+sizeHS+sizeUS+2]
-	mpi := t.OpaquePacket.Contents[10+sizeHS+sizeUS:]
+	pubkeyMPI := &PubkeyMPI{Options: t.Options, Pub: pub, MPI: t.OpaquePacket.Contents[10+sizeHS+sizeUS:]}
 
 	content = append(content, indent.Fill(t.sigType(stype)))
 	content = append(content, indent.Fill(t.pubAlg(pub)))
 	content = append(content, indent.Fill(t.hashAlg(hash)))
-	content = append(content, indent.Fill(t.hashLeft2(hasTag)))
-	if pub.IsDSA() {
-		c := t.mpiDSA(mpi)
-		for _, l := range c {
-			content = append(content, indent.Fill(l))
+	if sizeHS > 0 {
+		osp, err := packet.OpaqueSubpackets(t.OpaquePacket.Contents[6 : 6+sizeHS])
+		if err != nil {
+			return content, err
 		}
-		content = append(content, (indent + 1).Fill("-> hash(DSA q bits)"))
-	} else if pub.IsRSA() {
-		c := t.mpiRSA(mpi)
-		for _, l := range c {
-			content = append(content, indent.Fill(l))
-		}
-		content = append(content, (indent + 1).Fill("-> PKCS-1"))
+		sp := &Subpackets{Options: t.Options, Title: "Hashed Subpacket -", OpaqueSubpackets: osp}
+		content = append(content, sp.Parse(indent)...)
 	}
+	if sizeUS > 0 {
+		osp, err := packet.OpaqueSubpackets(t.OpaquePacket.Contents[8+sizeHS : 8+sizeHS+sizeUS])
+		if err != nil {
+			return content, err
+		}
+		sp := &Subpackets{Options: t.Options, Title: "Unhashed Subpacket -", OpaqueSubpackets: osp}
+		content = append(content, sp.Parse(indent)...)
+	}
+	content = append(content, indent.Fill(t.hashLeft2(hasTag)))
+	content = append(content, pubkeyMPI.Parse(indent)...)
 	return content, nil
 }
 
@@ -95,12 +99,12 @@ func (t Tag02) parseSigV3(indent Indent) ([]string, error) {
 	// [19] One or more multiprecision integers comprising the signature.
 	size := t.OpaquePacket.Contents[1]
 	stype := SigType(t.OpaquePacket.Contents[2])
-	creationTime := uint32(Octets2Int(t.OpaquePacket.Contents[3:7]))
+	creationTime := int64(Octets2Int(t.OpaquePacket.Contents[3:7]))
 	keyID := KeyID(Octets2Int(t.OpaquePacket.Contents[7:15]))
 	pub := PubAlg(t.OpaquePacket.Contents[15])
 	hash := HashAlg(t.OpaquePacket.Contents[16])
 	hashTag := t.OpaquePacket.Contents[17:19]
-	mpi := t.OpaquePacket.Contents[19:]
+	pubkeyMPI := &PubkeyMPI{Options: t.Options, Pub: pub, MPI: t.OpaquePacket.Contents[19:]}
 	content = append(content, indent.Fill(t.hashedMaterialSize(size)))
 	if size == 5 { //MUST be 5
 		content = append(content, (indent + 1).Fill(t.sigType(stype)))
@@ -113,19 +117,7 @@ func (t Tag02) parseSigV3(indent Indent) ([]string, error) {
 	content = append(content, indent.Fill(t.pubAlg(pub)))
 	content = append(content, indent.Fill(t.hashAlg(hash)))
 	content = append(content, indent.Fill(t.hashLeft2(hashTag)))
-	if pub.IsDSA() {
-		c := t.mpiDSA(mpi)
-		for _, l := range c {
-			content = append(content, indent.Fill(l))
-		}
-		content = append(content, (indent + 1).Fill("-> hash(DSA q bits)"))
-	} else if pub.IsRSA() {
-		c := t.mpiRSA(mpi)
-		for _, l := range c {
-			content = append(content, indent.Fill(l))
-		}
-		content = append(content, (indent + 1).Fill("-> PKCS-1"))
-	}
+	content = append(content, pubkeyMPI.Parse(indent)...)
 	return content, nil
 }
 
@@ -134,15 +126,15 @@ func (t Tag02) ver() string {
 }
 
 func (t Tag02) sigType(st SigType) string {
-	return fmt.Sprintf("Sig type - %v", st)
+	return fmt.Sprintf("Signature type - %v", st)
 }
 
 func (t Tag02) pubAlg(pa PubAlg) string {
-	return fmt.Sprintf("Pub alg - %v", pa)
+	return fmt.Sprintf("Public-key algorithm - %v", pa)
 }
 
 func (t Tag02) hashAlg(ha HashAlg) string {
-	return fmt.Sprintf("Hash alg - %v", ha)
+	return fmt.Sprintf("Hash algorithm - %v", ha)
 }
 
 func (t Tag02) hashLeft2(h []byte) string {
@@ -153,12 +145,12 @@ func (t Tag02) hashedMaterialSize(size byte) string {
 	return fmt.Sprintf("Hashed material(%d bytes):", size)
 }
 
-func (t Tag02) creationTime(tm uint32) string {
-	return fmt.Sprintf("Creation time - %s", StringRFC3339UNIX(tm, t.Uflag))
+func (t Tag02) creationTime(tm int64) string {
+	return fmt.Sprintf("Creation time - %s", StringRFC3339UNIX64(tm, t.Uflag))
 }
 
 func (t Tag02) keyID(kid KeyID) string {
-	return fmt.Sprintf("Key ID - %v", kid)
+	return fmt.Sprintf("Key ID of signer - %v", kid)
 }
 
 func (t Tag02) mpiDSA(mpi []byte) []string {
