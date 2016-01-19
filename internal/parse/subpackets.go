@@ -109,7 +109,6 @@ var parseSubpacketFunctions = []parseSubpacket{
 	parseSPType29,
 	parseSPType30,
 	parseSPType31,
-	parseSPType32,
 }
 
 var parseSubpacketFunctionsUA = []parseSubpacket{
@@ -132,7 +131,14 @@ func (sp *Subpackets) Parse(indent Indent) []string {
 	for _, pckt := range sp.OpaqueSubpackets {
 		st := SubpacketType(pckt.SubType)
 		content = append(content, indent.Fill(sp.info(pckt)))
-		if int(st) < len(parseSubpacketFunctions) {
+		if st == 32 {
+			strs := parseSPType32(sp, pckt) //with recursive call
+			if strs != nil {
+				for _, str := range strs {
+					content = append(content, (indent + 1).Fill(str))
+				}
+			}
+		} else if int(st) < len(parseSubpacketFunctions) {
 			strs := parseSubpacketFunctions[st](sp, pckt)
 			if strs != nil {
 				for _, str := range strs {
@@ -493,14 +499,13 @@ func parseSPType31(sp *Subpackets, op *packet.OpaqueSubpacket) []string {
 
 //Embedded Signature
 func parseSPType32(sp *Subpackets, op *packet.OpaqueSubpacket) []string {
-	//sig := &packet.OpaquePacket{Tag: uint8(0x02), Reason: error(nil), Contents: op.Contents}
-	//cxt := Tag02{Options: sp.Options, OpaquePacket: sig}
-	//content, err := cxt.Parse(0)
-	//if err != nil {
-	//	return nil
-	//}
-	//return content
-	return nil
+	sig := &packet.OpaquePacket{Tag: uint8(0x02), Reason: error(nil), Contents: op.Contents}
+	cxt := Tag02{Options: sp.Options, OpaquePacket: sig} //recursive call
+	content, err := cxt.Parse(0)
+	if err != nil {
+		return nil
+	}
+	return content
 }
 
 func stringFlagInfo(flag byte, name string) string {

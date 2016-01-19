@@ -1,7 +1,6 @@
 package parse
 
 import (
-	"bytes"
 	"fmt"
 
 	"golang.org/x/crypto/openpgp/packet"
@@ -151,29 +150,4 @@ func (t Tag02) creationTime(tm int64) string {
 
 func (t Tag02) keyID(kid KeyID) string {
 	return fmt.Sprintf("Key ID of signer - %v", kid)
-}
-
-func (t Tag02) mpiDSA(mpi []byte) []string {
-	var content = make([]string, 0)
-	reader := bytes.NewReader(mpi)
-	dsaMPI := &DSASigMPI{}
-	if err := dsaMPI.Get(reader); err != nil {
-		content = append(content, err.Error())
-	} else {
-		content = append(content, dsaMPI.DSASigR.Dump("DSA r", t.Iflag))
-		content = append(content, dsaMPI.DSASigS.Dump("DSA s", t.Iflag))
-	}
-	return content
-}
-
-func (t Tag02) mpiRSA(mpi []byte) []string {
-	var content = make([]string, 0)
-	reader := bytes.NewReader(mpi)
-	rsaMPI := &RSASigMPI{}
-	if err := rsaMPI.Get(reader); err != nil {
-		content = append(content, err.Error())
-	} else {
-		content = append(content, rsaMPI.RSASignature.Dump("RSA m^d mod n", t.Iflag))
-	}
-	return content
 }
