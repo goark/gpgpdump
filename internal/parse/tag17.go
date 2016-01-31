@@ -1,10 +1,13 @@
 package parse
 
-import "golang.org/x/crypto/openpgp/packet"
+import (
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+	"golang.org/x/crypto/openpgp/packet"
+)
 
 // Tag17 - User Attribute Packet
 type Tag17 struct {
-	*Options
+	*options.Options
 	OpaquePacket *packet.OpaquePacket
 }
 

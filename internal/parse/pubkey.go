@@ -1,10 +1,14 @@
 package parse
 
-import "bytes"
+import (
+	"bytes"
+
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+)
 
 // PubkeyMPI - multi-precision integers of public key algorithm
 type PubkeyMPI struct {
-	*Options
+	*options.Options
 	Pub PubAlg
 	MPI []byte
 }

@@ -1,10 +1,13 @@
 package parse
 
-import "golang.org/x/crypto/openpgp/packet"
+import (
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+	"golang.org/x/crypto/openpgp/packet"
+)
 
 // Unknown packet
 type Unknown struct {
-	*Options
+	*options.Options
 	OpaquePacket *packet.OpaquePacket
 }
 

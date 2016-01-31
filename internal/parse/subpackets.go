@@ -3,6 +3,8 @@ package parse
 import (
 	"fmt"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+
 	"golang.org/x/crypto/openpgp/packet"
 )
 
@@ -119,7 +121,7 @@ var parseSubpacketFunctionsUA = []parseSubpacket{
 
 // Subpackets - Sub-Packets
 type Subpackets struct {
-	*Options
+	*options.Options
 	Title            string
 	OpaqueSubpackets []*packet.OpaqueSubpacket
 	SigCreationTime  int64

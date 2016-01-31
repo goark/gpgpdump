@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+
 	"golang.org/x/crypto/openpgp/packet"
 )
 
 // Tag11 - Literal Data Packet
 type Tag11 struct {
-	*Options
+	*options.Options
 	OpaquePacket *packet.OpaquePacket
 }
 

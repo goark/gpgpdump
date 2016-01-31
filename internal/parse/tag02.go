@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+
 	"golang.org/x/crypto/openpgp/packet"
 )
 
 // Tag02 - Signature Packet
 type Tag02 struct {
-	*Options
+	*options.Options
 	OpaquePacket *packet.OpaquePacket
 	version      SigVer
 }

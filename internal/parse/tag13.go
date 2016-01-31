@@ -3,12 +3,14 @@ package parse
 import (
 	"fmt"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+
 	"golang.org/x/crypto/openpgp/packet"
 )
 
 // Tag13 - User ID Packet
 type Tag13 struct {
-	*Options
+	*options.Options
 	OpaquePacket *packet.OpaquePacket
 }
 
