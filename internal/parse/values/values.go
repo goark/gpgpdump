@@ -103,7 +103,33 @@ func (t Tag) String() string {
 	return fmt.Sprintf("%s (tag %d)", tagNames.Get(int(t), "Unknown"), t)
 }
 
-// SigVer is Signiture Version
+// PubVer is Public-Key Packet Version
+type PubVer byte
+
+// IsOld return true if old version
+func (v PubVer) IsOld() bool {
+	return (v == 2 || v == 3)
+}
+
+// IsNew return true if new version
+func (v PubVer) IsNew() bool {
+	return (v == 4)
+}
+
+func (v PubVer) String() string {
+	var t string
+	switch true {
+	case v.IsOld():
+		t = "old"
+	case v.IsNew():
+		t = "new"
+	default:
+		t = "unknown"
+	}
+	return fmt.Sprintf("Ver %d - %s", v, t)
+}
+
+// SigVer is Signiture Packet Version
 type SigVer byte
 
 // IsOld return true if old version
@@ -117,14 +143,16 @@ func (v SigVer) IsNew() bool {
 }
 
 func (v SigVer) String() string {
+	var t string
 	switch true {
 	case v.IsOld():
-		return fmt.Sprintf("%d - old", byte(v))
+		t = "old"
 	case v.IsNew():
-		return fmt.Sprintf("%d - new", byte(v))
+		t = "new"
 	default:
-		return fmt.Sprintf("%d - unknown", byte(v))
+		t = "unknown"
 	}
+	return fmt.Sprintf("Ver %d - %s", v, t)
 }
 
 var sigTypeNames = Msgs{
@@ -182,7 +210,7 @@ func (pa PubAlg) String() string {
 	} else {
 		name = pubAlgNames.Get(int(pa), "Unknown")
 	}
-	return fmt.Sprintf("%s (pub %d)", name, pa)
+	return fmt.Sprintf("Public-key algorithm - %s (pub %d)", name, pa)
 }
 
 // IsRSA returns if RSA algorithm.

@@ -24,7 +24,7 @@ func (t Tag02) Parse(indent values.Indent) (values.Content, error) {
 	content := values.NewContent()
 
 	version := values.SigVer(t.body[0])
-	content = append(content, (indent + 1).Fill(t.ver(version)))
+	content = append(content, (indent + 1).Fill(version.String()))
 	if version.IsOld() {
 		c, err := t.parseV3(indent + 1)
 		if err != nil {
@@ -71,10 +71,10 @@ func (t Tag02) parseV3(indent values.Indent) (values.Content, error) {
 		return content, nil
 	}
 	content = append(content, indent.Fill(t.keyID(values.KeyID(keyID))))
-	content = append(content, indent.Fill(t.pubAlg(pub)))
+	content = append(content, indent.Fill(pub.String()))
 	content = append(content, indent.Fill(t.hashAlg(hash)))
 	content = append(content, indent.Fill(t.hashLeft2(hashTag)))
-	content = content.Add(pubkey.Parse(indent))
+	content = content.Add(pubkey.ParseSig(indent))
 	return content, nil
 }
 
@@ -101,7 +101,7 @@ func (t Tag02) parseV4(indent values.Indent) (values.Content, error) {
 	pubkey := pubkeys.New(t.Options, pub, t.body[10+sizeHS+sizeUS:])
 
 	content = append(content, indent.Fill(t.sigType(stype)))
-	content = append(content, indent.Fill(t.pubAlg(pub)))
+	content = append(content, indent.Fill(pub.String()))
 	content = append(content, indent.Fill(t.hashAlg(hash)))
 	if sizeHS > 0 {
 		sp, err := NewSubpackets(t.Options, "Hashed Subpacket -", t.body[6:6+sizeHS])
@@ -118,20 +118,12 @@ func (t Tag02) parseV4(indent values.Indent) (values.Content, error) {
 		content = content.Add(sp.Parse(indent))
 	}
 	content = append(content, indent.Fill(t.hashLeft2(hasTag)))
-	content = content.Add(pubkey.Parse(indent))
+	content = content.Add(pubkey.ParseSig(indent))
 	return content, nil
-}
-
-func (t Tag02) ver(v values.SigVer) string {
-	return fmt.Sprintf("Ver %v", v)
 }
 
 func (t Tag02) sigType(st values.SigType) string {
 	return fmt.Sprintf("Signature type - %v", st)
-}
-
-func (t Tag02) pubAlg(pa values.PubAlg) string {
-	return fmt.Sprintf("Public-key algorithm - %v", pa)
 }
 
 func (t Tag02) hashAlg(ha values.HashAlg) string {
