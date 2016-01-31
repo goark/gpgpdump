@@ -438,11 +438,7 @@ func parseSPType31(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 //Embedded Signature
 func parseSPType32(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	tag2 := New(sp.Options, op.Contents)
-	content, err := tag2.Parse(0)
-	if err != nil {
-		return nil, err
-	}
-	return content, nil
+	return tag2.Parse(0) //recursive call
 }
 
 func stringFlagInfo(flag byte, name string) string {
