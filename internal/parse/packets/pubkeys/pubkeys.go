@@ -2,6 +2,7 @@ package pubkeys
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
@@ -33,6 +34,7 @@ func (p *Pubkey) ParsePub(indent values.Indent) values.Content {
 		content = append(content, indent.Fill("Multi-precision integers of Elgamal:"))
 		content = content.AddIndent(p.elgPub(), indent+1)
 	default:
+		content = append(content, indent.Fill(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub)))
 	}
 	return content
 }
@@ -125,7 +127,7 @@ func (p *Pubkey) ParseSig(indent values.Indent) values.Content {
 		content = append(content, indent.Fill("Multi-precision integers of Elgamal:"))
 		content = content.AddIndent(p.elgSig(), indent+1)
 	default:
-		content = append(content, indent.Fill("Multi-precision integers of Unknown signature(pub %d)"))
+		content = append(content, indent.Fill(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub)))
 	}
 	return content
 }
@@ -175,5 +177,57 @@ func (p *Pubkey) elgSig() values.Content {
 		return content
 	}
 	content = append(content, mpi.Dump("ElGamal b = (h - a*x)/k mod p - 1", p.Iflag))
+	return content
+}
+
+//ParseSym multi-precision integers of public key algorithm for SPublic-Key Encrypted Session Key Packet
+func (p *Pubkey) ParseSym(indent values.Indent) values.Content {
+	content := values.NewContent()
+	switch true {
+	case p.pub.IsRSA():
+		content = append(content, indent.Fill("Multi-precision integers of RSA:"))
+		content = content.AddIndent(p.rsaSym(), indent+1)
+		content = append(content, (indent + 2).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
+	case p.pub.IsDSA():
+		content = append(content, indent.Fill("Multi-precision integers of DSA:"))
+		content = append(content, (indent + 1).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
+	case p.pub.IsElgamal():
+		content = append(content, indent.Fill("Multi-precision integers of Elgamal:"))
+		content = content.AddIndent(p.elgSym(), indent+1)
+		content = append(content, (indent + 2).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
+	default:
+		content = append(content, indent.Fill(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub)))
+		content = append(content, (indent + 1).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
+	}
+	return content
+}
+
+func (p *Pubkey) rsaSym() values.Content {
+	content := values.NewContent()
+	reader := bytes.NewReader(p.mpi)
+	mpi, err := GetMPI(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, mpi.Dump("RSA m^e mod n", p.Iflag))
+	return content
+}
+
+func (p *Pubkey) elgSym() values.Content {
+	content := values.NewContent()
+	reader := bytes.NewReader(p.mpi)
+	mpi, err := GetMPI(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, mpi.Dump("ElGamal g^k mod p", p.Iflag))
+	mpi, err = GetMPI(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, mpi.Dump("ElGamal m * y^k mod p", p.Iflag))
 	return content
 }

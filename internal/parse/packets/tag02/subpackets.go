@@ -247,7 +247,7 @@ func parseSPType12(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 func parseSPType16(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
 	keyID := values.KeyID(values.Octets2Int(op.Contents))
-	content = append(content, fmt.Sprintf("Key ID - %v", keyID))
+	content = append(content, keyID.String())
 	return content, nil
 }
 

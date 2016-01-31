@@ -25,6 +25,7 @@ func parseBinary(opt *options.Options, reader io.Reader) (values.Content, error)
 func parse(opt *options.Options, body io.Reader) (values.Content, error) {
 	pckts := packets.NewPackets(body)
 	content := values.NewContent()
+	opt.ResetSymAlgMode()
 	for {
 		p, err := pckts.Next()
 		if err != nil {

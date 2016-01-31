@@ -70,7 +70,7 @@ func (t Tag02) parseV3(indent values.Indent) (values.Content, error) {
 		content = append(content, (indent + 1).Fill("Unknown"))
 		return content, nil
 	}
-	content = append(content, indent.Fill(t.keyID(values.KeyID(keyID))))
+	content = append(content, indent.Fill(keyID.String()))
 	content = append(content, indent.Fill(pub.String()))
 	content = append(content, indent.Fill(t.hashAlg(hash)))
 	content = append(content, indent.Fill(t.hashLeft2(hashTag)))
@@ -140,8 +140,4 @@ func (t Tag02) hashedMaterialSize(size byte) string {
 
 func (t Tag02) creationTime(tm int64) string {
 	return fmt.Sprintf("Creation time - %s", values.StringRFC3339UNIX64(tm, t.Uflag))
-}
-
-func (t Tag02) keyID(kid values.KeyID) string {
-	return fmt.Sprintf("Key ID of signer - %v", kid)
 }

@@ -82,13 +82,13 @@ var tagNames = Msgs{
 	7:  "Secret-Subkey Packet",
 	8:  "Compressed Data Packet",
 	9:  "Symmetrically Encrypted Data Packet",
-	10: "Marker Packet",
+	10: "Marker Packet (Obsolete Literal Packet)",
 	11: "Literal Data Packet",
 	12: "Trust Packet",
 	13: "User ID Packet",
 	14: "Public-Subkey Packet",
 	17: "User Attribute Packet",
-	18: "Sym. Encrypted and Integrity Protected Data Packet",
+	18: "Sym. Encrypted Integrity Protected Data Packet",
 	19: "Modification Detection Code Packet",
 	60: "Private or Experimental Values",
 	61: "Private or Experimental Values",
@@ -155,6 +155,22 @@ func (v SigVer) String() string {
 	return fmt.Sprintf("Ver %d - %s", v, t)
 }
 
+// PubSymKeyVer is Public-Key Encrypted Session Key Packet Version
+type PubSymKeyVer byte
+
+func (v PubSymKeyVer) String() string {
+	var t string
+	switch v {
+	case 2:
+		t = "old"
+	case 3:
+		t = "new"
+	default:
+		t = "unknown"
+	}
+	return fmt.Sprintf("Ver %d - %s", v, t)
+}
+
 var sigTypeNames = Msgs{
 	0x00: "Signature of a binary document",
 	0x01: "Signature of a canonical text document",
@@ -184,7 +200,7 @@ func (s SigType) String() string {
 type KeyID uint64
 
 func (kid KeyID) String() string {
-	return fmt.Sprintf("0x%X", uint64(kid))
+	return fmt.Sprintf("Key ID - 0x%X", uint64(kid))
 }
 
 var pubAlgNames = Msgs{
