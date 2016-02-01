@@ -137,6 +137,8 @@ func (p *Pubkey) ecdsaPub() values.Content {
 
 func (p *Pubkey) ecdhPub() values.Content {
 	content := values.NewContent()
+	content = append(content, fmt.Sprintf("Dump - %s", values.DumpByte(p.mpi)))
+
 	reader := bytes.NewReader(p.mpi)
 	oid, err := GetOID(reader)
 	if err != nil {
@@ -150,6 +152,18 @@ func (p *Pubkey) ecdhPub() values.Content {
 		return content
 	}
 	content = append(content, mpi.DumpEC("ECDH P = (x, y)", p.Iflag))
+	dat, err := GetECParm(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+
+	if dat.Bytes[0] == 0x01 {
+		content = append(content, values.HashAlg(dat.Bytes[1]).String())
+		content = append(content, values.SymAlg(dat.Bytes[2]).String())
+	} else {
+		content = append(content, dat.Dump("Unknown KDF parameters -", p.Iflag))
+	}
 	return content
 }
 
@@ -304,19 +318,19 @@ func (p *Pubkey) elgSym() values.Content {
 
 func (p *Pubkey) ecdhSym() values.Content {
 	content := values.NewContent()
-	fmt.Println("length", len(p.mpi))
 	reader := bytes.NewReader(p.mpi)
-	oid, err := GetOID(reader)
-	if err != nil {
-		content = append(content, err.Error())
-		return content
-	}
-	content = append(content, fmt.Sprintf("ECDH OID - %v", oid))
 	mpi, err := GetMPI(reader)
 	if err != nil {
 		content = append(content, err.Error())
 		return content
 	}
 	content = append(content, mpi.DumpEC("ECDH P = (x, y)", p.Iflag))
+	key, err := GetECParm(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, key.Dump("symmetric key (encoded) -", p.Iflag))
+
 	return content
 }

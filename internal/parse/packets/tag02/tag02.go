@@ -72,7 +72,7 @@ func (t Tag02) parseV3(indent values.Indent) (values.Content, error) {
 	}
 	content = append(content, indent.Fill(keyID.String()))
 	content = append(content, indent.Fill(pub.String()))
-	content = append(content, indent.Fill(t.hashAlg(hash)))
+	content = append(content, indent.Fill(hash.String()))
 	content = append(content, indent.Fill(t.hashLeft2(hashTag)))
 	content = content.Add(pubkey.ParseSig(indent))
 	return content, nil
@@ -102,7 +102,7 @@ func (t Tag02) parseV4(indent values.Indent) (values.Content, error) {
 
 	content = append(content, indent.Fill(t.sigType(stype)))
 	content = append(content, indent.Fill(pub.String()))
-	content = append(content, indent.Fill(t.hashAlg(hash)))
+	content = append(content, indent.Fill(hash.String()))
 	if sizeHS > 0 {
 		sp, err := NewSubpackets(t.Options, "Hashed Subpacket -", t.body[6:6+sizeHS])
 		if err != nil {
@@ -124,10 +124,6 @@ func (t Tag02) parseV4(indent values.Indent) (values.Content, error) {
 
 func (t Tag02) sigType(st values.SigType) string {
 	return fmt.Sprintf("Signature type - %v", st)
-}
-
-func (t Tag02) hashAlg(ha values.HashAlg) string {
-	return fmt.Sprintf("Hash algorithm - %v", ha)
 }
 
 func (t Tag02) hashLeft2(h []byte) string {

@@ -439,9 +439,9 @@ func parseSPType31(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 	hashAlg := values.HashAlg(op.Contents[1])
 	hash := op.Contents[2:]
 
-	content = append(content, fmt.Sprintf("Public-key algorithm - %v", pubAlg))
-	content = append(content, fmt.Sprintf("Hash algorithm - %v", hashAlg))
-	content = append(content, fmt.Sprintf("Hash(%d bytes) - %v", len(hash), values.DumpByte(hash)))
+	content = append(content, pubAlg.String())
+	content = append(content, hashAlg.String())
+	content = append(content, fmt.Sprintf("Hash (%d bytes) - %v", len(hash), values.DumpByte(hash)))
 	return content, nil
 }
 

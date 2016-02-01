@@ -47,11 +47,35 @@ func (oid *OID) String() string {
 	return "Unknown"
 }
 
-// Dump returns dump-out OID
-func (oid *OID) Dump(header string, iflag bool) string {
-	dump := "..."
-	if iflag && oid.Length > 0 && oid.Bytes != nil {
-		dump = values.DumpByte(oid.Bytes)
+// ECParm is for Sym. Key for ECC
+type ECParm struct {
+	Bytes  []byte
+	Length byte
+}
+
+//GetECParm returns parsing Sym. Key for ECC
+func GetECParm(reader io.Reader) (*ECParm, error) {
+	var length [1]byte
+	if _, err := io.ReadFull(reader, length[0:]); err != nil {
+		if err == io.EOF {
+			return nil, nil
+		}
+		return nil, err
 	}
-	return fmt.Sprintf("%s (%d bits) - %s", header, oid.Length, dump)
+	key := &ECParm{}
+	key.Length = length[0]
+	key.Bytes = make([]byte, key.Length)
+	if _, err := io.ReadFull(reader, key.Bytes); err != nil {
+		return nil, err
+	}
+	return key, nil
+}
+
+// Dump returns dump-out OID
+func (key *ECParm) Dump(header string, iflag bool) string {
+	dump := "..."
+	if iflag && key.Length > 0 && key.Bytes != nil {
+		dump = values.DumpByte(key.Bytes)
+	}
+	return fmt.Sprintf("%s (%d byte) - %s", header, key.Length, dump)
 }

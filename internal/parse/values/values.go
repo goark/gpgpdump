@@ -281,7 +281,7 @@ func (s SymAlg) String() string {
 	} else {
 		name = symAlgNames.Get(int(s), "Unknown")
 	}
-	return fmt.Sprintf("%s (sym %d)", name, s)
+	return fmt.Sprintf("Symmetric algorithm - %s (sym %d)", name, s)
 }
 
 var hashAlgNames = Msgs{
@@ -309,7 +309,7 @@ func (ha HashAlg) String() string {
 	} else {
 		name = hashAlgNames.Get(int(ha), "Unknown")
 	}
-	return fmt.Sprintf("%s (hash %d)", name, ha)
+	return fmt.Sprintf("Hash algorithm - %s (hash %d)", name, ha)
 }
 
 var compAlgNames = Msgs{
