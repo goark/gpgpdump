@@ -54,12 +54,14 @@ func (s *S2K) Parse(indent values.Indent) values.Content {
 		switch mrk {
 		case "GNU1":
 			content = append(content, (indent + 1).Fill("GnuPG gnu-dummy (s2k 1001)"))
+			s.left -= 4
 		case "GNU2":
 			content = append(content, (indent + 1).Fill("GnuPG gnu-divert-to-card (s2k 1001)"))
 			l := s.buf[5]
 			content = append(content, (indent + 2).Fill(fmt.Sprintf("Serial Number: %s", values.DumpByte(s.buf[6:6+1]))))
 			s.left -= 5 + int(l)
 		default:
+			s.left -= 4
 		}
 	}
 	return content
