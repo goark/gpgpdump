@@ -2,7 +2,7 @@ package tag03
 
 import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/s2k.go"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/s2k"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 )
 

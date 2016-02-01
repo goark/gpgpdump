@@ -11,14 +11,18 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag01"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag02"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag03"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag04"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag06"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag08"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag09"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag10"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag11"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag12"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag13"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag14"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag17"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag18"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag19"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/unknown"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 )
@@ -61,14 +65,20 @@ func (p Packet) getTag(opt *options.Options) Tags {
 		return tag02.New(opt, p.Content)
 	case 3:
 		return tag03.New(opt, p.Content)
+	case 4:
+		return tag04.New(opt, p.Content)
 	case 6:
 		return tag06.New(opt, p.Content)
+	case 8:
+		return tag08.New(opt, p.Content)
 	case 9:
 		return tag09.New(opt, p.Content)
 	case 10:
 		return tag10.New(opt, p.Content)
 	case 11:
 		return tag11.New(opt, p.Content)
+	case 12:
+		return tag12.New(opt, p.Content)
 	case 13:
 		return tag13.New(opt, p.Content)
 	case 14:
@@ -77,6 +87,8 @@ func (p Packet) getTag(opt *options.Options) Tags {
 		return tag17.New(opt, p.Content)
 	case 18:
 		return tag18.New(opt, p.Content)
+	case 19:
+		return tag19.New(opt, p.Content)
 	case 60, 61, 62, 63:
 		return private.New(opt, p.Content)
 	default:

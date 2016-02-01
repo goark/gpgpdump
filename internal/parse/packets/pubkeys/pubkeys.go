@@ -137,8 +137,6 @@ func (p *Pubkey) ecdsaPub() values.Content {
 
 func (p *Pubkey) ecdhPub() values.Content {
 	content := values.NewContent()
-	content = append(content, fmt.Sprintf("Dump - %s", values.DumpByte(p.mpi)))
-
 	reader := bytes.NewReader(p.mpi)
 	oid, err := GetOID(reader)
 	if err != nil {

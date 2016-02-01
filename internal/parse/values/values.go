@@ -155,6 +155,20 @@ func (v SigVer) String() string {
 	return fmt.Sprintf("Ver %d - %s", v, t)
 }
 
+// OneSigVer is One-Pass Signature Packet Version
+type OneSigVer byte
+
+func (v OneSigVer) String() string {
+	var t string
+	switch v {
+	case 3:
+		t = "new"
+	default:
+		t = "unknown"
+	}
+	return fmt.Sprintf("Ver %d - %s", v, t)
+}
+
 // PubSessKeyVer is Public-Key Encrypted Session Key Packet Version
 type PubSessKeyVer byte
 
@@ -357,7 +371,7 @@ var compAlgNames = Msgs{
 type CompAlg byte
 
 func (ca CompAlg) String() string {
-	return fmt.Sprintf("%s (comp %d)", compAlgNames.Get(int(ca), "Unknown"), ca)
+	return fmt.Sprintf("Compression algorithms - %s (comp %d)", compAlgNames.Get(int(ca), "Unknown"), ca)
 }
 
 var literalFormatNames = Msgs{
