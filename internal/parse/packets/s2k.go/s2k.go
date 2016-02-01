@@ -47,8 +47,20 @@ func (s *S2K) Parse(indent values.Indent) values.Content {
 		content = append(content, (indent + 1).Fill(fmt.Sprintf("Salt - %s", values.DumpByte(s.buf[2:10]))))
 		c := uint32(s.buf[10])
 		count := (uint32(16) + (c & 15)) << ((c >> 4) + EXPBIAS)
-		content = append(content, (indent + 1).Fill(fmt.Sprintf("Salt - %d", count)))
+		content = append(content, (indent + 1).Fill(fmt.Sprintf("Count - %d (coded count 0x%02x)", count, c)))
 		s.left -= 10
+	case 101:
+		mrk := string(s.buf[1:5])
+		switch mrk {
+		case "GNU1":
+			content = append(content, (indent + 1).Fill("GnuPG gnu-dummy (s2k 1001)"))
+		case "GNU2":
+			content = append(content, (indent + 1).Fill("GnuPG gnu-divert-to-card (s2k 1001)"))
+			l := s.buf[5]
+			content = append(content, (indent + 2).Fill(fmt.Sprintf("Serial Number: %s", values.DumpByte(s.buf[6:6+1]))))
+			s.left -= 5 + int(l)
+		default:
+		}
 	}
 	return content
 }
