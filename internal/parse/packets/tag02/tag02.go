@@ -55,7 +55,7 @@ func (t Tag02) parseV3(indent values.Indent) (values.Content, error) {
 	// [19] One or more multiprecision integers comprising the signature.
 	size := t.body[1]
 	stype := values.SigType(t.body[2])
-	creationTime := int64(values.Octets2Int(t.body[3:7]))
+	t.SigCreationTime = int64(values.Octets2Int(t.body[3:7]))
 	keyID := values.KeyID(values.Octets2Int(t.body[7:15]))
 	pub := values.PubAlg(t.body[15])
 	hash := values.HashAlg(t.body[16])
@@ -65,7 +65,7 @@ func (t Tag02) parseV3(indent values.Indent) (values.Content, error) {
 	content = append(content, indent.Fill(t.hashedMaterialSize(size)))
 	if size == 5 { //MUST be 5
 		content = append(content, (indent + 1).Fill(t.sigType(stype)))
-		content = append(content, (indent + 1).Fill(t.creationTime(creationTime)))
+		content = append(content, (indent + 1).Fill(t.creationTime(t.SigCreationTime)))
 	} else {
 		content = append(content, (indent + 1).Fill("Unknown"))
 		return content, nil

@@ -33,6 +33,12 @@ func (p *Pubkey) ParsePub(indent values.Indent) values.Content {
 	case p.pub.IsElgamal():
 		content = append(content, indent.Fill("Multi-precision integers of Elgamal:"))
 		content = content.AddIndent(p.elgPub(), indent+1)
+	case p.pub.IsECDH():
+		content = append(content, indent.Fill("Multi-precision integers of ECDH:"))
+		content = content.AddIndent(p.ecdhPub(), indent+1)
+	case p.pub.IsECDSA():
+		content = append(content, indent.Fill("Multi-precision integers of ECDSA:"))
+		content = content.AddIndent(p.ecdsaPub(), indent+1)
 	default:
 		content = append(content, indent.Fill(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub)))
 	}
@@ -111,6 +117,42 @@ func (p *Pubkey) elgPub() values.Content {
 	return content
 }
 
+func (p *Pubkey) ecdsaPub() values.Content {
+	content := values.NewContent()
+	reader := bytes.NewReader(p.mpi)
+	oid, err := GetOID(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, fmt.Sprintf("ECDSA OID - %v", oid))
+	mpi, err := GetMPI(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, mpi.DumpEC("ECDSA P = (x, y)", p.Iflag))
+	return content
+}
+
+func (p *Pubkey) ecdhPub() values.Content {
+	content := values.NewContent()
+	reader := bytes.NewReader(p.mpi)
+	oid, err := GetOID(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, fmt.Sprintf("ECDH OID - %v", oid))
+	mpi, err := GetMPI(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, mpi.DumpEC("ECDH P = (x, y)", p.Iflag))
+	return content
+}
+
 //ParseSig multi-precision integers of public key algorithm for Signiture packet
 func (p *Pubkey) ParseSig(indent values.Indent) values.Content {
 	content := values.NewContent()
@@ -126,6 +168,11 @@ func (p *Pubkey) ParseSig(indent values.Indent) values.Content {
 	case p.pub.IsElgamal():
 		content = append(content, indent.Fill("Multi-precision integers of Elgamal:"))
 		content = content.AddIndent(p.elgSig(), indent+1)
+	case p.pub.IsECDH():
+		content = append(content, indent.Fill("Multi-precision integers of ECDH"))
+	case p.pub.IsECDSA():
+		content = append(content, indent.Fill("Multi-precision integers of ECDSA:"))
+		content = content.AddIndent(p.ecdsaSig(), indent+1)
 	default:
 		content = append(content, indent.Fill(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub)))
 	}
@@ -162,6 +209,24 @@ func (p *Pubkey) dsaSig() values.Content {
 	return content
 }
 
+func (p *Pubkey) ecdsaSig() values.Content {
+	content := values.NewContent()
+	reader := bytes.NewReader(p.mpi)
+	mpi, err := GetMPI(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, mpi.Dump("ECDSA r", p.Iflag))
+	mpi, err = GetMPI(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, mpi.Dump("ECDSA s", p.Iflag))
+	return content
+}
+
 func (p *Pubkey) elgSig() values.Content {
 	content := values.NewContent()
 	reader := bytes.NewReader(p.mpi)
@@ -195,6 +260,11 @@ func (p *Pubkey) ParseSym(indent values.Indent) values.Content {
 		content = append(content, indent.Fill("Multi-precision integers of Elgamal:"))
 		content = content.AddIndent(p.elgSym(), indent+1)
 		content = append(content, (indent + 2).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
+	case p.pub.IsECDH():
+		content = append(content, indent.Fill("Multi-precision integers of ECDH:"))
+		content = content.AddIndent(p.ecdhSym(), indent+1)
+	case p.pub.IsECDSA():
+		content = append(content, indent.Fill("Multi-precision integers of ECDSA:"))
 	default:
 		content = append(content, indent.Fill(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub)))
 		content = append(content, (indent + 1).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
@@ -229,5 +299,24 @@ func (p *Pubkey) elgSym() values.Content {
 		return content
 	}
 	content = append(content, mpi.Dump("ElGamal m * y^k mod p", p.Iflag))
+	return content
+}
+
+func (p *Pubkey) ecdhSym() values.Content {
+	content := values.NewContent()
+	fmt.Println("length", len(p.mpi))
+	reader := bytes.NewReader(p.mpi)
+	oid, err := GetOID(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, fmt.Sprintf("ECDH OID - %v", oid))
+	mpi, err := GetMPI(reader)
+	if err != nil {
+		content = append(content, err.Error())
+		return content
+	}
+	content = append(content, mpi.DumpEC("ECDH P = (x, y)", p.Iflag))
 	return content
 }

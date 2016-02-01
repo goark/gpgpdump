@@ -90,7 +90,7 @@ func (f *Facade) Run(args []string) (int, error) {
 func (f *Facade) showUsage() {
 	usageText := `
 USAGE:
-   %s [options] [PGPfile]
+   %s [options] [OpenPGP file]
 
 OPTIONS:
    -h -- displays this help

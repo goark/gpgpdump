@@ -244,6 +244,16 @@ func (pa PubAlg) IsElgamal() bool {
 	return (pa == 16 || pa == 20)
 }
 
+// IsECDH returns if ECDH algorithm.
+func (pa PubAlg) IsECDH() bool {
+	return (pa == 18)
+}
+
+// IsECDSA returns if ECDSA algorithm.
+func (pa PubAlg) IsECDSA() bool {
+	return (pa == 19)
+}
+
 var symAlgNames = Msgs{
 	0:  "Plaintext or unencrypted data",
 	1:  "IDEA",

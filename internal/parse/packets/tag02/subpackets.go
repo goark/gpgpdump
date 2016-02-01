@@ -63,8 +63,6 @@ type Subpackets struct {
 	*options.Options
 	title            string
 	opaqueSubpackets []*packet.OpaqueSubpacket
-	sigCreationTime  int64
-	keyCreationTime  int64
 }
 
 //NewSubpackets returns new Subpackets.
@@ -149,16 +147,22 @@ func parseSPReserved(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content
 //Signature Creation Time
 func parseSPType02(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	sp.sigCreationTime = int64(values.Octets2Int(op.Contents))
-	content = append(content, values.StringRFC3339UNIX64(sp.sigCreationTime, sp.Options.Uflag))
+	sp.SigCreationTime = int64(values.Octets2Int(op.Contents))
+	content = append(content, values.StringRFC3339UNIX64(sp.SigCreationTime, sp.Uflag))
 	return content, nil
 }
 
 //Signature Expiration Time
 func parseSPType03(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	expire := sp.sigCreationTime + int64(values.Octets2Int(op.Contents))
-	content = append(content, values.StringRFC3339UNIX64(expire, sp.Options.Uflag))
+	days := int64(values.Octets2Int(op.Contents))
+	after := fmt.Sprintf("%v days after", float64(days)/86400)
+	if sp.SigCreationTime == 0 {
+		content = append(content, after)
+	} else {
+		content = append(content, fmt.Sprintf("%s (%s)", after, values.StringRFC3339UNIX64(sp.SigCreationTime+days, sp.Uflag)))
+		sp.SigCreationTime = 0
+	}
 	return content, nil
 }
 
@@ -202,8 +206,14 @@ func parseSPType07(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 //Key Expiration Time
 func parseSPType09(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	expire := sp.keyCreationTime + int64(values.Octets2Int(op.Contents))
-	content = append(content, values.StringRFC3339UNIX64(expire, sp.Options.Uflag))
+	days := int64(values.Octets2Int(op.Contents))
+	after := fmt.Sprintf("%v days after", float64(days)/86400)
+	if sp.KeyCreationTime == 0 {
+		content = append(content, after)
+	} else {
+		content = append(content, fmt.Sprintf("%s (%s)", after, values.StringRFC3339UNIX64(sp.KeyCreationTime+days, sp.Uflag)))
+		sp.KeyCreationTime = 0
+	}
 	return content, nil
 }
 

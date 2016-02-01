@@ -40,3 +40,12 @@ func (mpi *MPI) Dump(header string, iflag bool) string {
 	}
 	return fmt.Sprintf("%s (%d bits) - %s", header, mpi.BitLength, dump)
 }
+
+// DumpEC returns dump-out MPI
+func (mpi *MPI) DumpEC(header string, iflag bool) string {
+	dump := "..."
+	if iflag && mpi.BitLength > 0 && mpi.Bytes != nil {
+		dump = fmt.Sprintf("%02x || %s", mpi.Bytes[0], values.DumpByte(mpi.Bytes[1:]))
+	}
+	return fmt.Sprintf("%s (%d bits) - %s", header, mpi.BitLength, dump)
+}
