@@ -155,15 +155,29 @@ func (v SigVer) String() string {
 	return fmt.Sprintf("Ver %d - %s", v, t)
 }
 
-// PubSymKeyVer is Public-Key Encrypted Session Key Packet Version
-type PubSymKeyVer byte
+// PubSessKeyVer is Public-Key Encrypted Session Key Packet Version
+type PubSessKeyVer byte
 
-func (v PubSymKeyVer) String() string {
+func (v PubSessKeyVer) String() string {
 	var t string
 	switch v {
 	case 2:
 		t = "old"
 	case 3:
+		t = "new"
+	default:
+		t = "unknown"
+	}
+	return fmt.Sprintf("Ver %d - %s", v, t)
+}
+
+// SymKeyVer is Symmetric-Key Encrypted Session Key Packet Version
+type SymKeyVer byte
+
+func (v SymKeyVer) String() string {
+	var t string
+	switch v {
+	case 4:
 		t = "new"
 	default:
 		t = "unknown"
@@ -310,6 +324,26 @@ func (ha HashAlg) String() string {
 		name = hashAlgNames.Get(int(ha), "Unknown")
 	}
 	return fmt.Sprintf("Hash algorithm - %s (hash %d)", name, ha)
+}
+
+var s2kAlgNames = Msgs{
+	0: "Simple S2K",
+	1: "Salted S2K",
+	2: "Reserved valu",
+	3: "Iterated and Salted S2K",
+}
+
+// S2KAlg is S2K Algorithm ID
+type S2KAlg byte
+
+func (sa S2KAlg) String() string {
+	var name string
+	if 100 <= sa && sa <= 110 {
+		name = "Private/Experimental S2K"
+	} else {
+		name = s2kAlgNames.Get(int(sa), "Unknown")
+	}
+	return fmt.Sprintf("String-to-Key (S2K) algorithm - %s (s2k %d)", name, sa)
 }
 
 var compAlgNames = Msgs{

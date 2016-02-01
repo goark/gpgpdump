@@ -10,6 +10,7 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/private"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag01"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag02"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag03"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag06"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag09"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag10"
@@ -17,6 +18,7 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag13"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag14"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag17"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag18"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/unknown"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 )
@@ -57,6 +59,8 @@ func (p Packet) getTag(opt *options.Options) Tags {
 		return tag01.New(opt, p.Content)
 	case 2:
 		return tag02.New(opt, p.Content)
+	case 3:
+		return tag03.New(opt, p.Content)
 	case 6:
 		return tag06.New(opt, p.Content)
 	case 9:
@@ -71,6 +75,8 @@ func (p Packet) getTag(opt *options.Options) Tags {
 		return tag14.New(opt, p.Content)
 	case 17:
 		return tag17.New(opt, p.Content)
+	case 18:
+		return tag18.New(opt, p.Content)
 	case 60, 61, 62, 63:
 		return private.New(opt, p.Content)
 	default:

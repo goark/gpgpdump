@@ -25,7 +25,7 @@ func (t Tag01) Parse(indent values.Indent) (values.Content, error) {
 	// [09] one-octet number giving the public-key algorithm used.
 	// [10] string of octets that is the encrypted session key.
 
-	version := values.PubSymKeyVer(t.body[0])
+	version := values.PubSessKeyVer(t.body[0])
 	keyID := values.KeyID(values.Octets2Int(t.body[1:9]))
 	pub := values.PubAlg(t.body[9])
 	pubkey := pubkeys.New(t.Options, pub, t.body[10:])
