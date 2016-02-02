@@ -1,10 +1,9 @@
 package tag12
 
 import (
-	"fmt"
-
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Tag12 - Trust Packet
@@ -20,8 +19,8 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag12 {
 }
 
 // Parse parsing Trust Packet
-func (t Tag12) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
-	content = append(content, (indent + 1).Fill(fmt.Sprintf("Trust - %s", values.DumpByte(t.body))))
-	return content, nil
+func (t Tag12) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
+	pckt.AddSub(values.NewRawData("Trust", "", t.body, true).Get())
+	return pckt, nil
 }

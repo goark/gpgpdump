@@ -11,6 +11,7 @@
 ## Dependencies
 
 - [`github.com/spiegel-im-spiegel/gocli`](https://github.com/spiegel-im-spiegel/gocli)
+- [`github.com/BurntSushi/toml`](https://github.com/BurntSushi/toml)
 - `golang.org/x/crypto/openpgp/`[`armor`](https://godoc.org/golang.org/x/crypto/openpgp/armor)
 - `golang.org/x/crypto/openpgp/`[`packet`](https://godoc.org/golang.org/x/crypto/openpgp/packet)
 

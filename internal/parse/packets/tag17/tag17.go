@@ -3,6 +3,7 @@ package tag17
 import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Tag17 - User Attribute Packet
@@ -18,12 +19,12 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag17 {
 }
 
 // Parse parsingUser Attribute Packet
-func (t Tag17) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
-	sp, err := NewSubpackets(t.Options, "Subpacket -", t.body)
+func (t Tag17) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
+	/*sp, err := NewSubpackets(t.Options, "Subpacket -", t.body)
 	if err != nil {
 		return content, err
 	}
-	content = content.Add(sp.Parse(indent + 1))
-	return content, nil
+	content = content.Add(sp.Parse(indent + 1))*/
+	return pckt, nil
 }

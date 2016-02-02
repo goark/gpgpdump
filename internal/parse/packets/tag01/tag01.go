@@ -2,8 +2,8 @@ package tag01
 
 import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/pubkeys"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Tag01 - Public-Key Encrypted Session Key Packet
@@ -19,22 +19,22 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag01 {
 }
 
 // Parse parsing Public-Key Encrypted Session Key Packet
-func (t Tag01) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
+func (t Tag01) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
 	// [00] one-octet number giving the version number of the packet type.
 	// [01] eight-octet number that gives the Key ID of the public key to which the session key is encrypted.
 	// [09] one-octet number giving the public-key algorithm used.
 	// [10] string of octets that is the encrypted session key.
-
 	version := values.PubSessKeyVer(t.body[0])
 	keyID := values.KeyID(values.Octets2Int(t.body[1:9]))
 	pub := values.PubAlg(t.body[9])
-	pubkey := pubkeys.New(t.Options, pub, t.body[10:])
+	//pubkey := pubkeys.New(t.Options, pub, t.body[10:])
 
-	content = append(content, (indent + 1).Fill(version.String()))
-	content = append(content, (indent + 1).Fill(keyID.String()))
-	content = append(content, (indent + 1).Fill(pub.String()))
-	content = content.Add(pubkey.ParseSym(indent + 1))
+	pckt.AddSub(version.Get())
+	pckt.AddSub(keyID.Get())
+	pckt.AddSub(pub.Get())
+	//pckt.AddSub(pubkey.Get())
+
 	t.SetSymAlgModePubEnc()
-	return content, nil
+	return pckt, nil
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Private - Private Packet
@@ -20,13 +21,8 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Private {
 }
 
 // Parse parsing Private Packet
-func (t Private) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
-
-	dump := "..."
-	if t.Pflag {
-		dump = values.DumpByte(t.body)
-	}
-	content = append(content, indent.Fill(fmt.Sprintf("Private (%d bytes) - %s", len(t.body), dump)))
-	return content, nil
+func (t Private) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
+	pckt.AddSub(values.NewRawData("Private", fmt.Sprintf("%d bytes", len(t.body)), t.body, t.Pflag).Get())
+	return pckt, nil
 }

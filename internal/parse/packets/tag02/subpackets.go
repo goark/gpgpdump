@@ -148,7 +148,7 @@ func parseSPReserved(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content
 func parseSPType02(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
 	sp.SigCreationTime = values.Octets2Int(op.Contents)
-	content = append(content, values.SigTime(sp.SigCreationTime, sp.Uflag).String())
+	//content = append(content, values.SigTime(sp.SigCreationTime, sp.Uflag).String())
 	return content, nil
 }
 
@@ -225,9 +225,9 @@ func parseSPType10(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 //Preferred Symmetric Algorithms
 func parseSPType11(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	for _, c := range op.Contents {
-		content = append(content, values.SymAlg(c).String())
-	}
+	//for _, c := range op.Contents {
+	//	content = append(content, values.SymAlg(c).String())
+	//}
 	return content, nil
 }
 
@@ -256,8 +256,8 @@ func parseSPType12(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 //Issuer
 func parseSPType16(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	keyID := values.KeyID(values.Octets2Int(op.Contents))
-	content = append(content, keyID.String())
+	//keyID := values.KeyID(values.Octets2Int(op.Contents))
+	//content = append(content, keyID.String())
 	return content, nil
 }
 
@@ -296,18 +296,18 @@ func parseSPType20(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 //Preferred Hash Algorithms
 func parseSPType21(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	for _, c := range op.Contents {
-		content = append(content, values.HashAlg(c).String())
-	}
+	//for _, c := range op.Contents {
+	//	content = append(content, values.HashAlg(c).String())
+	//}
 	return content, nil
 }
 
 //Preferred Compression Algorithms
 func parseSPType22(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	for _, c := range op.Contents {
-		content = append(content, values.CompAlg(c).String())
-	}
+	//for _, c := range op.Contents {
+	//	content = append(content, values.CompAlg(c).String())
+	//}
 	return content, nil
 }
 
@@ -435,19 +435,20 @@ func parseSPType30(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 //Signature Target
 func parseSPType31(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	pubAlg := values.PubAlg(op.Contents[0])
-	hashAlg := values.HashAlg(op.Contents[1])
-	hash := op.Contents[2:]
+	//pubAlg := values.PubAlg(op.Contents[0])
+	//hashAlg := values.HashAlg(op.Contents[1])
+	//hash := op.Contents[2:]
 
-	content = append(content, pubAlg.String())
-	content = append(content, hashAlg.String())
-	content = append(content, fmt.Sprintf("Hash (%d bytes) - %v", len(hash), values.DumpByte(hash)))
+	//content = append(content, pubAlg.String())
+	//content = append(content, hashAlg.String())
+	//content = append(content, fmt.Sprintf("Hash (%d bytes) - %v", len(hash), values.DumpByte(hash)))
 	return content, nil
 }
 
 //Embedded Signature
 func parseSPType32(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	return New(sp.Options, values.Tag(2), op.Contents).Parse(0) //recursive call
+	return nil, nil
+	//return New(sp.Options, values.Tag(2), op.Contents).Parse(0) //recursive call
 }
 
 func stringFlagInfo(flag byte, name string) string {

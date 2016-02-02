@@ -28,10 +28,6 @@ func (r RawData) Get() *items.Item {
 	return items.NewItemDump(r.name, dump, r.note)
 }
 
-func (r RawData) String() string {
-	return r.Get().String()
-}
-
 // DumpByte returns string byte-data
 func DumpByte(data []byte) string {
 	sep := ""

@@ -2,6 +2,7 @@ package values
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
@@ -35,12 +36,8 @@ var tagNames = Msgs{
 type Tag int
 
 // Get returns Item instance
-func (t Tag) Get() *items.Item {
-	return items.NewItem("Packet Type", fmt.Sprintf("%s (tag %d)", tagNames.Get(int(t), "Unknown"), t), "")
-}
-
-func (t Tag) String() string {
-	return t.Get().String()
+func (t Tag) Get(size int) *items.Item {
+	return items.NewItem("Packet", strconv.Itoa(int(t)), fmt.Sprintf("%s (tag %d) (%d bytes)", tagNames.Get(int(t), "Unknown"), t, size))
 }
 
 var sigTypeNames = Msgs{
@@ -66,11 +63,7 @@ type SigType byte
 
 // Get returns Item instance
 func (s SigType) Get() *items.Item {
-	return items.NewItem("Signiture Type", fmt.Sprintf("%s (%02x)", sigTypeNames.Get(int(s), "Unknown"), byte(s)), "")
-}
-
-func (s SigType) String() string {
-	return s.Get().String()
+	return items.NewItem("Signiture Type", fmt.Sprintf("0x%02x", s), fmt.Sprintf("%s (%02x)", sigTypeNames.Get(int(s), "Unknown"), s))
 }
 
 var pubAlgNames = Msgs{
@@ -97,11 +90,7 @@ func (pa PubAlg) Get() *items.Item {
 	} else {
 		name = pubAlgNames.Get(int(pa), "Unknown")
 	}
-	return items.NewItem("Public-key algorithm", fmt.Sprintf("%s (pub %d)", name, pa), "")
-}
-
-func (pa PubAlg) String() string {
-	return pa.Get().String()
+	return items.NewItem("Public-key algorithm", strconv.Itoa(int(pa)), fmt.Sprintf("%s (pub %d)", name, pa))
 }
 
 // IsRSA returns if RSA algorithm.
@@ -157,11 +146,7 @@ func (s SymAlg) Get() *items.Item {
 	} else {
 		name = symAlgNames.Get(int(s), "Unknown")
 	}
-	return items.NewItem("Symmetric algorithm", fmt.Sprintf("%s (sym %d)", name, s), "")
-}
-
-func (s SymAlg) String() string {
-	return s.Get().String()
+	return items.NewItem("Symmetric algorithm", strconv.Itoa(int(s)), fmt.Sprintf("%s (sym %d)", name, s))
 }
 
 var hashAlgNames = Msgs{
@@ -190,11 +175,7 @@ func (ha HashAlg) Get() *items.Item {
 	} else {
 		name = hashAlgNames.Get(int(ha), "Unknown")
 	}
-	return items.NewItem("Hash algorithm", fmt.Sprintf("%s (hash %d)", name, ha), "")
-}
-
-func (ha HashAlg) String() string {
-	return ha.Get().String()
+	return items.NewItem("Hash algorithm", strconv.Itoa(int(ha)), fmt.Sprintf("%s (hash %d)", name, ha))
 }
 
 var s2kAlgNames = Msgs{
@@ -215,11 +196,7 @@ func (sa S2KAlg) Get() *items.Item {
 	} else {
 		name = s2kAlgNames.Get(int(sa), "Unknown")
 	}
-	return items.NewItem("String-to-Key (S2K) algorithm", fmt.Sprintf("%s (s2k %d)", name, sa), "")
-}
-
-func (sa S2KAlg) String() string {
-	return sa.Get().String()
+	return items.NewItem("String-to-Key (S2K) algorithm", strconv.Itoa(int(sa)), fmt.Sprintf("%s (s2k %d)", name, sa))
 }
 
 var compAlgNames = Msgs{
@@ -234,9 +211,5 @@ type CompAlg byte
 
 // Get returns Item instance
 func (ca CompAlg) Get() *items.Item {
-	return items.NewItem("Compression algorithms", fmt.Sprintf("%s (comp %d)", compAlgNames.Get(int(ca), "Unknown"), ca), "")
-}
-
-func (ca CompAlg) String() string {
-	return ca.Get().String()
+	return items.NewItem("Compression algorithms", strconv.Itoa(int(ca)), fmt.Sprintf("%s (comp %d)", compAlgNames.Get(int(ca), "Unknown"), ca))
 }

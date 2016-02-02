@@ -32,10 +32,6 @@ func (u UNIXTime) Get() *items.Item {
 	return items.NewItem(u.name, u.RFC3339(), "")
 }
 
-func (u UNIXTime) String() string {
-	return u.Get().String()
-}
-
 //FileTime returns UNIXTime instance for Modification time of a file
 func FileTime(unix uint64, utc bool) UNIXTime {
 	return NewUNIXTime("Modification time of a file", unix, utc)

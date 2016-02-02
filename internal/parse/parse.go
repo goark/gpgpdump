@@ -5,12 +5,12 @@ import (
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets"
-	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 
 	"golang.org/x/crypto/openpgp/armor"
 )
 
-func parseArmor(opt *options.Options, reader io.Reader) (values.Content, error) {
+func parseArmor(opt *options.Options, reader io.Reader) (*items.Packets, error) {
 	block, err := armor.Decode(reader)
 	if err != nil {
 		return nil, err
@@ -18,13 +18,13 @@ func parseArmor(opt *options.Options, reader io.Reader) (values.Content, error) 
 	return parse(opt, block.Body)
 }
 
-func parseBinary(opt *options.Options, reader io.Reader) (values.Content, error) {
+func parseBinary(opt *options.Options, reader io.Reader) (*items.Packets, error) {
 	return parse(opt, reader)
 }
 
-func parse(opt *options.Options, body io.Reader) (values.Content, error) {
+func parse(opt *options.Options, body io.Reader) (*items.Packets, error) {
 	pckts := packets.NewPackets(body)
-	content := values.NewContent()
+	content := items.NewPackets()
 	opt.ResetSymAlgMode()
 	for {
 		p, err := pckts.Next()
@@ -38,7 +38,7 @@ func parse(opt *options.Options, body io.Reader) (values.Content, error) {
 		if err != nil {
 			return content, err
 		}
-		content = append(content, c...)
+		content.AddPacket(c)
 	}
 	return content, nil
 }

@@ -1,10 +1,9 @@
 package tag13
 
 import (
-	"fmt"
-
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Tag13 - User ID Packet
@@ -20,8 +19,8 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag13 {
 }
 
 // Parse parsing User ID Packet
-func (t Tag13) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
-	content = append(content, (indent + 1).Fill(fmt.Sprintf("User ID - %s", string(t.body))))
-	return content, nil
+func (t Tag13) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
+	pckt.AddSub(items.NewItem("User ID", string(t.body), ""))
+	return pckt, nil
 }

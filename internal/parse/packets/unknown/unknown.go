@@ -3,6 +3,7 @@ package unknown
 import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Unknown - Unknown Packet
@@ -18,6 +19,6 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Unknown {
 }
 
 // Parse parsing Unknown Packet
-func (t Unknown) Parse(indent values.Indent) (values.Content, error) {
-	return nil, nil
+func (t Unknown) Parse() (*items.Item, error) {
+	return t.tag.Get(len(t.body)), nil
 }

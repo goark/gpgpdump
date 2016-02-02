@@ -1,6 +1,10 @@
 package values
 
-import "github.com/spiegel-im-spiegel/gpgpdump/items"
+import (
+	"fmt"
+
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
+)
 
 var literalFormatNames = Msgs{
 	0x62: "binary",     //'b'
@@ -15,11 +19,11 @@ type LiteralFormat byte
 
 // Get returns Item instance
 func (l LiteralFormat) Get() *items.Item {
-	return items.NewItem("Literal data format", literalFormatNames.Get(int(l), "unknown"), "")
+	return items.NewItem("Literal data format", string(l), literalFormatNames.Get(int(l), "unknown"))
 }
 
 func (l LiteralFormat) String() string {
-	return l.Get().String()
+	return l.String()
 }
 
 // LiteralFname is file name of literal data
@@ -30,11 +34,7 @@ func (l LiteralFname) Get() *items.Item {
 	return items.NewItem("File name", string(l), "")
 }
 
-func (l LiteralFname) String() string {
-	return l.Get().String()
-}
-
 //LiteralData returns new RawData instance for Literal data
 func LiteralData(buf []byte, dump bool) *RawData {
-	return NewRawData("Literal data", "", buf, dump)
+	return NewRawData("Literal data", fmt.Sprintf("%d bytes", len(buf)), buf, dump)
 }

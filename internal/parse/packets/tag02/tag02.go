@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/pubkeys"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Tag02 - Signature Packet
@@ -21,29 +21,21 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag02 {
 }
 
 // Parse parsing Signature Packet
-func (t Tag02) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
+func (t Tag02) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
 
 	version := values.SigVer(t.body[0])
-	content = append(content, (indent + 1).Fill(version.String()))
+	pckt.AddSub(version.Get())
+
 	if version.IsOld() {
-		c, err := t.parseV3(indent + 1)
-		if err != nil {
-			return content, err
-		}
-		content = content.Add(c)
+		return t.parseV3(pckt)
 	} else if version.IsNew() {
-		c, err := t.parseV4(indent + 1)
-		if err != nil {
-			return content, err
-		}
-		content = content.Add(c)
+		return t.parseV4(pckt)
 	}
-	return content, nil
+	return pckt, nil
 }
 
-func (t Tag02) parseV3(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
+func (t Tag02) parseV3(pckt *items.Item) (*items.Item, error) {
 	//Structure of Signiture Packet (Ver3)
 	// [00] One-octet version number (3).
 	// [01] One-octet length of following hashed material.  MUST be 5.
@@ -61,27 +53,25 @@ func (t Tag02) parseV3(indent values.Indent) (values.Content, error) {
 	pub := values.PubAlg(t.body[15])
 	hash := values.HashAlg(t.body[16])
 	hashTag := t.body[17:19]
-	pubkey := pubkeys.New(t.Options, pub, t.body[19:])
+	//pubkey := pubkeys.New(t.Options, pub, t.body[19:])
 
-	content = append(content, indent.Fill(t.hashedMaterialSize(size)))
+	hm := items.NewItem("Hashed material", "", fmt.Sprintf("%d bytes", size))
 	if size == 5 { //MUST be 5
-		content = append(content, (indent + 1).Fill(t.sigType(stype)))
-		content = append(content, (indent + 1).Fill(values.SigTime(t.SigCreationTime, t.Uflag).String()))
+		hm.AddSub(stype.Get())
+		hm.AddSub(values.SigTime(t.SigCreationTime, t.Uflag).Get())
 	} else {
-		content = append(content, (indent + 1).Fill("Unknown"))
-		return content, nil
+		hm.Value = "Unknown"
 	}
-	content = append(content, indent.Fill(keyID.String()))
-	content = append(content, indent.Fill(pub.String()))
-	content = append(content, indent.Fill(hash.String()))
-	content = append(content, indent.Fill(t.hashLeft2(hashTag)))
-	content = content.Add(pubkey.ParseSig(indent))
-	return content, nil
+	pckt.AddSub(hm)
+	pckt.AddSub(keyID.Get())
+	pckt.AddSub(pub.Get())
+	pckt.AddSub(hash.Get())
+	pckt.AddSub(t.hashLeft2(hashTag).Get())
+	//pckt.AddSub(pubkey.Get())
+	return pckt, nil
 }
 
-func (t Tag02) parseV4(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
-
+func (t Tag02) parseV4(pckt *items.Item) (*items.Item, error) {
 	//Structure of Signiture Packet (Ver4)
 	// [00] One-octet version number (4).
 	// [01] One-octet signature type.
@@ -98,39 +88,31 @@ func (t Tag02) parseV4(indent values.Indent) (values.Content, error) {
 	hash := values.HashAlg(t.body[3])
 	sizeHS := values.Octets2Int(t.body[4:6])
 	sizeUS := values.Octets2Int(t.body[6+sizeHS : 6+sizeHS+2])
-	hasTag := t.body[8+sizeHS+sizeUS : 8+sizeHS+sizeUS+2]
-	pubkey := pubkeys.New(t.Options, pub, t.body[10+sizeHS+sizeUS:])
+	hashTag := t.body[8+sizeHS+sizeUS : 8+sizeHS+sizeUS+2]
+	//pubkey := pubkeys.New(t.Options, pub, t.body[10+sizeHS+sizeUS:])
 
-	content = append(content, indent.Fill(t.sigType(stype)))
-	content = append(content, indent.Fill(pub.String()))
-	content = append(content, indent.Fill(hash.String()))
+	pckt.AddSub(stype.Get())
+	pckt.AddSub(pub.Get())
+	pckt.AddSub(hash.Get())
 	if sizeHS > 0 {
-		sp, err := NewSubpackets(t.Options, "Hashed Subpacket -", t.body[6:6+sizeHS])
+		/*/sp, err := NewSubpackets(t.Options, "Hashed Subpacket -", t.body[6:6+sizeHS])
 		if err != nil {
 			return content, err
 		}
-		content = content.Add(sp.Parse(indent))
+		content = content.Add(sp.Parse(indent))*/
 	}
 	if sizeUS > 0 {
-		sp, err := NewSubpackets(t.Options, "Unhashed Subpacket -", t.body[8+sizeHS:8+sizeHS+sizeUS])
+		/*sp, err := NewSubpackets(t.Options, "Unhashed Subpacket -", t.body[8+sizeHS:8+sizeHS+sizeUS])
 		if err != nil {
 			return content, err
 		}
-		content = content.Add(sp.Parse(indent))
+		content = content.Add(sp.Parse(indent))*/
 	}
-	content = append(content, indent.Fill(t.hashLeft2(hasTag)))
-	content = content.Add(pubkey.ParseSig(indent))
-	return content, nil
+	pckt.AddSub(t.hashLeft2(hashTag).Get())
+	//pckt.AddSub(pubkey.Get())
+	return pckt, nil
 }
 
-func (t Tag02) sigType(st values.SigType) string {
-	return fmt.Sprintf("Signature type - %v", st)
-}
-
-func (t Tag02) hashLeft2(h []byte) string {
-	return fmt.Sprintf("Hash left 2 bytes - %s", values.DumpByte(h))
-}
-
-func (t Tag02) hashedMaterialSize(size byte) string {
-	return fmt.Sprintf("Hashed material(%d bytes):", size)
+func (t Tag02) hashLeft2(h []byte) *values.RawData {
+	return values.NewRawData("Hash left 2 bytes", "", h, true)
 }

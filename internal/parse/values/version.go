@@ -41,10 +41,6 @@ func (v Version) Get() *items.Item {
 	return items.NewItem("Version", strconv.Itoa(int(v.ver)), note)
 }
 
-func (v Version) String() string {
-	return v.Get().String()
-}
-
 // PubVer is Public-Key Packet Version
 func PubVer(ver byte) Version {
 	return NewVersion(ver, 4)

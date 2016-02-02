@@ -3,6 +3,7 @@ package tag11
 import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Tag11 - Literal Data Packet
@@ -18,8 +19,8 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag11 {
 }
 
 // Parse parsing Literal Data Packet
-func (t Tag11) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
+func (t Tag11) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
 
 	f := values.LiteralFormat(t.body[0])
 	flen := int(t.body[1])
@@ -27,9 +28,9 @@ func (t Tag11) Parse(indent values.Indent) (values.Content, error) {
 	ftime := values.FileTime(values.Octets2Int(t.body[2+flen:2+flen+4]), t.Uflag)
 	data := values.LiteralData(t.body[2+flen+4:], t.Lflag)
 
-	content = append(content, (indent + 1).Fill(f.String()))
-	content = append(content, (indent + 1).Fill(filename.String()))
-	content = append(content, (indent + 1).Fill(ftime.String()))
-	content = append(content, (indent + 1).Fill(data.String()))
-	return content, nil
+	pckt.AddSub(f.Get())
+	pckt.AddSub(filename.Get())
+	pckt.AddSub(ftime.Get())
+	pckt.AddSub(data.Get())
+	return pckt, nil
 }

@@ -25,7 +25,13 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag19"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/unknown"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
+
+//Tags parsing interface
+type Tags interface {
+	Parse() (*items.Item, error)
+}
 
 //Packet is OpenPGP Packet
 type Packet struct {
@@ -39,22 +45,8 @@ func (p Packet) String() string {
 }
 
 //Parse parsing OpenPGP packet.
-func (p Packet) Parse(opt *options.Options) (values.Content, error) {
-	content := values.NewContent()
-	indent := values.Indent(0)
-	content = append(content, indent.Fill(p.String()))
-
-	c, err := p.getTag(opt).Parse(indent)
-	if err != nil {
-		return content, err
-	}
-	content = content.Add(c)
-	return content, nil
-}
-
-//Tags parsing interface
-type Tags interface {
-	Parse(values.Indent) (values.Content, error)
+func (p Packet) Parse(opt *options.Options) (*items.Item, error) {
+	return p.getTag(opt).Parse()
 }
 
 func (p Packet) getTag(opt *options.Options) Tags {

@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/BurntSushi/toml"
 	"github.com/spiegel-im-spiegel/gocli"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 )
@@ -46,7 +47,11 @@ func (c *Context) Run() error {
 			content, err = parseBinary(c.Options, reader)
 		}
 	}
-	c.Output(content)
+	var buffer bytes.Buffer
+	if err := toml.NewEncoder(&buffer).Encode(content); err != nil {
+		return err
+	}
+	c.Output(buffer.String())
 	if err != nil {
 		return err
 	}

@@ -3,6 +3,7 @@ package tag08
 import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Tag08 - Compressed Data Packet
@@ -18,11 +19,11 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag08 {
 }
 
 // Parse parsing Compressed Data Packet
-func (t Tag08) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
+func (t Tag08) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
 
 	comp := values.CompAlg(t.body[0])
-	content = append(content, (indent + 1).Fill(comp.String()))
-	content = append(content, (indent + 1).Fill("Compressed data"))
-	return content, nil
+	pckt.AddSub(comp.Get())
+	pckt.AddSub(items.NewItem("Compressed data", "", ""))
+	return pckt, nil
 }

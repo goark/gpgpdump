@@ -1,10 +1,9 @@
 package tag10
 
 import (
-	"fmt"
-
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Tag10 - Marker Packet (Obsolete Literal Packet)
@@ -20,14 +19,8 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag10 {
 }
 
 // Parse parsing Marker Packet (Obsolete Literal Packet)
-func (t Tag10) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
-
-	dump := "..."
-	if t.Mflag {
-		//dump = values.DumpByte(t.body)
-		dump = string(t.body)
-	}
-	content = append(content, (indent + 1).Fill(fmt.Sprintf("Literal (%d bytes) - %s", len(t.body), dump)))
-	return content, nil
+func (t Tag10) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
+	pckt.AddSub(values.LiteralData(t.body, t.Mflag).Get())
+	return pckt, nil
 }

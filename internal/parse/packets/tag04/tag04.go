@@ -1,10 +1,11 @@
 package tag04
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Tag04 - One-Pass Signature Packet
@@ -20,8 +21,8 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag04 {
 }
 
 // Parse parsing One-Pass Signature Packet
-func (t Tag04) Parse(indent values.Indent) (values.Content, error) {
-	content := values.NewContent()
+func (t Tag04) Parse() (*items.Item, error) {
+	pckt := t.tag.Get(len(t.body))
 	// [00] one-octet version number
 	// [01] one-octet signature type
 	// [02] one-octet number describing the hash algorithm used.
@@ -35,15 +36,15 @@ func (t Tag04) Parse(indent values.Indent) (values.Content, error) {
 	keyID := values.KeyID(values.Octets2Int(t.body[4:12]))
 	flag := t.body[12]
 
-	content = append(content, (indent + 1).Fill(version.String()))
-	content = append(content, (indent + 1).Fill(sig.String()))
-	content = append(content, (indent + 1).Fill(hash.String()))
-	content = append(content, (indent + 1).Fill(pub.String()))
-	content = append(content, (indent + 1).Fill(keyID.String()))
+	pckt.AddSub(version.Get())
+	pckt.AddSub(sig.Get())
+	pckt.AddSub(hash.Get())
+	pckt.AddSub(pub.Get())
+	pckt.AddSub(keyID.Get())
 	f := "other than one pass signature"
 	if flag == 0 {
 		f = "another one pass signature"
 	}
-	content = append(content, (indent + 1).Fill(fmt.Sprintf("Next packet - %s", f)))
-	return content, nil
+	pckt.AddSub(items.NewItem("Encrypted session key", strconv.Itoa(int(flag)), f))
+	return pckt, nil
 }
