@@ -147,20 +147,20 @@ func parseSPReserved(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content
 //Signature Creation Time
 func parseSPType02(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	sp.SigCreationTime = int64(values.Octets2Int(op.Contents))
-	content = append(content, values.StringRFC3339UNIX64(sp.SigCreationTime, sp.Uflag))
+	sp.SigCreationTime = values.Octets2Int(op.Contents)
+	content = append(content, values.SigTime(sp.SigCreationTime, sp.Uflag).String())
 	return content, nil
 }
 
 //Signature Expiration Time
 func parseSPType03(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	days := int64(values.Octets2Int(op.Contents))
+	days := values.Octets2Int(op.Contents)
 	after := fmt.Sprintf("%v days after", float64(days)/86400)
 	if sp.SigCreationTime == 0 {
 		content = append(content, after)
 	} else {
-		content = append(content, fmt.Sprintf("%s (%s)", after, values.StringRFC3339UNIX64(sp.SigCreationTime+days, sp.Uflag)))
+		content = append(content, fmt.Sprintf("%s (%s)", after, values.SigTime(sp.SigCreationTime+days, sp.Uflag).RFC3339()))
 		sp.SigCreationTime = 0
 	}
 	return content, nil
@@ -206,12 +206,12 @@ func parseSPType07(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 //Key Expiration Time
 func parseSPType09(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
 	content := values.NewContent()
-	days := int64(values.Octets2Int(op.Contents))
+	days := values.Octets2Int(op.Contents)
 	after := fmt.Sprintf("%v days after", float64(days)/86400)
 	if sp.KeyCreationTime == 0 {
 		content = append(content, after)
 	} else {
-		content = append(content, fmt.Sprintf("%s (%s)", after, values.StringRFC3339UNIX64(sp.KeyCreationTime+days, sp.Uflag)))
+		content = append(content, fmt.Sprintf("%s (%s)", after, values.SigTime(sp.KeyCreationTime+days, sp.Uflag).RFC3339()))
 		sp.KeyCreationTime = 0
 	}
 	return content, nil

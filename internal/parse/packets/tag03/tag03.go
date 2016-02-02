@@ -24,7 +24,7 @@ func (t Tag03) Parse(indent values.Indent) (values.Content, error) {
 	// [01] one-octet number describing the symmetric algorithm used.
 	// [02] string-to-key (S2K) specifier
 
-	version := values.SymKeyVer(t.body[0])
+	version := values.SymSessKeyVer(t.body[0])
 	sym := values.SymAlg(t.body[1])
 	s2k := s2k.New(t.Options, t.body[2:])
 

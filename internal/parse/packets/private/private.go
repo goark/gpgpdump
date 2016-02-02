@@ -13,12 +13,12 @@ type Private struct {
 	body []byte
 }
 
-//New return Tag11
+//New return Private Packet
 func New(opt *options.Options, body []byte) *Private {
 	return &Private{Options: opt, body: body}
 }
 
-// Parse parsing Literal Data Packet
+// Parse parsing Private Packet
 func (t Private) Parse(indent values.Indent) (values.Content, error) {
 	content := values.NewContent()
 

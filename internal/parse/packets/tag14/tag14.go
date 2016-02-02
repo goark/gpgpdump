@@ -19,5 +19,5 @@ func New(opt *options.Options, body []byte) *Tag14 {
 
 // Parse parsing Public-Subkey Packet
 func (t Tag14) Parse(indent values.Indent) (values.Content, error) {
-	return tag06.New(t.Options, t.body).Parse(indent)
+	return tag06.New(t.Options, t.body).Parse(indent) //redirect to Tag06
 }

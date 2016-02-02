@@ -55,7 +55,7 @@ func (t Tag02) parseV3(indent values.Indent) (values.Content, error) {
 	// [19] One or more multiprecision integers comprising the signature.
 	size := t.body[1]
 	stype := values.SigType(t.body[2])
-	t.SigCreationTime = int64(values.Octets2Int(t.body[3:7]))
+	t.SigCreationTime = values.Octets2Int(t.body[3:7])
 	keyID := values.KeyID(values.Octets2Int(t.body[7:15]))
 	pub := values.PubAlg(t.body[15])
 	hash := values.HashAlg(t.body[16])
@@ -65,7 +65,7 @@ func (t Tag02) parseV3(indent values.Indent) (values.Content, error) {
 	content = append(content, indent.Fill(t.hashedMaterialSize(size)))
 	if size == 5 { //MUST be 5
 		content = append(content, (indent + 1).Fill(t.sigType(stype)))
-		content = append(content, (indent + 1).Fill(t.creationTime(t.SigCreationTime)))
+		content = append(content, (indent + 1).Fill(values.SigTime(t.SigCreationTime, t.Uflag).String()))
 	} else {
 		content = append(content, (indent + 1).Fill("Unknown"))
 		return content, nil
@@ -132,8 +132,4 @@ func (t Tag02) hashLeft2(h []byte) string {
 
 func (t Tag02) hashedMaterialSize(size byte) string {
 	return fmt.Sprintf("Hashed material(%d bytes):", size)
-}
-
-func (t Tag02) creationTime(tm int64) string {
-	return fmt.Sprintf("Creation time - %s", values.StringRFC3339UNIX64(tm, t.Uflag))
 }

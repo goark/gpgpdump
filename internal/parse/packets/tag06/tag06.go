@@ -49,12 +49,12 @@ func (t Tag06) parseV3(indent values.Indent) (values.Content, error) {
 	// [05] two-octet number denoting the time in days that this key is valid.
 	// [07] one-octet number denoting the public-key algorithm of this key.
 	// [08] series of multiprecision integers comprising the key material
-	t.KeyCreationTime = int64(values.Octets2Int(t.body[1:5]))
+	t.KeyCreationTime = values.Octets2Int(t.body[1:5])
 	days := uint16(values.Octets2Int(t.body[5:7]))
 	pub := values.PubAlg(t.body[7])
 	pubkey := pubkeys.New(t.Options, pub, t.body[8:])
 
-	content = append(content, indent.Fill(t.creationTime(t.KeyCreationTime)))
+	content = append(content, indent.Fill(values.PubKeyTime(t.KeyCreationTime, t.Uflag).String()))
 	content = append(content, indent.Fill(t.days(days)))
 	content = append(content, indent.Fill(pub.String()))
 	content = content.Add(pubkey.ParsePub(indent))
@@ -68,18 +68,14 @@ func (t Tag06) parseV4(indent values.Indent) (values.Content, error) {
 	// [01] four-octet number denoting the time that the key was created.
 	// [05] one-octet number denoting the public-key algorithm of this key.
 	// [06] series of multiprecision integers comprising the key material.
-	t.KeyCreationTime = int64(values.Octets2Int(t.body[1:5]))
+	t.KeyCreationTime = values.Octets2Int(t.body[1:5])
 	pub := values.PubAlg(t.body[5])
 	pubkey := pubkeys.New(t.Options, pub, t.body[6:])
 
-	content = append(content, indent.Fill(t.creationTime(t.KeyCreationTime)))
+	content = append(content, indent.Fill(values.PubKeyTime(t.KeyCreationTime, t.Uflag).String()))
 	content = append(content, indent.Fill(pub.String()))
 	content = content.Add(pubkey.ParsePub(indent))
 	return content, nil
-}
-
-func (t Tag06) creationTime(tm int64) string {
-	return fmt.Sprintf("Public key creation time - %s", values.StringRFC3339UNIX64(tm, t.Uflag))
 }
 
 func (t Tag06) days(d uint16) string {
