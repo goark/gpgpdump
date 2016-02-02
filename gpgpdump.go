@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/spiegel-im-spiegel/gocli"
-	"github.com/spiegel-im-spiegel/gpgpdump/facade"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/facade"
 )
 
 const (
