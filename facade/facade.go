@@ -43,15 +43,15 @@ func (f *Facade) Run(args []string) (int, error) {
 	cmd := parse.Command(f.UI)
 
 	flags := flag.NewFlagSet(f.Name, flag.ContinueOnError)
-	flags.BoolVar(&cmd.Hflag, "h", false, "displays this help")
-	flags.BoolVar(&cmd.Vflag, "v", false, "displays version")
+	flags.BoolVar(&cmd.Hflag, "h", false, "output this help")
+	flags.BoolVar(&cmd.Vflag, "v", false, "output version")
 	flags.BoolVar(&cmd.Aflag, "a", false, "accepts ASCII input only")
 	//flags.BoolVar(&cmd.Gflag, "g", false, "selects alternate dump format") // do not use g option
-	flags.BoolVar(&cmd.Iflag, "i", false, "dumps multi-precision integer")
+	flags.BoolVar(&cmd.Iflag, "i", false, "dumps multi-precision integers")
 	flags.BoolVar(&cmd.Lflag, "l", false, "dumps literal packets (tag 11)")
 	flags.BoolVar(&cmd.Mflag, "m", false, "dumps marker packets (tag 10)")
 	flags.BoolVar(&cmd.Pflag, "p", false, "dumps private packets (tag 60-63)")
-	flags.BoolVar(&cmd.Uflag, "u", false, "displays UTC time")
+	flags.BoolVar(&cmd.Uflag, "u", false, "output UTC time")
 	ftest := flags.Bool("ftest", false, "facade test")
 	flags.Usage = func() {
 		f.showUsage()
@@ -93,14 +93,14 @@ USAGE:
    %s [options] [OpenPGP file]
 
 OPTIONS:
-   -h -- displays this help
-   -v -- displays version
+   -h -- output this help
+   -v -- output version
    -a -- accepts ASCII input only
-   -i -- dumps integer packets
-   -l -- dumps literal packets
-   -m -- dumps marker packets
-   -p -- dumps private packets
-   -u -- displays UTC time
+   -i -- dumps multi-precision integers
+   -l -- dumps literal packets (tag 11)
+   -m -- dumps marker packets (tag 10)
+   -p -- dumps private packets (tag 60-63)
+   -u -- output UTC time
 `
 	f.OutputErrln(fmt.Sprintf(strings.Trim(usageText, " \t\n\r"), f.Name))
 }
