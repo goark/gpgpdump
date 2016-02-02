@@ -11,12 +11,13 @@ import (
 // Tag02 - Signature Packet
 type Tag02 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag02
-func New(opt *options.Options, body []byte) *Tag02 {
-	return &Tag02{Options: opt, body: body}
+//New return Signature Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag02 {
+	return &Tag02{Options: opt, tag: tag, body: body}
 }
 
 // Parse parsing Signature Packet

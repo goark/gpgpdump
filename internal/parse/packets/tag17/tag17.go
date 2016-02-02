@@ -8,15 +8,16 @@ import (
 // Tag17 - User Attribute Packet
 type Tag17 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag17
-func New(opt *options.Options, body []byte) *Tag17 {
-	return &Tag17{Options: opt, body: body}
+//New return User Attribute Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag17 {
+	return &Tag17{Options: opt, tag: tag, body: body}
 }
 
-// Parse parsing Literal Data Packet
+// Parse parsingUser Attribute Packet
 func (t Tag17) Parse(indent values.Indent) (values.Content, error) {
 	content := values.NewContent()
 	sp, err := NewSubpackets(t.Options, "Subpacket -", t.body)

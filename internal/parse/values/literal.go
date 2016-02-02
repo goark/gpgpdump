@@ -36,5 +36,5 @@ func (l LiteralFname) String() string {
 
 //LiteralData returns new RawData instance for Literal data
 func LiteralData(buf []byte, dump bool) *RawData {
-	return NewRawData("Literal data", buf, dump)
+	return NewRawData("Literal data", "", buf, dump)
 }

@@ -60,39 +60,39 @@ type Tags interface {
 func (p Packet) getTag(opt *options.Options) Tags {
 	switch p.Tag {
 	case 1:
-		return tag01.New(opt, p.Content)
+		return tag01.New(opt, p.Tag, p.Content)
 	case 2:
-		return tag02.New(opt, p.Content)
+		return tag02.New(opt, p.Tag, p.Content)
 	case 3:
-		return tag03.New(opt, p.Content)
+		return tag03.New(opt, p.Tag, p.Content)
 	case 4:
-		return tag04.New(opt, p.Content)
+		return tag04.New(opt, p.Tag, p.Content)
 	case 6:
-		return tag06.New(opt, p.Content)
+		return tag06.New(opt, p.Tag, p.Content)
 	case 8:
-		return tag08.New(opt, p.Content)
+		return tag08.New(opt, p.Tag, p.Content)
 	case 9:
-		return tag09.New(opt, p.Content)
+		return tag09.New(opt, p.Tag, p.Content)
 	case 10:
-		return tag10.New(opt, p.Content)
+		return tag10.New(opt, p.Tag, p.Content)
 	case 11:
-		return tag11.New(opt, p.Content)
+		return tag11.New(opt, p.Tag, p.Content)
 	case 12:
-		return tag12.New(opt, p.Content)
+		return tag12.New(opt, p.Tag, p.Content)
 	case 13:
-		return tag13.New(opt, p.Content)
+		return tag13.New(opt, p.Tag, p.Content)
 	case 14:
-		return tag14.New(opt, p.Content)
+		return tag14.New(opt, p.Tag, p.Content)
 	case 17:
-		return tag17.New(opt, p.Content)
+		return tag17.New(opt, p.Tag, p.Content)
 	case 18:
-		return tag18.New(opt, p.Content)
+		return tag18.New(opt, p.Tag, p.Content)
 	case 19:
-		return tag19.New(opt, p.Content)
+		return tag19.New(opt, p.Tag, p.Content)
 	case 60, 61, 62, 63:
-		return private.New(opt, p.Content)
+		return private.New(opt, p.Tag, p.Content)
 	default:
-		return unknown.New(opt, p.Content)
+		return unknown.New(opt, p.Tag, p.Content)
 	}
 }
 

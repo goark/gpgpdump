@@ -8,12 +8,13 @@ import (
 // Tag11 - Literal Data Packet
 type Tag11 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag11
-func New(opt *options.Options, body []byte) *Tag11 {
-	return &Tag11{Options: opt, body: body}
+//New return Literal Data Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag11 {
+	return &Tag11{Options: opt, tag: tag, body: body}
 }
 
 // Parse parsing Literal Data Packet

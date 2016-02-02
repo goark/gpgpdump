@@ -10,15 +10,16 @@ import (
 // Tag10 - Marker Packet (Obsolete Literal Packet)
 type Tag10 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag11
-func New(opt *options.Options, body []byte) *Tag10 {
-	return &Tag10{Options: opt, body: body}
+//New return Marker Packet (Obsolete Literal Packet)
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag10 {
+	return &Tag10{Options: opt, tag: tag, body: body}
 }
 
-// Parse parsing Literal Data Packet
+// Parse parsing Marker Packet (Obsolete Literal Packet)
 func (t Tag10) Parse(indent values.Indent) (values.Content, error) {
 	content := values.NewContent()
 

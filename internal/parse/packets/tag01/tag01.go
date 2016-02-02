@@ -9,15 +9,16 @@ import (
 // Tag01 - Public-Key Encrypted Session Key Packet
 type Tag01 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag11
-func New(opt *options.Options, body []byte) *Tag01 {
-	return &Tag01{Options: opt, body: body}
+//New return Public-Key Encrypted Session Key Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag01 {
+	return &Tag01{Options: opt, tag: tag, body: body}
 }
 
-// Parse parsing Literal Data Packet
+// Parse parsing Public-Key Encrypted Session Key Packet
 func (t Tag01) Parse(indent values.Indent) (values.Content, error) {
 	content := values.NewContent()
 	// [00] one-octet number giving the version number of the packet type.

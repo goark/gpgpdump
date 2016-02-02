@@ -8,15 +8,16 @@ import (
 // Tag09 - Symmetrically Encrypted Data Packet
 type Tag09 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag11
-func New(opt *options.Options, body []byte) *Tag09 {
-	return &Tag09{Options: opt, body: body}
+//New return Symmetrically Encrypted Data Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag09 {
+	return &Tag09{Options: opt, tag: tag, body: body}
 }
 
-// Parse parsing Literal Data Packet
+// Parse parsing Symmetrically Encrypted Data Packe
 func (t Tag09) Parse(indent values.Indent) (values.Content, error) {
 	content := values.NewContent()
 

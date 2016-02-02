@@ -10,12 +10,13 @@ import (
 // Private - Private Packet
 type Private struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
 //New return Private Packet
-func New(opt *options.Options, body []byte) *Private {
-	return &Private{Options: opt, body: body}
+func New(opt *options.Options, tag values.Tag, body []byte) *Private {
+	return &Private{Options: opt, tag: tag, body: body}
 }
 
 // Parse parsing Private Packet

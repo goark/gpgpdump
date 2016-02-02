@@ -10,12 +10,13 @@ import (
 // Tag12 - Trust Packet
 type Tag12 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag12
-func New(opt *options.Options, body []byte) *Tag12 {
-	return &Tag12{Options: opt, body: body}
+//New return Trust Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag12 {
+	return &Tag12{Options: opt, tag: tag, body: body}
 }
 
 // Parse parsing Trust Packet

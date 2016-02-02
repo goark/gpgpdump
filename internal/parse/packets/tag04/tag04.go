@@ -10,12 +10,13 @@ import (
 // Tag04 - One-Pass Signature Packet
 type Tag04 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag04
-func New(opt *options.Options, body []byte) *Tag04 {
-	return &Tag04{Options: opt, body: body}
+//New return One-Pass Signature Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag04 {
+	return &Tag04{Options: opt, tag: tag, body: body}
 }
 
 // Parse parsing One-Pass Signature Packet

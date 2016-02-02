@@ -9,13 +9,14 @@ import (
 //RawData - raw data
 type RawData struct {
 	name string
+	note string
 	buf  []byte
 	dump bool
 }
 
 //NewRawData returns new RawData instance
-func NewRawData(name string, buf []byte, dump bool) *RawData {
-	return &RawData{name: name, buf: buf, dump: dump}
+func NewRawData(name, note string, buf []byte, dump bool) *RawData {
+	return &RawData{name: name, note: note, buf: buf, dump: dump}
 }
 
 // Get returns Item instance
@@ -24,7 +25,7 @@ func (r RawData) Get() *items.Item {
 	if r.dump {
 		dump = DumpByte(r.buf)
 	}
-	return items.NewItemDump(r.name, dump)
+	return items.NewItemDump(r.name, dump, r.note)
 }
 
 func (r RawData) String() string {

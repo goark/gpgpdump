@@ -11,12 +11,13 @@ import (
 // Tag06 - Public-Key Packet
 type Tag06 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag06
-func New(opt *options.Options, body []byte) *Tag06 {
-	return &Tag06{Options: opt, body: body}
+//New return Public-Key Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag06 {
+	return &Tag06{Options: opt, tag: tag, body: body}
 }
 
 // Parse parsing Public-Key Packet

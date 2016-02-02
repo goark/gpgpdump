@@ -8,12 +8,13 @@ import (
 // Tag18 - Sym. Encrypted Integrity Protected Data Packet
 type Tag18 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag18
-func New(opt *options.Options, body []byte) *Tag18 {
-	return &Tag18{Options: opt, body: body}
+//New return Sym. Encrypted Integrity Protected Data Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag18 {
+	return &Tag18{Options: opt, tag: tag, body: body}
 }
 
 // Parse parsing Sym. Encrypted Integrity Protected Data Packet

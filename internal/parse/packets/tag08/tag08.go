@@ -8,12 +8,13 @@ import (
 // Tag08 - Compressed Data Packet
 type Tag08 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag08
-func New(opt *options.Options, body []byte) *Tag08 {
-	return &Tag08{Options: opt, body: body}
+//New return Compressed Data Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag08 {
+	return &Tag08{Options: opt, tag: tag, body: body}
 }
 
 // Parse parsing Compressed Data Packet

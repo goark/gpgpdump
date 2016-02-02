@@ -9,12 +9,13 @@ import (
 // Tag03 - Symmetric-Key Encrypted Session Key Packet
 type Tag03 struct {
 	*options.Options
+	tag  values.Tag
 	body []byte
 }
 
-//New return Tag03
-func New(opt *options.Options, body []byte) *Tag03 {
-	return &Tag03{Options: opt, body: body}
+//New return ymmetric-Key Encrypted Session Key Packet
+func New(opt *options.Options, tag values.Tag, body []byte) *Tag03 {
+	return &Tag03{Options: opt, tag: tag, body: body}
 }
 
 // Parse parsing Symmetric-Key Encrypted Session Key Packet
