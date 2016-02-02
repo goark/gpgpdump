@@ -46,11 +46,11 @@ func (f *Facade) Run(args []string) (int, error) {
 	flags.BoolVar(&cmd.Hflag, "h", false, "displays this help")
 	flags.BoolVar(&cmd.Vflag, "v", false, "displays version")
 	flags.BoolVar(&cmd.Aflag, "a", false, "accepts ASCII input only")
-	flags.BoolVar(&cmd.Gflag, "g", false, "selects alternate dump format")
-	flags.BoolVar(&cmd.Iflag, "i", false, "dumps integer packets")
-	flags.BoolVar(&cmd.Lflag, "l", false, "dumps literal packets")
-	flags.BoolVar(&cmd.Mflag, "m", false, "dumps marker packets")
-	flags.BoolVar(&cmd.Pflag, "p", false, "dumps private packets")
+	//flags.BoolVar(&cmd.Gflag, "g", false, "selects alternate dump format") // do not use g option
+	flags.BoolVar(&cmd.Iflag, "i", false, "dumps multi-precision integer")
+	flags.BoolVar(&cmd.Lflag, "l", false, "dumps literal packets (tag 11)")
+	flags.BoolVar(&cmd.Mflag, "m", false, "dumps marker packets (tag 10)")
+	flags.BoolVar(&cmd.Pflag, "p", false, "dumps private packets (tag 60-63)")
 	flags.BoolVar(&cmd.Uflag, "u", false, "displays UTC time")
 	ftest := flags.Bool("ftest", false, "facade test")
 	flags.Usage = func() {
@@ -96,7 +96,6 @@ OPTIONS:
    -h -- displays this help
    -v -- displays version
    -a -- accepts ASCII input only
-   -g -- selects alternate dump format
    -i -- dumps integer packets
    -l -- dumps literal packets
    -m -- dumps marker packets
