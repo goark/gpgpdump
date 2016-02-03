@@ -48,7 +48,7 @@ func (t Tag02) parseV3(pckt *items.Item) (*items.Item, error) {
 	// [19] One or more multiprecision integers comprising the signature.
 	size := t.body[1]
 	stype := values.SigType(t.body[2])
-	t.SigCreationTime = values.Octets2Int(t.body[3:7])
+	unix := values.SigTime(t.body[3:7], t.Uflag)
 	keyID := values.KeyID(values.Octets2Int(t.body[7:15]))
 	pub := values.PubAlg(t.body[15])
 	hash := values.HashAlg(t.body[16])
@@ -58,7 +58,8 @@ func (t Tag02) parseV3(pckt *items.Item) (*items.Item, error) {
 	hm := items.NewItem("Hashed material", "", fmt.Sprintf("%d bytes", size), "")
 	if size == 5 { //MUST be 5
 		hm.AddSub(stype.Get())
-		hm.AddSub(values.SigTime(t.SigCreationTime, t.Uflag).Get())
+		t.SigCreationTime = unix.Unix()
+		hm.AddSub(unix.Get())
 	} else {
 		hm.Value = "Unknown"
 	}

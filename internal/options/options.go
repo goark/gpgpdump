@@ -32,8 +32,8 @@ type Options struct {
 	Mflag           bool //dumps marker packets (tag 10)
 	Pflag           bool //dumps private packets (tag 60-63)
 	Uflag           bool //output UTC time
-	SigCreationTime uint64
-	KeyCreationTime uint64
+	SigCreationTime int64
+	KeyCreationTime int64
 	Mode            SymAlgMode
 }
 

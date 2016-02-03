@@ -41,12 +41,13 @@ func (t Tag06) parseV3(pckt *items.Item) (*items.Item, error) {
 	// [05] two-octet number denoting the time in days that this key is valid.
 	// [07] one-octet number denoting the public-key algorithm of this key.
 	// [08] series of multiprecision integers comprising the key material
-	t.KeyCreationTime = values.Octets2Int(t.body[1:5])
+	unix := values.PubKeyTime(t.body[1:5], t.Uflag)
 	days := uint16(values.Octets2Int(t.body[5:7]))
 	pub := values.PubAlg(t.body[7])
 	//pubkey := pubkeys.New(t.Options, pub, t.body[8:])
 
-	pckt.AddSub(values.PubKeyTime(t.KeyCreationTime, t.Uflag).Get())
+	t.KeyCreationTime = unix.Unix()
+	pckt.AddSub(unix.Get())
 	pckt.AddSub(items.NewItem("Valid days", strconv.Itoa(int(days)), "0 is forever", ""))
 	pckt.AddSub(pub.Get())
 	//pckt.AddSub(pubkey.ParsePub())
@@ -59,11 +60,12 @@ func (t Tag06) parseV4(pckt *items.Item) (*items.Item, error) {
 	// [01] four-octet number denoting the time that the key was created.
 	// [05] one-octet number denoting the public-key algorithm of this key.
 	// [06] series of multiprecision integers comprising the key material.
-	t.KeyCreationTime = values.Octets2Int(t.body[1:5])
+	unix := values.PubKeyTime(t.body[1:5], t.Uflag)
 	pub := values.PubAlg(t.body[5])
 	//pubkey := pubkeys.New(t.Options, pub, t.body[6:])
 
-	pckt.AddSub(values.PubKeyTime(t.KeyCreationTime, t.Uflag).Get())
+	t.KeyCreationTime = unix.Unix()
+	pckt.AddSub(unix.Get())
 	pckt.AddSub(pub.Get())
 	//pckt.AddSub(pubkey.ParsePub())
 	return pckt, nil
