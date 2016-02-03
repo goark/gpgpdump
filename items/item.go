@@ -38,18 +38,3 @@ func NewItemDump(name, dump, note string) *Item {
 func (i *Item) AddSub(a *Item) {
 	i.Item = append(i.Item, a)
 }
-
-/*
-func (i *Item) String() string {
-	if len(i.Dump) > 0 {
-		if len(i.Note) > 0 {
-			return fmt.Sprintf("%s (%s) - %s", i.Name, i.Note, i.Dump)
-		}
-		return fmt.Sprintf("%s - %s", i.Name, i.Dump)
-	}
-	if len(i.Note) > 0 {
-		return fmt.Sprintf("%s - %s (%s)", i.Name, i.Value, i.Note)
-	}
-	return fmt.Sprintf("%s - %s", i.Name, i.Value)
-}
-*/

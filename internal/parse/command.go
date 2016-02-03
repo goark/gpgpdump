@@ -2,6 +2,7 @@ package parse
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"io"
 	"io/ioutil"
@@ -10,6 +11,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/spiegel-im-spiegel/gocli"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Errors
@@ -47,15 +49,33 @@ func (c *Context) Run() error {
 			content, err = parseBinary(c.Options, reader)
 		}
 	}
-	var buffer bytes.Buffer
-	if err := toml.NewEncoder(&buffer).Encode(content); err != nil {
-		return err
+	var str string
+	if c.Jflag {
+		str, err = encodeJSON(content)
+	} else {
+		str, err = encodeTOML(content)
 	}
-	c.Output(buffer.String())
 	if err != nil {
 		return err
 	}
+	c.Output(str)
 	return nil
+}
+
+func encodeTOML(content *items.Packets) (string, error) {
+	var buf bytes.Buffer
+	if err := toml.NewEncoder(&buf).Encode(content); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
+}
+
+func encodeJSON(content *items.Packets) (string, error) {
+	buf, err := json.MarshalIndent(content, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(buf), nil
 }
 
 func (c *Context) readData() ([]byte, error) {

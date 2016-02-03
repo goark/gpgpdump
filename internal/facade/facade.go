@@ -48,6 +48,7 @@ func (f *Facade) Run(args []string) (int, error) {
 	flags.BoolVar(&cmd.Aflag, "a", false, "accepts ASCII input only")
 	//flags.BoolVar(&cmd.Gflag, "g", false, "selects alternate dump format") // do not use g option
 	flags.BoolVar(&cmd.Iflag, "i", false, "dumps multi-precision integers")
+	flags.BoolVar(&cmd.Jflag, "j", false, "output with JSON format")
 	flags.BoolVar(&cmd.Lflag, "l", false, "dumps literal packets (tag 11)")
 	flags.BoolVar(&cmd.Mflag, "m", false, "dumps marker packets (tag 10)")
 	flags.BoolVar(&cmd.Pflag, "p", false, "dumps private packets (tag 60-63)")
@@ -97,6 +98,7 @@ OPTIONS:
    -v -- output version
    -a -- accepts ASCII input only
    -i -- dumps multi-precision integers
+   -j -- output with JSON format
    -l -- dumps literal packets (tag 11)
    -m -- dumps marker packets (tag 10)
    -p -- dumps private packets (tag 60-63)

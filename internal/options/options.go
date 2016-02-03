@@ -22,15 +22,16 @@ func (m SymAlgMode) IsPubEnc() bool {
 
 // Options for gpgpdump
 type Options struct {
-	Hflag           bool //displays this help
-	Vflag           bool //displays version
+	Hflag           bool //output this help
+	Vflag           bool //output version
 	Aflag           bool //accepts ASCII input only
 	Gflag           bool //selects alternate dump format
-	Iflag           bool //dumps integer packets
-	Lflag           bool //dumps literal packets
-	Mflag           bool //dumps marker packets
-	Pflag           bool //dumps private packets
-	Uflag           bool //displays UTC time
+	Iflag           bool //dumps multi-precision integers
+	Jflag           bool //output with JSON format
+	Lflag           bool //dumps literal packets (tag 11)
+	Mflag           bool //dumps marker packets (tag 10)
+	Pflag           bool //dumps private packets (tag 60-63)
+	Uflag           bool //output UTC time
 	SigCreationTime uint64
 	KeyCreationTime uint64
 	Mode            SymAlgMode
