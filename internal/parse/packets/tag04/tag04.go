@@ -1,7 +1,7 @@
 package tag04
 
 import (
-	"strconv"
+	"fmt"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
@@ -45,6 +45,6 @@ func (t Tag04) Parse() (*items.Item, error) {
 	if flag == 0 {
 		f = "another one pass signature"
 	}
-	pckt.AddSub(items.NewItem("Encrypted session key", strconv.Itoa(int(flag)), f))
+	pckt.AddSub(items.NewItem("Encrypted session key", f, "", fmt.Sprintf("%02x", byte(flag))))
 	return pckt, nil
 }

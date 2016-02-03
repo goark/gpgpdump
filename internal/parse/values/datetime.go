@@ -29,7 +29,7 @@ func (u UNIXTime) RFC3339() string {
 
 // Get returns Item instance
 func (u UNIXTime) Get() *items.Item {
-	return items.NewItem(u.name, u.RFC3339(), "")
+	return items.NewItem(u.name, u.RFC3339(), "", "")
 }
 
 //FileTime returns UNIXTime instance for Modification time of a file

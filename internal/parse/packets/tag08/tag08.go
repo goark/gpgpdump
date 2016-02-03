@@ -24,6 +24,6 @@ func (t Tag08) Parse() (*items.Item, error) {
 
 	comp := values.CompAlg(t.body[0])
 	pckt.AddSub(comp.Get())
-	pckt.AddSub(items.NewItem("Compressed data", "", ""))
+	pckt.AddSub(items.NewItem("Compressed data", "", "", ""))
 	return pckt, nil
 }

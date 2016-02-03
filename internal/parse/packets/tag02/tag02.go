@@ -55,7 +55,7 @@ func (t Tag02) parseV3(pckt *items.Item) (*items.Item, error) {
 	hashTag := t.body[17:19]
 	//pubkey := pubkeys.New(t.Options, pub, t.body[19:])
 
-	hm := items.NewItem("Hashed material", "", fmt.Sprintf("%d bytes", size))
+	hm := items.NewItem("Hashed material", "", fmt.Sprintf("%d bytes", size), "")
 	if size == 5 { //MUST be 5
 		hm.AddSub(stype.Get())
 		hm.AddSub(values.SigTime(t.SigCreationTime, t.Uflag).Get())

@@ -21,6 +21,6 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag13 {
 // Parse parsing User ID Packet
 func (t Tag13) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
-	pckt.AddSub(items.NewItem("User ID", string(t.body), ""))
+	pckt.AddSub(items.NewItem("User ID", string(t.body), "", ""))
 	return pckt, nil
 }

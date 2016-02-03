@@ -33,7 +33,7 @@ func (t Tag03) Parse() (*items.Item, error) {
 	pckt.AddSub(sym.Get())
 	//pckt.AddSub(s2k.Parse())
 	if s2k.Left() > 0 {
-		pckt.AddSub(items.NewItem("Encrypted session key", "", "sym alg(1 bytes) + session key"))
+		pckt.AddSub(items.NewItem("Encrypted session key", "", "sym alg(1 bytes) + session key", ""))
 	}
 	t.SetSymAlgModeSymEnc()
 	return pckt, nil

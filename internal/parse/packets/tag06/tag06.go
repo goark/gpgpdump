@@ -47,7 +47,7 @@ func (t Tag06) parseV3(pckt *items.Item) (*items.Item, error) {
 	//pubkey := pubkeys.New(t.Options, pub, t.body[8:])
 
 	pckt.AddSub(values.PubKeyTime(t.KeyCreationTime, t.Uflag).Get())
-	pckt.AddSub(items.NewItem("Valid days", strconv.Itoa(int(days)), "0 is forever"))
+	pckt.AddSub(items.NewItem("Valid days", strconv.Itoa(int(days)), "0 is forever", ""))
 	pckt.AddSub(pub.Get())
 	//pckt.AddSub(pubkey.ParsePub())
 	return pckt, nil

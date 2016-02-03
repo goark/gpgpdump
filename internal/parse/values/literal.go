@@ -19,7 +19,7 @@ type LiteralFormat byte
 
 // Get returns Item instance
 func (l LiteralFormat) Get() *items.Item {
-	return items.NewItem("Literal data format", string(l), literalFormatNames.Get(int(l), "unknown"))
+	return items.NewItem("Literal data format", string(l), literalFormatNames.Get(int(l), "unknown"), fmt.Sprintf("%02x", byte(l)))
 }
 
 func (l LiteralFormat) String() string {
@@ -31,7 +31,7 @@ type LiteralFname string
 
 // Get returns Item instance
 func (l LiteralFname) Get() *items.Item {
-	return items.NewItem("File name", string(l), "")
+	return items.NewItem("File name", string(l), "", "")
 }
 
 //LiteralData returns new RawData instance for Literal data

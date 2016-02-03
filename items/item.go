@@ -25,8 +25,8 @@ type Item struct {
 }
 
 //NewItem returns Item instance
-func NewItem(name, value, note string) *Item {
-	return &Item{Name: name, Value: value, Note: note}
+func NewItem(name, value, note, dump string) *Item {
+	return &Item{Name: name, Value: value, Note: note, Dump: dump}
 }
 
 //NewItemDump returns Item instance for dump

@@ -24,11 +24,11 @@ func (t Tag18) Parse() (*items.Item, error) {
 
 	switch true {
 	case t.Mode.IsSymEnc():
-		pckt.AddSub(items.NewItem("Encrypted data", "", "sym alg is specified in sym-key encrypted session key; plain text + MDC SHA1(20 bytes)"))
+		pckt.AddSub(items.NewItem("Encrypted data", "", "sym alg is specified in sym-key encrypted session key; plain text + MDC SHA1(20 bytes)", ""))
 	case t.Mode.IsPubEnc():
-		pckt.AddSub(items.NewItem("Encrypted data", "", "sym alg is specified in pub-key encrypted session key; plain text + MDC SHA1(20 bytes)"))
+		pckt.AddSub(items.NewItem("Encrypted data", "", "sym alg is specified in pub-key encrypted session key; plain text + MDC SHA1(20 bytes)", ""))
 	default:
-		pckt.AddSub(items.NewItem("Encrypted data", "", ""))
+		pckt.AddSub(items.NewItem("Encrypted data", "", "", ""))
 	}
 	t.ResetSymAlgMode()
 	return pckt, nil
