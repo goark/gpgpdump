@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
@@ -18,15 +17,15 @@ type Expire struct {
 
 //NewExpire returns new Expire instance
 func NewExpire(name string, buf []byte, start int64, utc bool) *Expire {
-	return &Expire{name: name, bug: buf, start: start, utc: utc}
+	return &Expire{name: name, buf: buf, start: start, utc: utc}
 }
 
 // Get returns Item instance
 func (e Expire) Get() *items.Item {
-	exp := int64(values.Octets2Int(e.buf))
-	end = ""
+	exp := int64(Octets2Int(e.buf))
+	end := ""
 	if e.start > 0 {
-		end = RFC3339(start+exp, e.utc)
+		end = RFC3339(e.start+exp, e.utc)
 	}
 	return items.NewItem(e.name, fmt.Sprintf("%v days after", float64(exp)/86400.0), end, DumpByte(e.buf))
 }

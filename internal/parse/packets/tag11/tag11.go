@@ -25,7 +25,7 @@ func (t Tag11) Parse() (*items.Item, error) {
 	f := values.LiteralFormat(t.body[0])
 	flen := int(t.body[1])
 	filename := values.LiteralFname(t.body[2 : 2+flen])
-	ftime := values.FileTime(values.Octets2Int(t.body[2+flen:2+flen+4]), t.Uflag)
+	ftime := values.FileTime(t.body[2+flen:2+flen+4], t.Uflag)
 	data := values.LiteralData(t.body[2+flen+4:], t.Lflag)
 
 	pckt.AddSub(f.Get())
