@@ -36,7 +36,7 @@ type Tag int
 
 // Get returns Item instance
 func (t Tag) Get(size int) *items.Item {
-	return items.NewItem("Packet", fmt.Sprintf("%s (tag %d)", tagNames.Get(int(t), "Unknown"), t), fmt.Sprintf("%d bytes", size), fmt.Sprintf("%02x", byte(t)))
+	return items.NewItem("Packet", fmt.Sprintf("%s (tag %d)", tagNames.Get(int(t), "Unknown"), t), fmt.Sprintf("%d bytes", size), "")
 }
 
 var sigTypeNames = Msgs{
@@ -62,7 +62,7 @@ type SigType byte
 
 // Get returns Item instance
 func (s SigType) Get() *items.Item {
-	return items.NewItem("Signiture Type", fmt.Sprintf("%s (%02x)", sigTypeNames.Get(int(s), "Unknown"), s), "", fmt.Sprintf("%02x", byte(s)))
+	return items.NewItem("Signiture Type", fmt.Sprintf("%s (0x%02x)", sigTypeNames.Get(int(s), "Unknown"), s), "", fmt.Sprintf("%02x", byte(s)))
 }
 
 var pubAlgNames = Msgs{

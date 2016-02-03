@@ -5,6 +5,7 @@
 [gpgpdump](https://github.com/spiegel-im-spiegel/gpgpdump) is a OpenPGP ([RFC 4880](https://tools.ietf.org/html/rfc4880)) packet visualizer by [golang](https://golang.org/).
 
 - [pgpdump](https://github.com/kazu-yamamoto/pgpdump) compatible (maybe)
+- Output with [TOML](https://github.com/toml-lang/toml) format
 - Support [RFC 5581](http://tools.ietf.org/html/rfc5581)
 - Support [RFC 6637](http://tools.ietf.org/html/rfc6637)
 
@@ -12,8 +13,8 @@
 
 - [`github.com/spiegel-im-spiegel/gocli`](https://github.com/spiegel-im-spiegel/gocli)
 - [`github.com/BurntSushi/toml`](https://github.com/BurntSushi/toml)
-- `golang.org/x/crypto/openpgp/`[`armor`](https://godoc.org/golang.org/x/crypto/openpgp/armor)
-- `golang.org/x/crypto/openpgp/`[`packet`](https://godoc.org/golang.org/x/crypto/openpgp/packet)
+- [`golang.org/x/crypto/openpgp/armor`](https://godoc.org/golang.org/x/crypto/openpgp/armor)
+- [`golang.org/x/crypto/openpgp/packet`](https://godoc.org/golang.org/x/crypto/openpgp/packet)
 
 ## Install
 
@@ -29,15 +30,15 @@ USAGE:
    gpgpdump [options] [OpenPGP file]
 
 OPTIONS:
-   -h -- displays this help
-   -v -- displays version
+   -h -- output this help
+   -v -- output version
    -a -- accepts ASCII input only
-   -g -- selects alternate dump format
-   -i -- dumps integer packets
-   -l -- dumps literal packets
-   -m -- dumps marker packets
-   -p -- dumps private packets
-   -u -- displays UTC time
+   -i -- dumps multi-precision integers
+   -j -- output with JSON format
+   -l -- dumps literal packets (tag 11)
+   -m -- dumps marker packets (tag 10)
+   -p -- dumps private packets (tag 60-63)
+   -u -- output UTC time
 ```
 
 ## License

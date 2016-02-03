@@ -47,23 +47,28 @@ func (t Tag02) parseV3(pckt *items.Item) (*items.Item, error) {
 	// [17] Two-octet field holding left 16 bits of signed hash value.
 	// [19] One or more multiprecision integers comprising the signature.
 	size := t.body[1]
+
+	hm := items.NewItem("Hashed material", "", fmt.Sprintf("%d bytes", size), "")
+	if size != 5 { //MUST be 5
+		hm.Value = "Unknown"
+		hm.Dump = values.DumpByte(t.body[3 : 3+size])
+		pckt.AddSub(hm)
+		return pckt, nil
+	}
 	stype := values.SigType(t.body[2])
 	unix := values.SigTime(t.body[3:7], t.Uflag)
+
+	hm.AddSub(stype.Get())
+	t.SigCreationTime = unix.Unix()
+	hm.AddSub(unix.Get())
+	pckt.AddSub(hm)
+
 	keyID := values.KeyID(values.Octets2Int(t.body[7:15]))
 	pub := values.PubAlg(t.body[15])
 	hash := values.HashAlg(t.body[16])
 	hashTag := t.body[17:19]
 	//pubkey := pubkeys.New(t.Options, pub, t.body[19:])
 
-	hm := items.NewItem("Hashed material", "", fmt.Sprintf("%d bytes", size), "")
-	if size == 5 { //MUST be 5
-		hm.AddSub(stype.Get())
-		t.SigCreationTime = unix.Unix()
-		hm.AddSub(unix.Get())
-	} else {
-		hm.Value = "Unknown"
-	}
-	pckt.AddSub(hm)
 	pckt.AddSub(keyID.Get())
 	pckt.AddSub(pub.Get())
 	pckt.AddSub(hash.Get())

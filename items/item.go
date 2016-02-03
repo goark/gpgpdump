@@ -10,18 +10,18 @@ func NewPackets() *Packets {
 	return &Packets{}
 }
 
-//AddPacket add item in packets.
+//AddPacket add item in Packets.
 func (p *Packets) AddPacket(a *Item) {
 	p.Packet = append(p.Packet, a)
 }
 
-//Item - item in packet
+//Item - item in Packets
 type Item struct {
-	Name  string
-	Value string
-	Dump  string
-	Note  string
-	Item  []*Item
+	Name  string  `toml:"name" json:"name"`
+	Value string  `toml:"value,omitempty" json:"value,omitempty"`
+	Dump  string  `toml:"dump,omitempty" json:"dump,omitempty"`
+	Note  string  `toml:"note,omitempty" json:"note,omitempty"`
+	Item  []*Item `toml:"Item,omitempty" json:"Item,omitempty"`
 }
 
 //NewItem returns Item instance

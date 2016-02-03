@@ -63,8 +63,8 @@ func (c *Context) Run() error {
 }
 
 func encodeTOML(content *items.Packets) (string, error) {
-	var buf bytes.Buffer
-	if err := toml.NewEncoder(&buf).Encode(content); err != nil {
+	buf := new(bytes.Buffer)
+	if err := toml.NewEncoder(buf).Encode(content); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
