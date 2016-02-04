@@ -4,8 +4,8 @@
 
 [gpgpdump](https://github.com/spiegel-im-spiegel/gpgpdump) is a OpenPGP ([RFC 4880](https://tools.ietf.org/html/rfc4880)) packet visualizer by [golang](https://golang.org/).
 
-- [pgpdump](https://github.com/kazu-yamamoto/pgpdump) compatible (maybe)
-- Output with [TOML](https://github.com/toml-lang/toml) format
+- Adapted from [pgpdump](https://github.com/kazu-yamamoto/pgpdump)
+- Output with [TOML](https://github.com/toml-lang/toml) (or [JSON](https://tools.ietf.org/html/rfc7159)) format
 - Support [RFC 5581](http://tools.ietf.org/html/rfc5581)
 - Support [RFC 6637](http://tools.ietf.org/html/rfc6637)
 
