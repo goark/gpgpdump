@@ -25,12 +25,14 @@ var (
 
 // Facade of facade context
 type Facade struct {
-	// UI is Command line user interface
+	//UI is Command line user interface
 	*gocli.UI
 	// Name of application
 	Name string
-	// Version of application
+	//Version of application
 	Version string
+	//command for parsing
+	command *parse.Context
 }
 
 // NewFacade returns a new Facade instance
@@ -40,41 +42,41 @@ func NewFacade(appName, version string, ui *gocli.UI) *Facade {
 
 // Run Application
 func (f *Facade) Run(args []string) (int, error) {
-	cmd := parse.Command(f.UI)
+	f.command = parse.Command(f.UI)
 
 	flags := flag.NewFlagSet(f.Name, flag.ContinueOnError)
-	flags.BoolVar(&cmd.Hflag, "h", false, "output this help")
-	flags.BoolVar(&cmd.Vflag, "v", false, "output version")
-	flags.BoolVar(&cmd.Aflag, "a", false, "accepts ASCII input only")
-	//flags.BoolVar(&cmd.Gflag, "g", false, "selects alternate dump format") // do not use g option
-	flags.BoolVar(&cmd.Iflag, "i", false, "dumps multi-precision integers")
-	flags.BoolVar(&cmd.Jflag, "j", false, "output with JSON format")
-	flags.BoolVar(&cmd.Lflag, "l", false, "dumps literal packets (tag 11)")
-	flags.BoolVar(&cmd.Mflag, "m", false, "dumps marker packets (tag 10)")
-	flags.BoolVar(&cmd.Pflag, "p", false, "dumps private packets (tag 60-63)")
-	flags.BoolVar(&cmd.Uflag, "u", false, "output UTC time")
+	flags.BoolVar(&f.command.Hflag, "h", false, "output this help")
+	flags.BoolVar(&f.command.Vflag, "v", false, "output version")
+	flags.BoolVar(&f.command.Aflag, "a", false, "accepts ASCII input only")
+	//flags.BoolVar(&f.command.Gflag, "g", false, "selects alternate dump format") // not used
+	flags.BoolVar(&f.command.Iflag, "i", false, "dumps multi-precision integers")
+	flags.BoolVar(&f.command.Jflag, "j", false, "output with JSON format")
+	flags.BoolVar(&f.command.Lflag, "l", false, "dumps literal packets (tag 11)")
+	flags.BoolVar(&f.command.Mflag, "m", false, "dumps marker packets (tag 10)")
+	flags.BoolVar(&f.command.Pflag, "p", false, "dumps private packets (tag 60-63)")
+	flags.BoolVar(&f.command.Uflag, "u", false, "output UTC time")
 	ftest := flags.Bool("ftest", false, "facade test")
 	flags.Usage = func() {
 		f.showUsage()
 	}
 	// Parse commandline flag
 	if err := flags.Parse(args); err != nil {
-		return ExitFailure, nil
+		return ExitFailure, err
 	}
-	if cmd.Hflag {
+	if f.command.Hflag {
 		f.showUsage()
 		return ExitSuccess, nil
 	}
-	if cmd.Vflag {
+	if f.command.Vflag {
 		f.showVersion()
 		return ExitSuccess, nil
 	}
 
 	switch flags.NArg() {
 	case 0:
-		cmd.InputFile = ""
+		f.command.InputFile = ""
 	case 1:
-		cmd.InputFile = flags.Arg(0)
+		f.command.InputFile = flags.Arg(0)
 	default:
 		return ExitFailure, os.ErrInvalid
 	}
@@ -82,7 +84,7 @@ func (f *Facade) Run(args []string) (int, error) {
 	if *ftest { // for facade test
 		return ExitSuccess, ErrFacadeTest
 	}
-	if err := cmd.Run(); err != nil {
+	if err := f.command.Run(); err != nil {
 		return ExitFailure, err
 	}
 	return ExitSuccess, nil

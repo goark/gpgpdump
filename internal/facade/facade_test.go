@@ -98,6 +98,9 @@ func TestRunHflag(t *testing.T) {
 	if fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
 	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
+	}
 	if fcd.command.Mflag {
 		t.Errorf("command.Mflag = %v.", fcd.command.Mflag)
 	}
@@ -143,6 +146,9 @@ func TestRunVflag(t *testing.T) {
 	}
 	if fcd.command.Iflag {
 		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
+	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
 	}
 	if fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
@@ -193,6 +199,9 @@ func TestRunAflag(t *testing.T) {
 	if fcd.command.Iflag {
 		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
 	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
+	}
 	if fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
 	}
@@ -221,11 +230,11 @@ func TestRunGflag(t *testing.T) {
 	args := []string{"-ftest", "-g"}
 
 	rtn, err := fcd.Run(args)
-	if rtn != 0 {
-		t.Errorf("facade.Run() = %v, want 0.", rtn)
+	if rtn == 0 {
+		t.Errorf("facade.Run() = %v, want not 0.", rtn)
 	}
-	if err != ErrFacadeTest {
-		t.Errorf("facade.Run() = \"%v\", want \"%v\".", err, ErrFacadeTest)
+	if err == ErrFacadeTest {
+		t.Errorf("facade.Run() = \"%v\", want not \"%v\".", err, ErrFacadeTest)
 	}
 	if fcd.command.Hflag {
 		t.Errorf("command.Hflag = %v.", fcd.command.Hflag)
@@ -236,11 +245,14 @@ func TestRunGflag(t *testing.T) {
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
 	}
-	if !fcd.command.Gflag {
+	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
 	}
 	if fcd.command.Iflag {
 		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
+	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
 	}
 	if fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
@@ -291,6 +303,61 @@ func TestRunIflag(t *testing.T) {
 	if !fcd.command.Iflag {
 		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
 	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
+	}
+	if fcd.command.Lflag {
+		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
+	}
+	if fcd.command.Mflag {
+		t.Errorf("command.Mflag = %v.", fcd.command.Mflag)
+	}
+	if fcd.command.Pflag {
+		t.Errorf("command.Pflag = %v.", fcd.command.Pflag)
+	}
+	if fcd.command.Uflag {
+		t.Errorf("command.Uflag = %v.", fcd.command.Uflag)
+	}
+	if fcd.command.InputFile != "" {
+		t.Errorf("command.InputFile = \"%v\", want empty.", fcd.command.InputFile)
+	}
+}
+
+func TestRunJflag(t *testing.T) {
+	name := "gpgpgdump"
+	version := "0.0.0"
+	inpmsg := ""
+	outBuf := new(bytes.Buffer)
+	errBuf := new(bytes.Buffer)
+	ui := GetUI(inpmsg, outBuf, errBuf)
+	fcd := NewFacade(name, version, ui)
+	args := []string{"-ftest", "-j"}
+
+	rtn, err := fcd.Run(args)
+	if rtn != 0 {
+		t.Errorf("facade.Run() = %v, want 0.", rtn)
+	}
+	if err != ErrFacadeTest {
+		t.Errorf("facade.Run() = \"%v\", want \"%v\".", err, ErrFacadeTest)
+	}
+	if fcd.command.Hflag {
+		t.Errorf("command.Hflag = %v.", fcd.command.Hflag)
+	}
+	if fcd.command.Vflag {
+		t.Errorf("command.Vflag = %v.", fcd.command.Vflag)
+	}
+	if fcd.command.Aflag {
+		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Gflag {
+		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
+	}
+	if fcd.command.Iflag {
+		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
+	}
+	if !fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
+	}
 	if fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
 	}
@@ -339,6 +406,9 @@ func TestRunLflag(t *testing.T) {
 	}
 	if fcd.command.Iflag {
 		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
+	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
 	}
 	if !fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
@@ -389,6 +459,9 @@ func TestRunMflag(t *testing.T) {
 	if fcd.command.Iflag {
 		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
 	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
+	}
 	if fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
 	}
@@ -437,6 +510,9 @@ func TestRunPflag(t *testing.T) {
 	}
 	if fcd.command.Iflag {
 		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
+	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
 	}
 	if fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
@@ -487,6 +563,9 @@ func TestRunUflag(t *testing.T) {
 	if fcd.command.Iflag {
 		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
 	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
+	}
 	if fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
 	}
@@ -536,6 +615,9 @@ func TestRunFile(t *testing.T) {
 	}
 	if fcd.command.Iflag {
 		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
+	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
 	}
 	if fcd.command.Lflag {
 		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
