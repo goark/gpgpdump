@@ -2,16 +2,13 @@ package parse
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"io"
 	"io/ioutil"
 	"os"
 
-	"github.com/BurntSushi/toml"
 	"github.com/spiegel-im-spiegel/gocli"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Errors
@@ -51,31 +48,15 @@ func (c *Context) Run() error {
 	}
 	var str string
 	if c.Jflag {
-		str, err = encodeJSON(content)
+		str, err = content.MarshalJSON()
 	} else {
-		str, err = encodeTOML(content)
+		str, err = content.MarshalTOML()
 	}
 	if err != nil {
 		return err
 	}
 	c.Output(str)
 	return nil
-}
-
-func encodeTOML(content *items.Packets) (string, error) {
-	buf := new(bytes.Buffer)
-	if err := toml.NewEncoder(buf).Encode(content); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
-}
-
-func encodeJSON(content *items.Packets) (string, error) {
-	buf, err := json.MarshalIndent(content, "", "  ")
-	if err != nil {
-		return "", err
-	}
-	return string(buf), nil
 }
 
 func (c *Context) readData() ([]byte, error) {
