@@ -20,6 +20,17 @@ func (m SymAlgMode) IsPubEnc() bool {
 	return m == SymAlgModePubEnc
 }
 
+func (m SymAlgMode) String() string {
+	switch true {
+	case m.IsPubEnc():
+		return "Pubkey Encryption Mode"
+	case m.IsSymEnc():
+		return "Sym. Encryption Mode"
+	default:
+		return "Not Specified"
+	}
+}
+
 // Options for gpgpdump
 type Options struct {
 	Hflag           bool //output this help
