@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/pubkeys"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
@@ -44,13 +45,13 @@ func (t Tag06) parseV3(pckt *items.Item) (*items.Item, error) {
 	unix := values.PubKeyTime(t.body[1:5], t.Uflag)
 	days := uint16(values.Octets2Int(t.body[5:7]))
 	pub := values.PubAlg(t.body[7])
-	//pubkey := pubkeys.New(t.Options, pub, t.body[8:])
+	pubkey := pubkeys.New(t.Options, pub, t.body[8:])
 
 	t.KeyCreationTime = unix.Unix()
 	pckt.AddSub(unix.Get())
 	pckt.AddSub(items.NewItem("Valid days", strconv.Itoa(int(days)), "0 is forever", ""))
 	pckt.AddSub(pub.Get())
-	//pckt.AddSub(pubkey.ParsePub())
+	pubkey.ParsePub(pckt)
 	return pckt, nil
 }
 
@@ -62,11 +63,11 @@ func (t Tag06) parseV4(pckt *items.Item) (*items.Item, error) {
 	// [06] series of multiprecision integers comprising the key material.
 	unix := values.PubKeyTime(t.body[1:5], t.Uflag)
 	pub := values.PubAlg(t.body[5])
-	//pubkey := pubkeys.New(t.Options, pub, t.body[6:])
+	pubkey := pubkeys.New(t.Options, pub, t.body[6:])
 
 	t.KeyCreationTime = unix.Unix()
 	pckt.AddSub(unix.Get())
 	pckt.AddSub(pub.Get())
-	//pckt.AddSub(pubkey.ParsePub())
+	pubkey.ParsePub(pckt)
 	return pckt, nil
 }

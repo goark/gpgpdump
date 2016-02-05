@@ -3,9 +3,11 @@ package pubkeys
 import (
 	"bytes"
 	"fmt"
+	"io"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 // Pubkey - information of public key algorithm
@@ -21,314 +23,313 @@ func New(opt *options.Options, pub values.PubAlg, mpi []byte) *Pubkey {
 }
 
 //ParsePub multi-precision integers of public key algorithm for Public-key packet
-func (p *Pubkey) ParsePub(indent values.Indent) values.Content {
-	content := values.NewContent()
+func (p *Pubkey) ParsePub(pckt *items.Item) error {
 	switch true {
 	case p.pub.IsRSA():
-		content = append(content, indent.Fill("Multi-precision integers of RSA:"))
-		content = content.AddIndent(p.rsaPub(), indent+1)
+		return p.rsaPub(pckt)
 	case p.pub.IsDSA():
-		content = append(content, indent.Fill("Multi-precision integers of DSA:"))
-		content = content.AddIndent(p.dsaPub(), indent+1)
+		return p.dsaPub(pckt)
 	case p.pub.IsElgamal():
-		content = append(content, indent.Fill("Multi-precision integers of Elgamal:"))
-		content = content.AddIndent(p.elgPub(), indent+1)
+		return p.elgPub(pckt)
 	case p.pub.IsECDH():
-		content = append(content, indent.Fill("Multi-precision integers of ECDH:"))
-		content = content.AddIndent(p.ecdhPub(), indent+1)
+		return p.ecdhPub(pckt)
 	case p.pub.IsECDSA():
-		content = append(content, indent.Fill("Multi-precision integers of ECDSA:"))
-		content = content.AddIndent(p.ecdsaPub(), indent+1)
+		return p.ecdsaPub(pckt)
 	default:
-		content = append(content, indent.Fill(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub)))
+		pckt.AddSub(items.NewItem(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub), "", fmt.Sprintf("%d bytes", len(p.mpi)), ""))
 	}
-	return content
+	return nil
 }
 
-func (p *Pubkey) rsaPub() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) rsaPub(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
+
+	mpi, err := values.GetMPI(reader, "RSA n", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("RSA n", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "RSA e", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("RSA e", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-func (p *Pubkey) dsaPub() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) dsaPub(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
+
+	mpi, err := values.GetMPI(reader, "DSA p", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("DSA p", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "DSA q", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("DSA q", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "DSA g", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("DSA g", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "DSA y", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("DSA y", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-func (p *Pubkey) elgPub() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) elgPub(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
+
+	mpi, err := values.GetMPI(reader, "ElGamal p", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("ElGamal p", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "ElGamal g", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("ElGamal g", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "ElGamal y", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("ElGamal y", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-func (p *Pubkey) ecdsaPub() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) ecdsaPub(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	oid, err := GetOID(reader)
+
+	oid, err := values.OID(reader)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, fmt.Sprintf("ECDSA OID - %v", oid))
-	mpi, err := GetMPI(reader)
+	pckt.AddSub(oid.Get())
+
+	mpi, err := values.GetMPI(reader, "ECDH 04 || X || Y", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.DumpEC("ECDSA P = (x, y)", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-func (p *Pubkey) ecdhPub() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) ecdhPub(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	oid, err := GetOID(reader)
-	if err != nil {
-		content = append(content, err.Error())
-		return content
-	}
-	content = append(content, fmt.Sprintf("ECDH OID - %v", oid))
-	mpi, err := GetMPI(reader)
-	if err != nil {
-		content = append(content, err.Error())
-		return content
-	}
-	content = append(content, mpi.DumpEC("ECDH P = (x, y)", p.Iflag))
-	dat, err := GetECParm(reader)
-	if err != nil {
-		content = append(content, err.Error())
-		return content
-	}
 
-	if dat.Bytes[0] == 0x01 {
-		content = append(content, values.HashAlg(dat.Bytes[1]).String())
-		content = append(content, values.SymAlg(dat.Bytes[2]).String())
+	oid, err := values.OID(reader)
+	if err != nil {
+		return err
+	}
+	pckt.AddSub(oid.Get())
+
+	mpi, err := values.GetMPI(reader, "ECDSA 04 || X || Y", p.Iflag)
+	if err != nil {
+		return err
+	}
+	pckt.AddSub(mpi.Get())
+
+	dat, err := getECParm(reader)
+	if err != nil {
+		return err
+	}
+	if dat == nil {
+		return nil
+	}
+	item := items.NewItem("KDF parameters", "", fmt.Sprintf("%d bytes", len(dat)), "")
+	if dat[0] == 0x01 {
+		item.AddSub(values.HashAlg(dat[1]).Get())
+		item.AddSub(values.SymAlg(dat[2]).Get())
 	} else {
-		content = append(content, dat.Dump("Unknown KDF parameters -", p.Iflag))
+		item.Value = "Unknown"
 	}
-	return content
+	pckt.AddSub(item)
+	return nil
 }
 
 //ParseSig multi-precision integers of public key algorithm for Signiture packet
-func (p *Pubkey) ParseSig(indent values.Indent) values.Content {
-	content := values.NewContent()
+func (p *Pubkey) ParseSig(pckt *items.Item) error {
 	switch true {
 	case p.pub.IsRSA():
-		content = append(content, indent.Fill("Multi-precision integers of RSA:"))
-		content = content.AddIndent(p.rsaSig(), indent+1)
-		content = append(content, (indent + 2).Fill("-> PKCS-1"))
+		return p.rsaSig(pckt)
 	case p.pub.IsDSA():
-		content = append(content, indent.Fill("Multi-precision integers of DSA:"))
-		content = content.AddIndent(p.dsaSig(), indent+1)
-		content = append(content, (indent + 2).Fill("-> hash(DSA q bits)"))
+		return p.dsaSig(pckt)
 	case p.pub.IsElgamal():
-		content = append(content, indent.Fill("Multi-precision integers of Elgamal:"))
-		content = content.AddIndent(p.elgSig(), indent+1)
+		return p.elgSig(pckt)
 	case p.pub.IsECDH():
-		content = append(content, indent.Fill("Multi-precision integers of ECDH"))
+		pckt.AddSub(items.NewItem("Multi-precision integers of ECDH", "", fmt.Sprintf("%d bytes", len(p.mpi)), ""))
 	case p.pub.IsECDSA():
-		content = append(content, indent.Fill("Multi-precision integers of ECDSA:"))
-		content = content.AddIndent(p.ecdsaSig(), indent+1)
+		return p.ecdsaSig(pckt)
 	default:
-		content = append(content, indent.Fill(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub)))
+		pckt.AddSub(items.NewItem(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub), "", fmt.Sprintf("%d bytes", len(p.mpi)), ""))
 	}
-	return content
+	return nil
 }
 
-func (p *Pubkey) rsaSig() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) rsaSig(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
+
+	mpi, err := values.GetMPI(reader, "RSA m^d mod n -> PKCS-1", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("RSA m^d mod n", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-func (p *Pubkey) dsaSig() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) dsaSig(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
+
+	mpi, err := values.GetMPI(reader, "DSA r", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("DSA r", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "DSA s", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("DSA s", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-func (p *Pubkey) ecdsaSig() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) ecdsaSig(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
+
+	mpi, err := values.GetMPI(reader, "ECDSA r", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("ECDSA r", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "ECDSA s", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("ECDSA s", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-func (p *Pubkey) elgSig() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) elgSig(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
+
+	mpi, err := values.GetMPI(reader, "ElGamal a = g^k mod p", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("ElGamal a = g^k mod p", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "ElGamal b = (h - a*x)/k mod p - 1", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("ElGamal b = (h - a*x)/k mod p - 1", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-//ParseSym multi-precision integers of public key algorithm for SPublic-Key Encrypted Session Key Packet
-func (p *Pubkey) ParseSym(indent values.Indent) values.Content {
-	content := values.NewContent()
+//ParseSes multi-precision integers of public key algorithm for Public-Key Encrypted Session Key Packet
+func (p *Pubkey) ParseSes(pckt *items.Item) error {
 	switch true {
 	case p.pub.IsRSA():
-		content = append(content, indent.Fill("Multi-precision integers of RSA:"))
-		content = content.AddIndent(p.rsaSym(), indent+1)
-		content = append(content, (indent + 2).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
+		return p.rsaSes(pckt)
 	case p.pub.IsDSA():
-		content = append(content, indent.Fill("Multi-precision integers of DSA:"))
-		content = append(content, (indent + 1).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
+		pckt.AddSub(items.NewItem("Multi-precision integers of DSA", "", fmt.Sprintf("%d bytes", len(p.mpi)), ""))
 	case p.pub.IsElgamal():
-		content = append(content, indent.Fill("Multi-precision integers of Elgamal:"))
-		content = content.AddIndent(p.elgSym(), indent+1)
-		content = append(content, (indent + 2).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
+		return p.elgSes(pckt)
 	case p.pub.IsECDH():
-		content = append(content, indent.Fill("Multi-precision integers of ECDH:"))
-		content = content.AddIndent(p.ecdhSym(), indent+1)
+		return p.ecdhSes(pckt)
 	case p.pub.IsECDSA():
-		content = append(content, indent.Fill("Multi-precision integers of ECDSA:"))
+		pckt.AddSub(items.NewItem("Multi-precision integers of ECDSA", "", fmt.Sprintf("%d bytes", len(p.mpi)), ""))
 	default:
-		content = append(content, indent.Fill(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub)))
-		content = append(content, (indent + 1).Fill("-> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02"))
+		pckt.AddSub(items.NewItem(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pub), "", fmt.Sprintf("%d bytes", len(p.mpi)), ""))
 	}
-	return content
+	return nil
 }
 
-func (p *Pubkey) rsaSym() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) rsaSes(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
+
+	mpi, err := values.GetMPI(reader, "RSA m^e mod n -> m = Ses alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("RSA m^e mod n", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-func (p *Pubkey) elgSym() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) elgSes(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
+
+	mpi, err := values.GetMPI(reader, "ElGamal g^k mod p", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("ElGamal g^k mod p", p.Iflag))
-	mpi, err = GetMPI(reader)
+	pckt.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(reader, "ElGamal m * y^k mod p -> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02", p.Iflag)
 	if err != nil {
-		content = append(content, err.Error())
-		return content
+		return err
 	}
-	content = append(content, mpi.Dump("ElGamal m * y^k mod p", p.Iflag))
-	return content
+	pckt.AddSub(mpi.Get())
+
+	return nil
 }
 
-func (p *Pubkey) ecdhSym() values.Content {
-	content := values.NewContent()
+func (p *Pubkey) ecdhSes(pckt *items.Item) error {
 	reader := bytes.NewReader(p.mpi)
-	mpi, err := GetMPI(reader)
-	if err != nil {
-		content = append(content, err.Error())
-		return content
-	}
-	content = append(content, mpi.DumpEC("ECDH P = (x, y)", p.Iflag))
-	key, err := GetECParm(reader)
-	if err != nil {
-		content = append(content, err.Error())
-		return content
-	}
-	content = append(content, key.Dump("symmetric key (encoded) -", p.Iflag))
 
-	return content
+	mpi, err := values.GetMPI(reader, "ECDSA 04 || X || Y", p.Iflag)
+	if err != nil {
+		return err
+	}
+	pckt.AddSub(mpi.Get())
+
+	dat, err := getECParm(reader)
+	if err != nil {
+		return err
+	}
+	if dat == nil {
+		return nil
+	}
+	pckt.AddSub(items.NewItem("symmetric key (encoded)", "", fmt.Sprintf("%d bytes", len(dat)), ""))
+
+	return nil
+}
+
+func getECParm(reader io.Reader) ([]byte, error) {
+	var length [1]byte
+	if _, err := io.ReadFull(reader, length[0:]); err != nil {
+		if err == io.EOF {
+			return nil, nil
+		}
+		return nil, err
+	}
+	buf := make([]byte, length[0])
+	if _, err := io.ReadFull(reader, buf); err != nil {
+		return nil, err
+	}
+	return buf, nil
 }

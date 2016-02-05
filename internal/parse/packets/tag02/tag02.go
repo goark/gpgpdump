@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/pubkeys"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
@@ -67,13 +68,13 @@ func (t Tag02) parseV3(pckt *items.Item) (*items.Item, error) {
 	pub := values.PubAlg(t.body[15])
 	hash := values.HashAlg(t.body[16])
 	hashTag := t.body[17:19]
-	//pubkey := pubkeys.New(t.Options, pub, t.body[19:])
+	pubkey := pubkeys.New(t.Options, pub, t.body[19:])
 
 	pckt.AddSub(keyID.Get())
 	pckt.AddSub(pub.Get())
 	pckt.AddSub(hash.Get())
 	pckt.AddSub(t.hashLeft2(hashTag).Get())
-	//pckt.AddSub(pubkey.Get())
+	pubkey.ParseSig(pckt)
 	return pckt, nil
 }
 
@@ -95,7 +96,7 @@ func (t Tag02) parseV4(pckt *items.Item) (*items.Item, error) {
 	sizeHS := values.Octets2Int(t.body[4:6])
 	sizeUS := values.Octets2Int(t.body[6+sizeHS : 6+sizeHS+2])
 	hashTag := t.body[8+sizeHS+sizeUS : 8+sizeHS+sizeUS+2]
-	//pubkey := pubkeys.New(t.Options, pub, t.body[10+sizeHS+sizeUS:])
+	pubkey := pubkeys.New(t.Options, pub, t.body[10+sizeHS+sizeUS:])
 
 	pckt.AddSub(stype.Get())
 	pckt.AddSub(pub.Get())
@@ -115,7 +116,7 @@ func (t Tag02) parseV4(pckt *items.Item) (*items.Item, error) {
 		content = content.Add(sp.Parse(indent))*/
 	}
 	pckt.AddSub(t.hashLeft2(hashTag).Get())
-	//pckt.AddSub(pubkey.Get())
+	pubkey.ParseSig(pckt)
 	return pckt, nil
 }
 
