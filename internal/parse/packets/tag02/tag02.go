@@ -102,18 +102,22 @@ func (t Tag02) parseV4(pckt *items.Item) (*items.Item, error) {
 	pckt.AddSub(pub.Get())
 	pckt.AddSub(hash.Get())
 	if sizeHS > 0 {
-		/*/sp, err := NewSubpackets(t.Options, "Hashed Subpacket -", t.body[6:6+sizeHS])
+		sp, err := NewSubpackets(t.Options, "Hashed Subpacket", t.body[6:6+sizeHS])
 		if err != nil {
-			return content, err
+			return pckt, err
 		}
-		content = content.Add(sp.Parse(indent))*/
+		if err := sp.Parse(pckt); err != nil {
+			return pckt, err
+		}
 	}
 	if sizeUS > 0 {
-		/*sp, err := NewSubpackets(t.Options, "Unhashed Subpacket -", t.body[8+sizeHS:8+sizeHS+sizeUS])
+		sp, err := NewSubpackets(t.Options, "Unhashed Subpacket", t.body[8+sizeHS:8+sizeHS+sizeUS])
 		if err != nil {
-			return content, err
+			return pckt, err
 		}
-		content = content.Add(sp.Parse(indent))*/
+		if err := sp.Parse(pckt); err != nil {
+			return pckt, err
+		}
 	}
 	pckt.AddSub(t.hashLeft2(hashTag).Get())
 	pubkey.ParseSig(pckt)

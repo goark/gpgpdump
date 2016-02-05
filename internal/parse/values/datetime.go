@@ -49,22 +49,22 @@ type UNIXTime struct {
 }
 
 //NewUNIXTime returns new UNIXTime instance
-func NewUNIXTime(name string, buf []byte, utc bool) UNIXTime {
-	return UNIXTime{name: name, buf: buf, unix: int64(Octets2Int(buf)), utc: utc}
+func NewUNIXTime(name string, buf []byte, utc bool) *UNIXTime {
+	return &UNIXTime{name: name, buf: buf, unix: int64(Octets2Int(buf)), utc: utc}
 }
 
 // Unix returns UNIX Time
-func (u UNIXTime) Unix() int64 {
+func (u *UNIXTime) Unix() int64 {
 	return u.unix
 }
 
 // RFC3339 returns string with RFC3339 format
-func (u UNIXTime) RFC3339() string {
+func (u *UNIXTime) RFC3339() string {
 	return RFC3339(u.unix, u.utc)
 }
 
 // Get returns Item instance
-func (u UNIXTime) Get() *items.Item {
+func (u *UNIXTime) Get() *items.Item {
 	return items.NewItem(u.name, u.RFC3339(), "", DumpByte(u.buf))
 }
 
@@ -78,16 +78,16 @@ func RFC3339(unix int64, utc bool) string {
 }
 
 //FileTime returns UNIXTime instance for Modification time of a file
-func FileTime(buf []byte, utc bool) UNIXTime {
+func FileTime(buf []byte, utc bool) *UNIXTime {
 	return NewUNIXTime("Modification time of a file", buf, utc)
 }
 
 //PubKeyTime returns UNIXTime instance for Public key creation time
-func PubKeyTime(buf []byte, utc bool) UNIXTime {
+func PubKeyTime(buf []byte, utc bool) *UNIXTime {
 	return NewUNIXTime("Public key creation time", buf, utc)
 }
 
 //SigTime returns UNIXTime instance for Signature creation time
-func SigTime(buf []byte, utc bool) UNIXTime {
+func SigTime(buf []byte, utc bool) *UNIXTime {
 	return NewUNIXTime("Signature creation time", buf, utc)
 }

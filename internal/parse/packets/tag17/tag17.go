@@ -21,10 +21,12 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag17 {
 // Parse parsingUser Attribute Packet
 func (t Tag17) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
-	/*sp, err := NewSubpackets(t.Options, "Subpacket -", t.body)
+	sp, err := NewSubpackets(t.Options, "Subpacket", t.body)
 	if err != nil {
-		return content, err
+		return pckt, err
 	}
-	content = content.Add(sp.Parse(indent + 1))*/
+	if err := sp.Parse(pckt); err != nil {
+		return pckt, err
+	}
 	return pckt, nil
 }

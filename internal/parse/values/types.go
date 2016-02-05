@@ -36,7 +36,11 @@ type Tag int
 
 // Get returns Item instance
 func (t Tag) Get(size int) *items.Item {
-	return items.NewItem("Packet", fmt.Sprintf("%s (tag %d)", tagNames.Get(int(t), "Unknown"), t), fmt.Sprintf("%d bytes", size), "")
+	return items.NewItem("Packet", t.String(), fmt.Sprintf("%d bytes", size), "")
+}
+
+func (t Tag) String() string {
+	return fmt.Sprintf("%s (tag %d)", tagNames.Get(int(t), "Unknown"), t)
 }
 
 var sigTypeNames = Msgs{
@@ -62,7 +66,11 @@ type SigType byte
 
 // Get returns Item instance
 func (s SigType) Get() *items.Item {
-	return items.NewItem("Signiture Type", fmt.Sprintf("%s (0x%02x)", sigTypeNames.Get(int(s), "Unknown"), s), "", fmt.Sprintf("%02x", byte(s)))
+	return items.NewItem("Signiture Type", s.String(), "", fmt.Sprintf("%02x", byte(s)))
+}
+
+func (s SigType) String() string {
+	return fmt.Sprintf("%s (0x%02x)", sigTypeNames.Get(int(s), "Unknown"), int(s))
 }
 
 var pubAlgNames = Msgs{
@@ -83,13 +91,17 @@ type PubAlg byte
 
 // Get returns Item instance
 func (pa PubAlg) Get() *items.Item {
+	return items.NewItem("Public-key algorithm", pa.String(), "", fmt.Sprintf("%02x", byte(pa)))
+}
+
+func (pa PubAlg) String() string {
 	var name string
 	if 100 <= pa && pa <= 110 {
 		name = "Private/Experimental algorithm"
 	} else {
 		name = pubAlgNames.Get(int(pa), "Unknown")
 	}
-	return items.NewItem("Public-key algorithm", fmt.Sprintf("%s (pub %d)", name, pa), "", fmt.Sprintf("%02x", byte(pa)))
+	return fmt.Sprintf("%s (pub %d)", name, int(pa))
 }
 
 // IsRSA returns if RSA algorithm.
@@ -139,13 +151,17 @@ type SymAlg byte
 
 // Get returns Item instance
 func (s SymAlg) Get() *items.Item {
+	return items.NewItem("Symmetric algorithm", s.String(), "", fmt.Sprintf("%02x", byte(s)))
+}
+
+func (s SymAlg) String() string {
 	var name string
 	if 100 <= s && s <= 110 {
 		name = "Private/Experimental algorithm"
 	} else {
 		name = symAlgNames.Get(int(s), "Unknown")
 	}
-	return items.NewItem("Symmetric algorithm", fmt.Sprintf("%s (sym %d)", name, s), "", fmt.Sprintf("%02x", byte(s)))
+	return fmt.Sprintf("%s (sym %d)", name, int(s))
 }
 
 var hashAlgNames = Msgs{
@@ -168,13 +184,17 @@ type HashAlg byte
 
 // Get returns Item instance
 func (ha HashAlg) Get() *items.Item {
+	return items.NewItem("Hash algorithm", ha.String(), "", fmt.Sprintf("%02x", byte(ha)))
+}
+
+func (ha HashAlg) String() string {
 	var name string
 	if 100 <= ha && ha <= 110 {
 		name = "Private/Experimental algorithm"
 	} else {
-		name = hashAlgNames.Get(int(ha), "Unknown")
+		name = symAlgNames.Get(int(ha), "Unknown")
 	}
-	return items.NewItem("Hash algorithm", fmt.Sprintf("%s (hash %d)", name, ha), "", fmt.Sprintf("%02x", byte(ha)))
+	return fmt.Sprintf("%s (sym %d)", name, int(ha))
 }
 
 var s2kAlgNames = Msgs{
@@ -189,13 +209,17 @@ type S2KAlg byte
 
 // Get returns Item instance
 func (sa S2KAlg) Get() *items.Item {
+	return items.NewItem("String-to-Key (S2K) algorithm", sa.String(), "", fmt.Sprintf("%02x", byte(sa)))
+}
+
+func (sa S2KAlg) String() string {
 	var name string
 	if 100 <= sa && sa <= 110 {
-		name = "Private/Experimental S2K"
+		name = "Private/Experimental algorithm"
 	} else {
-		name = s2kAlgNames.Get(int(sa), "Unknown")
+		name = symAlgNames.Get(int(sa), "Unknown")
 	}
-	return items.NewItem("String-to-Key (S2K) algorithm", fmt.Sprintf("%s (s2k %d)", name, sa), "", fmt.Sprintf("%02x", byte(sa)))
+	return fmt.Sprintf("%s (sym %d)", name, int(sa))
 }
 
 var compAlgNames = Msgs{
@@ -210,5 +234,9 @@ type CompAlg byte
 
 // Get returns Item instance
 func (ca CompAlg) Get() *items.Item {
-	return items.NewItem("Compression algorithms", fmt.Sprintf("%s (comp %d)", compAlgNames.Get(int(ca), "Unknown"), ca), "", fmt.Sprintf("%02x", byte(ca)))
+	return items.NewItem("Compression algorithms", ca.String(), "", fmt.Sprintf("%02x", byte(ca)))
+}
+
+func (ca CompAlg) String() string {
+	return fmt.Sprintf("%s (comp %d)", compAlgNames.Get(int(ca), "Unknown"), ca)
 }

@@ -2,16 +2,18 @@ package tag02
 
 import (
 	"fmt"
+	"strconv"
 
 	"golang.org/x/crypto/openpgp/packet"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 var subpacketNames = values.Msgs{
 	0:  "Reserved",                               //00
-	1:  "Reserved",                               //01
+	1:  "Image Attribute",                        //01
 	2:  "Signature Creation Time",                //02
 	3:  "Signature Expiration Time",              //03
 	4:  "Exportable Certification",               //04
@@ -48,6 +50,11 @@ var subpacketNames = values.Msgs{
 // SubpacketType is sub-packet type
 type SubpacketType byte
 
+// Get returns Item instance
+func (s SubpacketType) Get() *items.Item {
+	return items.NewItem(s.String(), "", "", fmt.Sprintf("%02x", byte(s)))
+}
+
 func (s SubpacketType) String() string {
 	var name string
 	if 100 <= s && s <= 110 {
@@ -75,7 +82,7 @@ func NewSubpackets(opt *options.Options, title string, body []byte) (*Subpackets
 }
 
 // ParseSubpacket is function value of parsing sub-packet
-type ParseSubpacket func(*Subpackets, *packet.OpaqueSubpacket) (values.Content, error)
+type ParseSubpacket func(*Subpackets, *packet.OpaqueSubpacket, *items.Item) error
 
 //Functions is type of function list.
 type Functions map[int]ParseSubpacket
@@ -115,129 +122,136 @@ var parseSubpacketFunctions = Functions{
 }
 
 //Parse parsing sub-packets
-func (sp *Subpackets) Parse(indent values.Indent) values.Content {
-	content := values.NewContent()
-	for _, pckt := range sp.opaqueSubpackets {
-		st := SubpacketType(pckt.SubType)
-		content = append(content, indent.Fill(SubpacketName(SubpacketType(pckt.SubType), len(pckt.Contents), sp.title)))
+func (sp *Subpackets) Parse(pckt *items.Item) error {
+	sub := items.NewItem(sp.title, "", "", "")
+	for _, p := range sp.opaqueSubpackets {
 		var f ParseSubpacket
-		if st == 32 {
+		if p.SubType == 32 {
 			f = parseSPType32 // recursive call in parseSPType32()
 		} else {
-			f = parseSubpacketFunctions.Get(int(st), parseSPReserved)
+			f = parseSubpacketFunctions.Get(int(p.SubType), parseSPReserved)
 		}
-		c, err := f(sp, pckt)
-		if err != nil {
-			return content
+		if err := f(sp, p, sub); err != nil {
+			return err
 		}
-		content = content.AddIndent(c, indent+1)
 	}
-	return content
+	pckt.AddSub(sub)
+	return nil
 }
 
-//SubpacketName returns sub-packet name
-func SubpacketName(t SubpacketType, l int, title string) string {
-	return fmt.Sprintf("%s %v (%d bytes)", title, t, l)
-}
-
-func parseSPReserved(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	return nil, nil
+func parseSPReserved(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+	item.AddSub(st)
+	return nil
 }
 
 //Signature Creation Time
-func parseSPType02(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
+func parseSPType02(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
 	unix := values.SigTime(op.Contents, sp.Uflag)
+	st.Value = unix.Get().Value
+	st.Note = unix.Get().Note
 	sp.SigCreationTime = unix.Unix()
-	//content = append(content, values.SigTime(sp.SigCreationTime, sp.Uflag).String())
-	return content, nil
+	item.AddSub(st)
+	return nil
 }
 
 //Signature Expiration Time
-func parseSPType03(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	//days := values.Octets2Int(op.Contents)
-	//after := fmt.Sprintf("%v days after", float64(days)/86400)
-	//if sp.SigCreationTime == 0 {
-	//	content = append(content, after)
-	//} else {
-	//	content = append(content, fmt.Sprintf("%s (%s)", after, values.SigTime(sp.SigCreationTime+days, sp.Uflag).RFC3339()))
-	//	sp.SigCreationTime = 0
-	//}
-	return content, nil
+func parseSPType03(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	exp := values.SigExpire(op.Contents, sp.SigCreationTime, sp.Uflag).Get()
+	st.Value = exp.Value
+	st.Note = exp.Note
+	sp.SigCreationTime = 0
+	item.AddSub(st)
+	return nil
 }
 
 //Exportable Certification
-func parseSPType04(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
+func parseSPType04(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = values.DumpByte(op.Contents)
 	if op.Contents[0] == 0x00 {
-		content = append(content, "Not exportable")
+		st.Value = "Not exportable"
 	} else {
-		content = append(content, "Exportable")
+		st.Value = "Exportable"
 	}
-	return content, nil
+	item.AddSub(st)
+	return nil
 }
 
 //Trust Signature
-func parseSPType05(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	content = append(content, fmt.Sprintf("Level - %d", op.Contents[0]))
-	content = append(content, fmt.Sprintf("Trust amount - %d", op.Contents[2]))
-	return content, nil
+func parseSPType05(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+
+	st.AddSub(items.NewItem("Level", strconv.Itoa(int(op.Contents[0])), "", values.DumpByte(op.Contents[0:1])))
+	st.AddSub(items.NewItem("Trust amount", strconv.Itoa(int(op.Contents[0])), "", values.DumpByte(op.Contents[1:2])))
+
+	item.AddSub(st)
+	return nil
 }
 
 //Regular Expression
-func parseSPType06(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	content = append(content, string(op.Contents))
-	return content, nil
+func parseSPType06(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+	st.Value = string(op.Contents)
+	item.AddSub(st)
+	return nil
 }
 
 //Revocable
-func parseSPType07(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
+func parseSPType07(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 	if op.Contents[0] == 0x00 {
-		content = append(content, "Not revocable")
+		st.Value = "Not revocable"
 	} else {
-		content = append(content, "Revocable")
+		st.Value = "Revocable"
 	}
-	return content, nil
+	item.AddSub(st)
+	return nil
 }
 
 //Key Expiration Time
-func parseSPType09(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	//days := values.Octets2Int(op.Contents)
-	//after := fmt.Sprintf("%v days after", float64(days)/86400)
-	//if sp.KeyCreationTime == 0 {
-	//	content = append(content, after)
-	//} else {
-	//	content = append(content, fmt.Sprintf("%s (%s)", after, values.SigTime(sp.KeyCreationTime+days, sp.Uflag).RFC3339()))
-	//	sp.KeyCreationTime = 0
-	//}
-	return content, nil
+func parseSPType09(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	exp := values.SigExpire(op.Contents, sp.KeyCreationTime, sp.Uflag).Get()
+	st.Value = exp.Value
+	st.Note = exp.Note
+	sp.KeyCreationTime = 0
+	return nil
 }
 
 //Placeholder for backward compatibility
-func parseSPType10(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	return nil, nil
+func parseSPType10(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+	item.AddSub(st)
+	return nil
 }
 
 //Preferred Symmetric Algorithms
-func parseSPType11(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	//for _, c := range op.Contents {
-	//	content = append(content, values.SymAlg(c).String())
-	//}
-	return content, nil
+func parseSPType11(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+	for _, c := range op.Contents {
+		st.AddSub(values.SymAlg(c).Get())
+	}
+	item.AddSub(st)
+	return nil
 }
 
 //Revocation Key
-func parseSPType12(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
+func parseSPType12(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+
 	class := op.Contents[0]
 	pub := values.PubAlg(op.Contents[1])
-	fingerprint := op.Contents[2:]
+	fingerprint := values.NewRawData("Fingerprint", "", op.Contents[2:], true)
 
 	className := "Unknown"
 	if (class & 0x80) != 0x00 {
@@ -248,23 +262,29 @@ func parseSPType12(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 			className = "Normal"
 		}
 	}
-	content = append(content, fmt.Sprintf("Class - %s", className))
-	content = append(content, fmt.Sprintf("Public-key algorithm - %v", pub))
-	content = append(content, fmt.Sprintf("Fingerprint - %v", values.DumpByte(fingerprint)))
-	return content, nil
+	st.AddSub(items.NewItem("Class", className, "", values.DumpByte(op.Contents[0:1])))
+	st.AddSub(pub.Get())
+	st.AddSub(fingerprint.Get())
+
+	item.AddSub(st)
+	return nil
 }
 
 //Issuer
-func parseSPType16(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	//keyID := values.KeyID(values.Octets2Int(op.Contents))
-	//content = append(content, keyID.String())
-	return content, nil
+func parseSPType16(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	kid := values.KeyID(values.Octets2Int(op.Contents)).Get()
+	st.Value = kid.Value
+	st.Note = kid.Note
+	item.AddSub(st)
+	return nil
 }
 
 //Notation Data
-func parseSPType20(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
+func parseSPType20(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+
 	flags := op.Contents[0:4]
 	nameLength := int(values.Octets2Int(op.Contents[4:6]))
 	valueLength := int(values.Octets2Int(op.Contents[6:8]))
@@ -272,122 +292,141 @@ func parseSPType20(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, 
 	value := op.Contents[8+nameLength : 8+nameLength+valueLength]
 
 	human := flags[0] & 0x80
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(human, "Human-readable")))
+	st.AddSub(stringFlagInfo(human, "Human-readable"))
 	if (flags[0] & 0x7f) != 0x00 {
-		content = append(content, fmt.Sprintf("%s", stringFlagInfo(flags[0]&0x7f, fmt.Sprintf("Unknown flag1(0x%02x)", flags[0]))))
+		st.AddSub(stringFlagInfo(flags[0]&0x7f, fmt.Sprintf("Unknown flag1(0x%02x)", flags[0])))
 	}
 	if flags[1] != 0x00 {
-		content = append(content, fmt.Sprintf("%s", stringFlagInfo(flags[1], fmt.Sprintf("Unknown flag2(0x%02x)", flags[1]))))
+		st.AddSub(stringFlagInfo(flags[1], fmt.Sprintf("Unknown flag2(0x%02x)", flags[1])))
 	}
 	if flags[2] != 0x00 {
-		content = append(content, fmt.Sprintf("%s", stringFlagInfo(flags[2], fmt.Sprintf("Unknown flag3(0x%02x)", flags[2]))))
+		st.AddSub(stringFlagInfo(flags[1], fmt.Sprintf("Unknown flag3(0x%02x)", flags[2])))
 	}
 	if flags[3] != 0x00 {
-		content = append(content, fmt.Sprintf("%s", stringFlagInfo(flags[4], fmt.Sprintf("Unknown flag4(0x%02x)", flags[3]))))
+		st.AddSub(stringFlagInfo(flags[1], fmt.Sprintf("Unknown flag4(0x%02x)", flags[3])))
 	}
-	content = append(content, fmt.Sprintf("Name - %s", string(name)))
+	item.AddSub(items.NewItem("Name", string(name), "", ""))
 	if human != 0x00 {
-		content = append(content, fmt.Sprintf("Value - %v", string(value)))
+		st.AddSub(items.NewItem("Value", string(value), "", ""))
 	} else {
-		content = append(content, fmt.Sprintf("Value - %v", values.DumpByte(value)))
+		st.AddSub(values.NewRawData("Value", "", value, true).Get())
 	}
-	return content, nil
+
+	item.AddSub(st)
+	return nil
 }
 
 //Preferred Hash Algorithms
-func parseSPType21(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	//for _, c := range op.Contents {
-	//	content = append(content, values.HashAlg(c).String())
-	//}
-	return content, nil
+func parseSPType21(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+	for _, c := range op.Contents {
+		st.AddSub(values.HashAlg(c).Get())
+	}
+	item.AddSub(st)
+	return nil
 }
 
 //Preferred Compression Algorithms
-func parseSPType22(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	//for _, c := range op.Contents {
-	//	content = append(content, values.CompAlg(c).String())
-	//}
-	return content, nil
+func parseSPType22(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+	for _, c := range op.Contents {
+		st.AddSub(values.CompAlg(c).Get())
+	}
+	item.AddSub(st)
+	return nil
 }
 
 //Key Server Preferences
-func parseSPType23(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	flag1 := op.Contents[0]
+func parseSPType23(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x80, "No-modify")))
+	flag1 := op.Contents[0]
+	st.AddSub(stringFlagInfo(flag1&0x80, "No-modify"))
 	if (flag1 & 0x7f) != 0x00 {
-		content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x7f, fmt.Sprintf("Unknown flag1(0x%02x)", flag1))))
+		st.AddSub(stringFlagInfo(flag1&0x7f, fmt.Sprintf("Unknown flag1(0x%02x)", flag1)))
 	}
 	if len(op.Contents) > 1 {
 		flags := op.Contents[1:]
 		for i, flag := range flags {
 			if flag != 0x00 {
-				content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag))))
+				st.AddSub(stringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag)))
 			}
 		}
 	}
-	return content, nil
+	item.AddSub(st)
+	return nil
 }
 
 //Preferred Key Server
-func parseSPType24(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	content = append(content, string(op.Contents))
-	return content, nil
+func parseSPType24(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+	st.Value = string(op.Contents)
+	item.AddSub(st)
+	return nil
 }
 
 //Primary User ID
-func parseSPType25(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
+func parseSPType25(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 	if op.Contents[0] == 0x00 {
-		content = append(content, "Not primary")
+		st.Value = "Not primary"
 	} else {
-		content = append(content, "Primary")
+		st.Value = "Primary"
 	}
-	return content, nil
+	item.AddSub(st)
+	return nil
 }
 
 //Policy URI
-func parseSPType26(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	content = append(content, string(op.Contents))
-	return content, nil
+func parseSPType26(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+	st.Value = string(op.Contents)
+	item.AddSub(st)
+	return nil
 }
 
 //Key Flags
-func parseSPType27(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	flag1 := op.Contents[0]
+func parseSPType27(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x01, "This key may be used to certify other keys.")))
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x02, "This key may be used to sign data.")))
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x04, "This key may be used to encrypt communications.")))
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x08, "This key may be used to encrypt storage.")))
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x10, "The private component of this key may have been split by a secret-sharing mechanism.")))
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x20, "This key may be used for authentication.")))
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x80, "The private component of this key may be in the possession of more than one person.")))
+	flag1 := op.Contents[0]
+	st.AddSub(stringFlagInfo(flag1&0x01, "This key may be used to certify other keys."))
+	st.AddSub(stringFlagInfo(flag1&0x02, "This key may be used to sign data."))
+	st.AddSub(stringFlagInfo(flag1&0x04, "This key may be used to encrypt communications."))
+	st.AddSub(stringFlagInfo(flag1&0x08, "This key may be used to encrypt storage."))
+	st.AddSub(stringFlagInfo(flag1&0x10, "The private component of this key may have been split by a secret-sharing mechanism."))
+	st.AddSub(stringFlagInfo(flag1&0x20, "This key may be used for authentication."))
+	st.AddSub(stringFlagInfo(flag1&0x80, "The private component of this key may be in the possession of more than one person."))
 	if (flag1 & 0x40) != 0x00 {
-		content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x40, fmt.Sprintf("Unknown flag1(0x%02x)", flag1))))
+		st.AddSub(stringFlagInfo(flag1&0x40, fmt.Sprintf("Unknown flag1(0x%02x)", flag1)))
 	}
 	if len(op.Contents) > 1 {
 		flags := op.Contents[1:]
 		for i, flag := range flags {
 			if flag != 0x00 {
-				content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag))))
+				st.AddSub(stringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag)))
 			}
 		}
 	}
-	return content, nil
+
+	item.AddSub(st)
+	return nil
 }
 
 //Signer's User ID
-func parseSPType28(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	content = append(content, string(op.Contents))
-	return content, nil
+func parseSPType28(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+	st.Value = string(op.Contents)
+	item.AddSub(st)
+	return nil
 }
 
 var reasonNames = values.Msgs{
@@ -399,62 +438,79 @@ var reasonNames = values.Msgs{
 }
 
 //Reason for Revocation
-func parseSPType29(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	code := int(op.Contents[0])
+func parseSPType29(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 
+	code := int(op.Contents[0])
 	var name string
 	if 100 <= code && code <= 110 {
 		name = "Private/Experimental algorithm"
 	} else {
 		name = reasonNames.Get(int(code), "Unknown reason")
 	}
-	content = append(content, fmt.Sprintf("%s (%d)", name, code))
-	return content, nil
+	st.Value = fmt.Sprintf("%s (%d)", name, code)
+	item.AddSub(st)
+	return nil
 }
 
 //Features
-func parseSPType30(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	flag1 := op.Contents[0]
+func parseSPType30(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 
-	content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0x01, "Modification Detection (packets 18 and 19)")))
+	flag1 := op.Contents[0]
+	st.AddSub(stringFlagInfo(flag1&0x01, "Modification Detection (packets 18 and 19)"))
 	if (flag1 & 0xfe) != 0x00 {
-		content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag1&0xfe, fmt.Sprintf("Unknown flag1(0x%02x)", flag1))))
+		st.AddSub(stringFlagInfo(flag1&0xfe, fmt.Sprintf("Unknown flag1(0x%02x)", flag1)))
 	}
 	if len(op.Contents) > 1 {
 		flags := op.Contents[1:]
 		for i, flag := range flags {
 			if flag != 0x00 {
-				content = append(content, fmt.Sprintf("%s", stringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag))))
+				st.AddSub(stringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag)))
 			}
 		}
 	}
-	return content, nil
+	item.AddSub(st)
+	return nil
 }
 
 //Signature Target
-func parseSPType31(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	content := values.NewContent()
-	//pubAlg := values.PubAlg(op.Contents[0])
-	//hashAlg := values.HashAlg(op.Contents[1])
-	//hash := op.Contents[2:]
+func parseSPType31(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 
-	//content = append(content, pubAlg.String())
-	//content = append(content, hashAlg.String())
-	//content = append(content, fmt.Sprintf("Hash (%d bytes) - %v", len(hash), values.DumpByte(hash)))
-	return content, nil
+	pubAlg := values.PubAlg(op.Contents[0])
+	hashAlg := values.HashAlg(op.Contents[1])
+	hash := op.Contents[2:]
+
+	st.AddSub(pubAlg.Get())
+	st.AddSub(hashAlg.Get())
+	st.AddSub(values.NewRawData("Hash", "", hash, true).Get())
+
+	item.AddSub(st)
+	return nil
 }
 
 //Embedded Signature
-func parseSPType32(sp *Subpackets, op *packet.OpaqueSubpacket) (values.Content, error) {
-	return nil, nil
-	//return New(sp.Options, values.Tag(2), op.Contents).Parse(0) //recursive call
+func parseSPType32(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := SubpacketType(op.SubType).Get()
+	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
+
+	p, err := New(sp.Options, values.Tag(2), op.Contents).Parse() //recursive call
+	if err != nil {
+		return err
+	}
+	st.AddSub(p)
+	item.AddSub(st)
+	return nil
 }
 
-func stringFlagInfo(flag byte, name string) string {
+func stringFlagInfo(flag byte, name string) *items.Item {
+	f := items.NewItem("Flag", "Unset", name, "")
 	if flag != 0x00 {
-		return fmt.Sprintf("Set flag - %s", name)
+		f.Value = "Set"
 	}
-	return fmt.Sprintf("Unset flag - %s", name)
+	return f
 }
