@@ -1,6 +1,8 @@
 package tag01
 
 import (
+	"bytes"
+
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/pubkeys"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
@@ -29,7 +31,7 @@ func (t Tag01) Parse() (*items.Item, error) {
 	version := values.PubSessKeyVer(t.body[0])
 	keyID := values.KeyID(values.Octets2Int(t.body[1:9]))
 	pub := values.PubAlg(t.body[9])
-	pubkey := pubkeys.New(t.Options, pub, t.body[10:])
+	pubkey := pubkeys.New(t.Options, pub, bytes.NewReader(t.body[10:]))
 
 	pckt.AddSub(version.Get())
 	pckt.AddSub(keyID.Get())
