@@ -6,68 +6,30 @@ import (
 
 	"golang.org/x/crypto/openpgp/packet"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag02"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/sub"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
-// Subpackets - Sub-Packets
-type Subpackets struct {
-	*options.Options
-	title            string
-	opaqueSubpackets []*packet.OpaqueSubpacket
-}
-
-//NewSubpackets returns new Subpackets.
-func NewSubpackets(opt *options.Options, title string, body []byte) (*Subpackets, error) {
-	osp, err := packet.OpaqueSubpackets(body)
-	if err != nil {
-		return nil, err
-	}
-	return &Subpackets{Options: opt, title: title, opaqueSubpackets: osp}, nil
-}
-
-// ParseSubpacket is function value of parsing sub-packet
-type ParseSubpacket func(*Subpackets, *packet.OpaqueSubpacket, *items.Item) error
-
-//Functions is type of function list.
-type Functions map[int]ParseSubpacket
-
-//Get returns message.
-func (fs Functions) Get(i int, def ParseSubpacket) ParseSubpacket {
-	if f, ok := fs[i]; ok {
-		return f
-	}
-	return def
-}
-
-var parseSubpacketFunctions = Functions{
+var parseSubpacketFunctions = sub.Functions{
 	1: parseSPType01,
 }
 
-//Parse parsing sub-packets
-func (sp *Subpackets) Parse(pckt *items.Item) error {
-	sub := items.NewItem(sp.title, "", "", "")
-	for _, p := range sp.opaqueSubpackets {
-		if err := parseSubpacketFunctions.Get(int(p.SubType), parseSPReserved)(sp, p, sub); err != nil {
+//ParseSub parsing Sub Packets
+func ParseSub(sp *sub.Packets, pckt *items.Item) error {
+	s := items.NewItem(sp.Title, "", "", "")
+	for _, p := range sp.OpaqueSubpackets {
+		if err := parseSubpacketFunctions.Get(int(p.SubType), sub.ParseSPReserved)(sp, p, s); err != nil {
 			return err
 		}
 	}
-	pckt.AddSub(sub)
-	return nil
-}
-
-func parseSPReserved(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
-	st := tag02.SubpacketType(op.SubType).Get()
-	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
-	item.AddSub(st)
+	pckt.AddSub(s)
 	return nil
 }
 
 //Image Attribute
-func parseSPType01(sp *Subpackets, op *packet.OpaqueSubpacket, item *items.Item) error {
-	st := tag02.SubpacketType(op.SubType).Get()
+func parseSPType01(sp *sub.Packets, op *packet.OpaqueSubpacket, item *items.Item) error {
+	st := sub.PacketType(op.SubType).Get()
 	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 
 	length := values.Octets2IntLE(op.Contents[0:2])

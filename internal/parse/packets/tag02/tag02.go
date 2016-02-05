@@ -5,6 +5,7 @@ import (
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/pubkeys"
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/sub"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
@@ -102,20 +103,20 @@ func (t Tag02) parseV4(pckt *items.Item) (*items.Item, error) {
 	pckt.AddSub(pub.Get())
 	pckt.AddSub(hash.Get())
 	if sizeHS > 0 {
-		sp, err := NewSubpackets(t.Options, "Hashed Subpacket", t.body[6:6+sizeHS])
+		sp, err := sub.New(t.Options, "Hashed Subpacket", t.body[6:6+sizeHS])
 		if err != nil {
 			return pckt, err
 		}
-		if err := sp.Parse(pckt); err != nil {
+		if err := ParseSub(sp, pckt); err != nil {
 			return pckt, err
 		}
 	}
 	if sizeUS > 0 {
-		sp, err := NewSubpackets(t.Options, "Unhashed Subpacket", t.body[8+sizeHS:8+sizeHS+sizeUS])
+		sp, err := sub.New(t.Options, "Unhashed Subpacket", t.body[8+sizeHS:8+sizeHS+sizeUS])
 		if err != nil {
 			return pckt, err
 		}
-		if err := sp.Parse(pckt); err != nil {
+		if err := ParseSub(sp, pckt); err != nil {
 			return pckt, err
 		}
 	}

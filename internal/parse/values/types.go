@@ -66,7 +66,7 @@ type SigType byte
 
 // Get returns Item instance
 func (s SigType) Get() *items.Item {
-	return items.NewItem("Signiture Type", s.String(), "", fmt.Sprintf("%02x", byte(s)))
+	return items.NewItem("Signiture Type", s.String(), "", "")
 }
 
 func (s SigType) String() string {
@@ -91,7 +91,7 @@ type PubAlg byte
 
 // Get returns Item instance
 func (pa PubAlg) Get() *items.Item {
-	return items.NewItem("Public-key algorithm", pa.String(), "", fmt.Sprintf("%02x", byte(pa)))
+	return items.NewItem("Public-key Algorithm", pa.String(), "", "")
 }
 
 func (pa PubAlg) String() string {
@@ -151,7 +151,7 @@ type SymAlg byte
 
 // Get returns Item instance
 func (s SymAlg) Get() *items.Item {
-	return items.NewItem("Symmetric algorithm", s.String(), "", fmt.Sprintf("%02x", byte(s)))
+	return items.NewItem("Symmetric Algorithm", s.String(), "", "")
 }
 
 func (s SymAlg) String() string {
@@ -184,7 +184,7 @@ type HashAlg byte
 
 // Get returns Item instance
 func (ha HashAlg) Get() *items.Item {
-	return items.NewItem("Hash algorithm", ha.String(), "", fmt.Sprintf("%02x", byte(ha)))
+	return items.NewItem("Hash Algorithm", ha.String(), "", "")
 }
 
 func (ha HashAlg) String() string {
@@ -209,7 +209,7 @@ type S2KAlg byte
 
 // Get returns Item instance
 func (sa S2KAlg) Get() *items.Item {
-	return items.NewItem("String-to-Key (S2K) algorithm", sa.String(), "", fmt.Sprintf("%02x", byte(sa)))
+	return items.NewItem("String-to-Key (S2K) Algorithm", sa.String(), "", "")
 }
 
 func (sa S2KAlg) String() string {
@@ -234,7 +234,7 @@ type CompAlg byte
 
 // Get returns Item instance
 func (ca CompAlg) Get() *items.Item {
-	return items.NewItem("Compression algorithms", ca.String(), "", fmt.Sprintf("%02x", byte(ca)))
+	return items.NewItem("Compression Algorithms", ca.String(), "", "")
 }
 
 func (ca CompAlg) String() string {
