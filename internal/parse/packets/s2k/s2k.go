@@ -1,8 +1,11 @@
 package s2k
 
 import (
+	"strconv"
+
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 //EXPBIAS - S2K parameter
@@ -25,42 +28,43 @@ func (s S2K) Left() int {
 	return s.left
 }
 
-//Parse parsing S2K information
-func (s *S2K) Parse(indent values.Indent) values.Content {
-	content := values.NewContent()
-	/*	s2kAlg := values.S2KAlg(s.buf[0])
-		s.left = len(s.buf) - 1
+//Get parsing S2K information
+func (s *S2K) Get() *items.Item {
+	s2kAlg := values.S2KAlg(s.buf[0])
+	s2k := s2kAlg.Get()
+	s.left = len(s.buf) - 1
 
-		content = append(content, indent.Fill(s2kAlg.String()))
-		switch s2kAlg {
-		case 0:
-			content = append(content, (indent + 1).Fill(values.HashAlg(s.buf[1]).String()))
-			s.left--
-		case 1:
-			content = append(content, (indent + 1).Fill(values.HashAlg(s.buf[1]).String()))
-			content = append(content, (indent + 1).Fill(fmt.Sprintf("Salt - %s", values.DumpByte(s.buf[2:10]))))
-			s.left -= 9
-		case 3:
-			content = append(content, (indent + 1).Fill(values.HashAlg(s.buf[1]).String()))
-			content = append(content, (indent + 1).Fill(fmt.Sprintf("Salt - %s", values.DumpByte(s.buf[2:10]))))
-			c := uint32(s.buf[10])
-			count := (uint32(16) + (c & 15)) << ((c >> 4) + EXPBIAS)
-			content = append(content, (indent + 1).Fill(fmt.Sprintf("Count - %d (coded count 0x%02x)", count, c)))
-			s.left -= 10
-		case 101:
-			mrk := string(s.buf[1:5])
-			switch mrk {
-			case "GNU1":
-				content = append(content, (indent + 1).Fill("GnuPG gnu-dummy (s2k 1001)"))
-				s.left -= 4
-			case "GNU2":
-				content = append(content, (indent + 1).Fill("GnuPG gnu-divert-to-card (s2k 1001)"))
-				l := s.buf[5]
-				content = append(content, (indent + 2).Fill(fmt.Sprintf("Serial Number: %s", values.DumpByte(s.buf[6:6+1]))))
-				s.left -= 5 + int(l)
-			default:
-				s.left -= 4
-			}
+	switch s2kAlg {
+	case 0:
+		s2k.AddSub(values.HashAlg(s.buf[1]).Get())
+		s.left--
+	case 1:
+		s2k.AddSub(values.HashAlg(s.buf[1]).Get())
+		s2k.AddSub(values.NewRawData("Salt", "", s.buf[2:10], true).Get())
+		s.left -= 9
+	case 3:
+		s2k.AddSub(values.HashAlg(s.buf[1]).Get())
+		s2k.AddSub(values.NewRawData("Salt", "", s.buf[2:10], true).Get())
+		c := uint32(s.buf[10])
+		count := (uint32(16) + (c & 15)) << ((c >> 4) + EXPBIAS)
+		s2k.AddSub(items.NewItem("Count", strconv.Itoa(int(count)), "", values.DumpByte(s.buf[10:11])))
+		s.left -= 10
+	case 101:
+		mrk := string(s.buf[1:5])
+		gpg := items.NewItem("GnuPG Unknown", mrk, "", values.DumpByte(s.buf[1:5]))
+		s.left -= 4
+		switch mrk {
+		case "GNU1":
+			gpg.Name = "GnuPG gnu-dummy"
+			gpg.Note = "s2k 1001"
+		case "GNU2":
+			gpg.Name = "GnuPG gnu-divert-to-card"
+			gpg.Note = "s2k 1001"
+			l := s.buf[5]
+			gpg.AddSub(values.NewRawData("Serial Number", "", s.buf[6:6+1], true).Get())
+			s.left -= 1 + int(l)
 		}
-	*/return content
+		s2k.AddSub(gpg)
+	}
+	return s2k
 }
