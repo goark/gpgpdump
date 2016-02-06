@@ -146,12 +146,37 @@ var symAlgNames = Msgs{
 	13: "Camellia with 256-bit key",
 }
 
+var symAlgIVLen = map[int]int{
+	0:  8,  //Plaintext or unencrypted data
+	1:  8,  //IDEA
+	2:  8,  //TripleDES (168 bit key derived from 192)
+	3:  8,  //CAST5
+	4:  8,  //Blowfish
+	5:  8,  //Reserved
+	6:  8,  //Reserved
+	7:  16, //AES with 128-bit key
+	8:  16, //AES with 192-bit key
+	9:  16, //AES with 256-bit key
+	10: 16, //Twofish with 256-bit key
+	11: 16, //Camellia with 128-bit key
+	12: 16, //Camellia with 192-bit key
+	13: 16, //Camellia with 256-bit key
+}
+
 //SymAlg is Symmetric-Key Algorithm ID
 type SymAlg byte
 
 // Get returns Item instance
 func (s SymAlg) Get() *items.Item {
 	return items.NewItem("Symmetric Algorithm", s.String(), "", "")
+}
+
+// IVLen returns length of IV
+func (s SymAlg) IVLen() int {
+	if v, ok := symAlgIVLen[int(s)]; ok {
+		return v
+	}
+	return 0
 }
 
 func (s SymAlg) String() string {
@@ -192,9 +217,9 @@ func (ha HashAlg) String() string {
 	if 100 <= ha && ha <= 110 {
 		name = "Private/Experimental algorithm"
 	} else {
-		name = symAlgNames.Get(int(ha), "Unknown")
+		name = hashAlgNames.Get(int(ha), "Unknown")
 	}
-	return fmt.Sprintf("%s (sym %d)", name, int(ha))
+	return fmt.Sprintf("%s (hash %d)", name, int(ha))
 }
 
 var s2kAlgNames = Msgs{
@@ -217,9 +242,9 @@ func (sa S2KAlg) String() string {
 	if 100 <= sa && sa <= 110 {
 		name = "Private/Experimental algorithm"
 	} else {
-		name = symAlgNames.Get(int(sa), "Unknown")
+		name = s2kAlgNames.Get(int(sa), "Unknown")
 	}
-	return fmt.Sprintf("%s (sym %d)", name, int(sa))
+	return fmt.Sprintf("%s (s2k %d)", name, int(sa))
 }
 
 var compAlgNames = Msgs{

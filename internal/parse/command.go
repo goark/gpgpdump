@@ -46,6 +46,9 @@ func (c *Context) Run() error {
 			content, err = parseBinary(c.Options, reader)
 		}
 	}
+	if err != nil {
+		return err
+	}
 	var str string
 	if c.Jflag {
 		str, err = content.MarshalJSON()

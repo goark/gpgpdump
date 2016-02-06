@@ -1,6 +1,8 @@
 package s2k
 
 import (
+	"bytes"
+	"fmt"
 	"strconv"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
@@ -14,55 +16,92 @@ const EXPBIAS = uint32(6)
 // S2K - information of public key algorithm
 type S2K struct {
 	*options.Options
-	buf  []byte
-	left int
+	reader *bytes.Reader
+	hasIV  bool
 }
 
 //New returns new Pubkey
-func New(opt *options.Options, buf []byte) *S2K {
-	return &S2K{Options: opt, buf: buf}
+func New(opt *options.Options, reader *bytes.Reader) *S2K {
+	return &S2K{Options: opt, reader: reader, hasIV: true}
 }
 
 //Left returns left bytes
 func (s S2K) Left() int {
-	return s.left
+	return s.reader.Len()
+}
+
+//HasIV returns true if it has IV
+func (s S2K) HasIV() bool {
+	return s.hasIV
 }
 
 //Get parsing S2K information
 func (s *S2K) Get() *items.Item {
-	s2kAlg := values.S2KAlg(s.buf[0])
+	ss, err := s.reader.ReadByte()
+	if err != nil {
+		return nil
+	}
+	s2kAlg := values.S2KAlg(ss)
 	s2k := s2kAlg.Get()
-	s.left = len(s.buf) - 1
 
 	switch s2kAlg {
 	case 0:
-		s2k.AddSub(values.HashAlg(s.buf[1]).Get())
-		s.left--
+		h, err := s.reader.ReadByte()
+		if err != nil {
+			return s2k
+		}
+		s2k.AddSub(values.HashAlg(h).Get())
 	case 1:
-		s2k.AddSub(values.HashAlg(s.buf[1]).Get())
-		s2k.AddSub(values.NewRawData("Salt", "", s.buf[2:10], true).Get())
-		s.left -= 9
+		h, err := s.reader.ReadByte()
+		if err != nil {
+			return s2k
+		}
+		s2k.AddSub(values.HashAlg(h).Get())
+		var salt [8]byte
+		if _, err := s.reader.Read(salt[0:]); err != nil {
+			return s2k
+		}
+		s2k.AddSub(values.NewRawData("Salt", "", salt[:], true).Get())
 	case 3:
-		s2k.AddSub(values.HashAlg(s.buf[1]).Get())
-		s2k.AddSub(values.NewRawData("Salt", "", s.buf[2:10], true).Get())
-		c := uint32(s.buf[10])
-		count := (uint32(16) + (c & 15)) << ((c >> 4) + EXPBIAS)
-		s2k.AddSub(items.NewItem("Count", strconv.Itoa(int(count)), "", values.DumpByte(s.buf[10:11])))
-		s.left -= 10
+		h, err := s.reader.ReadByte()
+		if err != nil {
+			return s2k
+		}
+		s2k.AddSub(values.HashAlg(h).Get())
+		var salt [8]byte
+		if _, err := s.reader.Read(salt[0:]); err != nil {
+			return s2k
+		}
+		s2k.AddSub(values.NewRawData("Salt", "", salt[:], true).Get())
+		c, err := s.reader.ReadByte()
+		if err != nil {
+			return s2k
+		}
+		count := (uint32(16) + (uint32(c) & 15)) << ((uint32(c) >> 4) + EXPBIAS)
+		s2k.AddSub(items.NewItem("Count", strconv.Itoa(int(count)), fmt.Sprintf("coded: 0x%02x", c), ""))
 	case 101:
-		mrk := string(s.buf[1:5])
-		gpg := items.NewItem("GnuPG Unknown", mrk, "", values.DumpByte(s.buf[1:5]))
-		s.left -= 4
-		switch mrk {
+		s.hasIV = false
+		var mrk [4]byte
+		if _, err := s.reader.Read(mrk[0:]); err != nil {
+			return s2k
+		}
+		gpg := items.NewItem("GnuPG Unknown", string(mrk[:]), "", values.DumpByte(mrk[0:]))
+		switch string(mrk[:]) {
 		case "GNU1":
 			gpg.Name = "GnuPG gnu-dummy"
 			gpg.Note = "s2k 1001"
 		case "GNU2":
 			gpg.Name = "GnuPG gnu-divert-to-card"
 			gpg.Note = "s2k 1001"
-			l := s.buf[5]
-			gpg.AddSub(values.NewRawData("Serial Number", "", s.buf[6:6+1], true).Get())
-			s.left -= 1 + int(l)
+			l, err := s.reader.ReadByte()
+			if err != nil {
+				return s2k
+			}
+			ser := make([]byte, l)
+			if _, err := s.reader.Read(ser); err != nil {
+				return s2k
+			}
+			gpg.AddSub(values.NewRawData("Serial Number", "", ser, true).Get())
 		}
 		s2k.AddSub(gpg)
 	}

@@ -24,7 +24,9 @@ func TestTOML(t *testing.T) {
 	item1 := NewItem("name1", "value1", "note1", "00 01 02")
 	item2 := NewItemDump("name2", "03 04 05", "note2")
 	item1.AddSub(item2)
+	item1.AddSub(nil)
 	pckt.AddPacket(item1)
+	pckt.AddPacket(nil)
 	toml, err := pckt.MarshalTOML()
 	if err != nil {
 		t.Errorf("MarshalTOML() = \"%v\"want nil.", err)
@@ -61,7 +63,9 @@ func TestJSON(t *testing.T) {
 	item1 := NewItem("name1", "value1", "note1", "00 01 02")
 	item2 := NewItemDump("name2", "03 04 05", "note2")
 	item1.AddSub(item2)
+	item1.AddSub(nil)
 	pckt.AddPacket(item1)
+	pckt.AddPacket(nil)
 	toml, err := pckt.MarshalJSON()
 	if err != nil {
 		t.Errorf("MarshalTOML() = \"%v\"want nil.", err)

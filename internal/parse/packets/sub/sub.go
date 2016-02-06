@@ -101,3 +101,11 @@ func ParseSPReserved(sp *Packets, op *packet.OpaqueSubpacket, item *items.Item) 
 	item.AddSub(st)
 	return nil
 }
+
+//StringFlagInfo returns Item instance for flag info.
+func StringFlagInfo(flag byte, name string) *items.Item {
+	if flag != 0x00 {
+		return items.NewItem("Flag", "", name, "")
+	}
+	return nil
+}

@@ -202,18 +202,18 @@ func parseSPType20(sp *sub.Packets, op *packet.OpaqueSubpacket, item *items.Item
 	value := op.Contents[8+nameLength : 8+nameLength+valueLength]
 
 	human := flags[0] & 0x80
-	st.AddSub(stringFlagInfo(human, "Human-readable"))
+	st.AddSub(sub.StringFlagInfo(human, "Human-readable"))
 	if (flags[0] & 0x7f) != 0x00 {
-		st.AddSub(stringFlagInfo(flags[0]&0x7f, fmt.Sprintf("Unknown flag1(0x%02x)", flags[0])))
+		st.AddSub(sub.StringFlagInfo(flags[0]&0x7f, fmt.Sprintf("Unknown flag1(0x%02x)", flags[0])))
 	}
 	if flags[1] != 0x00 {
-		st.AddSub(stringFlagInfo(flags[1], fmt.Sprintf("Unknown flag2(0x%02x)", flags[1])))
+		st.AddSub(sub.StringFlagInfo(flags[1], fmt.Sprintf("Unknown flag2(0x%02x)", flags[1])))
 	}
 	if flags[2] != 0x00 {
-		st.AddSub(stringFlagInfo(flags[1], fmt.Sprintf("Unknown flag3(0x%02x)", flags[2])))
+		st.AddSub(sub.StringFlagInfo(flags[1], fmt.Sprintf("Unknown flag3(0x%02x)", flags[2])))
 	}
 	if flags[3] != 0x00 {
-		st.AddSub(stringFlagInfo(flags[1], fmt.Sprintf("Unknown flag4(0x%02x)", flags[3])))
+		st.AddSub(sub.StringFlagInfo(flags[1], fmt.Sprintf("Unknown flag4(0x%02x)", flags[3])))
 	}
 	item.AddSub(items.NewItem("Name", string(name), "", ""))
 	if human != 0x00 {
@@ -254,15 +254,15 @@ func parseSPType23(sp *sub.Packets, op *packet.OpaqueSubpacket, item *items.Item
 	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 
 	flag1 := op.Contents[0]
-	st.AddSub(stringFlagInfo(flag1&0x80, "No-modify"))
+	st.AddSub(sub.StringFlagInfo(flag1&0x80, "No-modify"))
 	if (flag1 & 0x7f) != 0x00 {
-		st.AddSub(stringFlagInfo(flag1&0x7f, fmt.Sprintf("Unknown flag1(0x%02x)", flag1)))
+		st.AddSub(sub.StringFlagInfo(flag1&0x7f, fmt.Sprintf("Unknown flag1(0x%02x)", flag1)))
 	}
 	if len(op.Contents) > 1 {
 		flags := op.Contents[1:]
 		for i, flag := range flags {
 			if flag != 0x00 {
-				st.AddSub(stringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag)))
+				st.AddSub(sub.StringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag)))
 			}
 		}
 	}
@@ -307,21 +307,21 @@ func parseSPType27(sp *sub.Packets, op *packet.OpaqueSubpacket, item *items.Item
 	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 
 	flag1 := op.Contents[0]
-	st.AddSub(stringFlagInfo(flag1&0x01, "This key may be used to certify other keys."))
-	st.AddSub(stringFlagInfo(flag1&0x02, "This key may be used to sign data."))
-	st.AddSub(stringFlagInfo(flag1&0x04, "This key may be used to encrypt communications."))
-	st.AddSub(stringFlagInfo(flag1&0x08, "This key may be used to encrypt storage."))
-	st.AddSub(stringFlagInfo(flag1&0x10, "The private component of this key may have been split by a secret-sharing mechanism."))
-	st.AddSub(stringFlagInfo(flag1&0x20, "This key may be used for authentication."))
-	st.AddSub(stringFlagInfo(flag1&0x80, "The private component of this key may be in the possession of more than one person."))
+	st.AddSub(sub.StringFlagInfo(flag1&0x01, "This key may be used to certify other keys."))
+	st.AddSub(sub.StringFlagInfo(flag1&0x02, "This key may be used to sign data."))
+	st.AddSub(sub.StringFlagInfo(flag1&0x04, "This key may be used to encrypt communications."))
+	st.AddSub(sub.StringFlagInfo(flag1&0x08, "This key may be used to encrypt storage."))
+	st.AddSub(sub.StringFlagInfo(flag1&0x10, "The private component of this key may have been split by a secret-sharing mechanism."))
+	st.AddSub(sub.StringFlagInfo(flag1&0x20, "This key may be used for authentication."))
+	st.AddSub(sub.StringFlagInfo(flag1&0x80, "The private component of this key may be in the possession of more than one person."))
 	if (flag1 & 0x40) != 0x00 {
-		st.AddSub(stringFlagInfo(flag1&0x40, fmt.Sprintf("Unknown flag1(0x%02x)", flag1)))
+		st.AddSub(sub.StringFlagInfo(flag1&0x40, fmt.Sprintf("Unknown flag1(0x%02x)", flag1)))
 	}
 	if len(op.Contents) > 1 {
 		flags := op.Contents[1:]
 		for i, flag := range flags {
 			if flag != 0x00 {
-				st.AddSub(stringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag)))
+				st.AddSub(sub.StringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag)))
 			}
 		}
 	}
@@ -370,15 +370,15 @@ func parseSPType30(sp *sub.Packets, op *packet.OpaqueSubpacket, item *items.Item
 	st.Note = fmt.Sprintf("%d bytes", len(op.Contents))
 
 	flag1 := op.Contents[0]
-	st.AddSub(stringFlagInfo(flag1&0x01, "Modification Detection (packets 18 and 19)"))
+	st.AddSub(sub.StringFlagInfo(flag1&0x01, "Modification Detection (packets 18 and 19)"))
 	if (flag1 & 0xfe) != 0x00 {
-		st.AddSub(stringFlagInfo(flag1&0xfe, fmt.Sprintf("Unknown flag1(0x%02x)", flag1)))
+		st.AddSub(sub.StringFlagInfo(flag1&0xfe, fmt.Sprintf("Unknown flag1(0x%02x)", flag1)))
 	}
 	if len(op.Contents) > 1 {
 		flags := op.Contents[1:]
 		for i, flag := range flags {
 			if flag != 0x00 {
-				st.AddSub(stringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag)))
+				st.AddSub(sub.StringFlagInfo(flag, fmt.Sprintf("Unknown flag%d(0x%02x)", i+2, flag)))
 			}
 		}
 	}
@@ -415,12 +415,4 @@ func parseSPType32(sp *sub.Packets, op *packet.OpaqueSubpacket, item *items.Item
 	st.AddSub(p)
 	item.AddSub(st)
 	return nil
-}
-
-func stringFlagInfo(flag byte, name string) *items.Item {
-	f := items.NewItem("Flag", "Unset", name, "")
-	if flag != 0x00 {
-		f.Value = "Set"
-	}
-	return f
 }

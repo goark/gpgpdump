@@ -37,7 +37,9 @@ func (p *Packets) MarshalJSON() (string, error) {
 
 //AddPacket add item in Packets.
 func (p *Packets) AddPacket(a *Item) {
-	p.Packet = append(p.Packet, a)
+	if a != nil {
+		p.Packet = append(p.Packet, a)
+	}
 }
 
 //Item - item in Packets
@@ -61,5 +63,7 @@ func NewItemDump(name, dump, note string) *Item {
 
 //AddSub add sub-item in item.
 func (i *Item) AddSub(a *Item) {
-	i.Item = append(i.Item, a)
+	if a != nil {
+		i.Item = append(i.Item, a)
+	}
 }

@@ -1,6 +1,8 @@
 package tag03
 
 import (
+	"bytes"
+
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/s2k"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
@@ -27,7 +29,7 @@ func (t Tag03) Parse() (*items.Item, error) {
 	// [02] string-to-key (S2K) specifier
 	version := values.SymSessKeyVer(t.body[0])
 	sym := values.SymAlg(t.body[1])
-	s2k := s2k.New(t.Options, t.body[2:])
+	s2k := s2k.New(t.Options, bytes.NewReader(t.body[2:]))
 
 	pckt.AddSub(version.Get())
 	pckt.AddSub(sym.Get())
