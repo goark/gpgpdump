@@ -40,6 +40,132 @@ OPTIONS:
    -m -- dumps marker packets (tag 10)
    -p -- dumps private packets (tag 60-63)
    -u -- output UTC time
+
+$ cat sig
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iF4EARMIAAYFAlTDCN8ACgkQMfv9qV+7+hg2HwEA6h2iFFuCBv3VrsSf2BREQaT1
+T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
+=ZOTN
+-----END PGP SIGNATURE-----
+
+$ cat sig | gpgpdump
+[[Packet]]
+  name = "Packet"
+  value = "Signature Packet (tag 2)"
+  note = "94 bytes"
+
+  [[Packet.Item]]
+    name = "Version"
+    value = "4"
+    dump = "04"
+    note = "new"
+
+  [[Packet.Item]]
+    name = "Signiture Type"
+    value = "Signature of a canonical text document (0x01)"
+
+  [[Packet.Item]]
+    name = "Public-key Algorithm"
+    value = "ECDSA public key algorithm (pub 19)"
+
+  [[Packet.Item]]
+    name = "Hash Algorithm"
+    value = "SHA256 (hash 8)"
+
+  [[Packet.Item]]
+    name = "Hashed Subpacket"
+
+    [[Packet.Item.Item]]
+      name = "Signature Creation Time (sub 2)"
+      value = "2015-01-24T11:52:15+09:00"
+      dump = "54 c3 08 df"
+
+  [[Packet.Item]]
+    name = "Unhashed Subpacket"
+
+    [[Packet.Item.Item]]
+      name = "Issuer (sub 16)"
+      value = "0x31FBFDA95FBBFA18"
+
+  [[Packet.Item]]
+    name = "Hash left 2 bytes"
+    dump = "36 1f"
+
+  [[Packet.Item]]
+    name = "Multi-precision integer"
+    dump = "..."
+    note = "ECDSA r (256 bits)"
+
+  [[Packet.Item]]
+    name = "Multi-precision integer"
+    dump = "..."
+    note = "ECDSA s (252 bits)"
+
+$ cat sig | gpgpdump -j
+{
+  "Packet": [
+    {
+      "name": "Packet",
+      "value": "Signature Packet (tag 2)",
+      "note": "94 bytes",
+      "Item": [
+        {
+          "name": "Version",
+          "value": "4",
+          "dump": "04",
+          "note": "new"
+        },
+        {
+          "name": "Signiture Type",
+          "value": "Signature of a canonical text document (0x01)"
+        },
+        {
+          "name": "Public-key Algorithm",
+          "value": "ECDSA public key algorithm (pub 19)"
+        },
+        {
+          "name": "Hash Algorithm",
+          "value": "SHA256 (hash 8)"
+        },
+        {
+          "name": "Hashed Subpacket",
+          "Item": [
+            {
+              "name": "Signature Creation Time (sub 2)",
+              "value": "2015-01-24T11:52:15+09:00",
+              "dump": "54 c3 08 df"
+            }
+          ]
+        },
+        {
+          "name": "Unhashed Subpacket",
+          "Item": [
+            {
+              "name": "Issuer (sub 16)",
+              "value": "0x31FBFDA95FBBFA18"
+            }
+          ]
+        },
+        {
+          "name": "Hash left 2 bytes",
+          "dump": "36 1f"
+        },
+        {
+          "name": "Multi-precision integer",
+          "dump": "...",
+          "note": "ECDSA r (256 bits)"
+        },
+        {
+          "name": "Multi-precision integer",
+          "dump": "...",
+          "note": "ECDSA s (252 bits)"
+        }
+      ]
+    }
+  ]
+}
 ```
 
 ## License

@@ -57,7 +57,7 @@ func TestJSON(t *testing.T) {
   ]
 }
 `
-	output := strings.Trim(norm, " \t\n\r")
+	output := strings.Trim(norm, " \t\n\r") + "\n"
 
 	pckt := NewPackets()
 	item1 := NewItem("name1", "value1", "note1", "00 01 02")

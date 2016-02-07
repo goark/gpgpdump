@@ -32,7 +32,7 @@ func (p *Packets) MarshalJSON() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(buf), nil
+	return string(buf) + "\n", nil
 }
 
 //AddPacket add item in Packets.
