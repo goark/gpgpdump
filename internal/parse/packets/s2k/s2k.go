@@ -43,43 +43,19 @@ func (s *S2K) Get() *items.Item {
 	}
 	s2kAlg := values.S2KAlg(ss)
 	s2k := s2kAlg.Get()
-
+	h, err := s.reader.ReadByte()
+	if err != nil {
+		return s2k
+	}
+	s2k.AddSub(values.HashAlg(h).Get())
 	switch s2kAlg {
-	case 0:
-		h, err := s.reader.ReadByte()
-		if err != nil {
-			return s2k
-		}
-		s2k.AddSub(values.HashAlg(h).Get())
-	case 1:
-		h, err := s.reader.ReadByte()
-		if err != nil {
-			return s2k
-		}
-		s2k.AddSub(values.HashAlg(h).Get())
-		var salt [8]byte
-		if _, err := s.reader.Read(salt[0:]); err != nil {
-			return s2k
-		}
-		s2k.AddSub(values.NewRawData("Salt", "", salt[:], true).Get())
-	case 3:
-		h, err := s.reader.ReadByte()
-		if err != nil {
-			return s2k
-		}
-		s2k.AddSub(values.HashAlg(h).Get())
-		var salt [8]byte
-		if _, err := s.reader.Read(salt[0:]); err != nil {
-			return s2k
-		}
-		s2k.AddSub(values.NewRawData("Salt", "", salt[:], true).Get())
-		c, err := s.reader.ReadByte()
-		if err != nil {
-			return s2k
-		}
-		count := (uint32(16) + (uint32(c) & 15)) << ((uint32(c) >> 4) + EXPBIAS)
-		s2k.AddSub(items.NewItem("Count", strconv.Itoa(int(count)), fmt.Sprintf("coded: 0x%02x", c), ""))
-	case 101:
+	case 0: //Simple S2K
+	case 1: //Salted S2K
+		s2k.AddSub(s.getSalt())
+	case 3: //Iterated and Salted S2K
+		s2k.AddSub(s.getSalt())
+		s2k.AddSub(s.getCount())
+	case 101: //Private/Experimental algorithm (s2k 101)
 		s.hasIV = false
 		var mrk [4]byte
 		if _, err := s.reader.Read(mrk[0:]); err != nil {
@@ -106,4 +82,21 @@ func (s *S2K) Get() *items.Item {
 		s2k.AddSub(gpg)
 	}
 	return s2k
+}
+
+func (s *S2K) getSalt() *items.Item {
+	var salt [8]byte
+	if _, err := s.reader.Read(salt[0:]); err != nil {
+		return nil
+	}
+	return values.NewRawData("Salt", "", salt[:], true).Get()
+}
+
+func (s *S2K) getCount() *items.Item {
+	c, err := s.reader.ReadByte()
+	if err != nil {
+		return nil
+	}
+	count := (uint32(16) + (uint32(c) & 15)) << ((uint32(c) >> 4) + EXPBIAS)
+	return items.NewItem("Count", strconv.Itoa(int(count)), fmt.Sprintf("coded: 0x%02x", c), "")
 }

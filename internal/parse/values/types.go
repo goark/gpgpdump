@@ -225,7 +225,7 @@ func (ha HashAlg) String() string {
 var s2kAlgNames = Msgs{
 	0: "Simple S2K",
 	1: "Salted S2K",
-	2: "Reserved valu",
+	2: "Reserved",
 	3: "Iterated and Salted S2K",
 }
 
@@ -259,7 +259,7 @@ type CompAlg byte
 
 // Get returns Item instance
 func (ca CompAlg) Get() *items.Item {
-	return items.NewItem("Compression Algorithms", ca.String(), "", "")
+	return items.NewItem("Compression Algorithm", ca.String(), "", "")
 }
 
 func (ca CompAlg) String() string {

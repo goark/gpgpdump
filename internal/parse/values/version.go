@@ -1,7 +1,6 @@
 package values
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
@@ -28,6 +27,11 @@ func (v Version) IsNew() bool {
 	return v.ver == v.cur
 }
 
+// IsUnknown return true if unknown version
+func (v Version) IsUnknown() bool {
+	return !v.IsOld() && !v.IsNew()
+}
+
 // Get returns Item instance
 func (v Version) Get() *items.Item {
 	var note string
@@ -39,7 +43,11 @@ func (v Version) Get() *items.Item {
 	default:
 		note = "unknown"
 	}
-	return items.NewItem("Version", strconv.Itoa(int(v.ver)), note, fmt.Sprintf("%02x", v.ver))
+	return items.NewItem("Version", v.String(), note, "")
+}
+
+func (v Version) String() string {
+	return strconv.Itoa(int(v.ver))
 }
 
 // PubVer is Public-Key Packet Version

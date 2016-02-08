@@ -22,5 +22,9 @@ type KeyID uint64
 
 //Get returns Item instance
 func (k KeyID) Get() *items.Item {
-	return items.NewItem("Key ID", fmt.Sprintf("0x%X", uint64(k)), "", "")
+	return items.NewItem("Key ID", k.String(), "", "")
+}
+
+func (k KeyID) String() string {
+	return fmt.Sprintf("0x%X", uint64(k))
 }

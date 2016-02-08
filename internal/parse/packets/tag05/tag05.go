@@ -64,7 +64,7 @@ func ParseSec(opt *options.Options, reader *bytes.Reader, item *items.Item, ver 
 	case 1:
 		item.Note = "the secret-key data is not encrypted."
 		item.AddSub(version.Get())
-		if version.IsNew() || version.IsOld() {
+		if !version.IsUnknown() {
 			pubkey := pubkeys.New(opt, pub, reader)
 			if err := pubkey.ParseSecPlain(item); err != nil {
 				return err
@@ -72,8 +72,12 @@ func ParseSec(opt *options.Options, reader *bytes.Reader, item *items.Item, ver 
 		} else {
 			item.AddSub(unknownMPIs(int(ver), reader.Len()))
 		}
-	case 254:
-		item.Note = "encrypted SHA1 hash"
+	case 254, 255:
+		if s == 254 {
+			item.Note = "encrypted SHA1 hash"
+		} else {
+			item.Note = "encrypted checksum"
+		}
 		sy, err := reader.ReadByte()
 		if err != nil {
 			return err
@@ -82,35 +86,14 @@ func ParseSec(opt *options.Options, reader *bytes.Reader, item *items.Item, ver 
 		item.AddSub(sym.Get())
 		s2k := s2k.New(opt, reader)
 		item.AddSub(s2k.Get())
-		iv := make([]byte, sym.IVLen())
-		if _, err := reader.Read(iv); err != nil {
-			return err
-		}
-		item.AddSub(values.NewRawData("IV", "", iv, true).Get())
-		if version.IsNew() || version.IsOld() {
-			pubkey := pubkeys.New(opt, pub, reader)
-			if err := pubkey.ParseSecEnc(item); err != nil {
+		if s2k.HasIV() {
+			iv := make([]byte, sym.IVLen())
+			if _, err := reader.Read(iv); err != nil {
 				return err
 			}
-		} else {
-			item.AddSub(unknownMPIs(int(ver), reader.Len()))
+			item.AddSub(values.NewRawData("IV", "", iv, true).Get())
 		}
-	case 255:
-		item.Note = "encrypted checksum"
-		sy, err := reader.ReadByte()
-		if err != nil {
-			return err
-		}
-		sym := values.SymAlg(sy)
-		item.AddSub(sym.Get())
-		s2k := s2k.New(opt, reader)
-		item.AddSub(s2k.Get())
-		iv := make([]byte, sym.IVLen())
-		if _, err := reader.Read(iv); err != nil {
-			return err
-		}
-		item.AddSub(values.NewRawData("IV", "", iv, true).Get())
-		if version.IsNew() || version.IsOld() {
+		if !version.IsUnknown() {
 			pubkey := pubkeys.New(opt, pub, reader)
 			if err := pubkey.ParseSecEnc(item); err != nil {
 				return err
@@ -127,7 +110,7 @@ func ParseSec(opt *options.Options, reader *bytes.Reader, item *items.Item, ver 
 			return err
 		}
 		item.AddSub(values.NewRawData("IV", "", iv, true).Get())
-		if version.IsNew() || version.IsOld() {
+		if !version.IsUnknown() {
 			pubkey := pubkeys.New(opt, pub, reader)
 			if err := pubkey.ParseSecEnc(item); err != nil {
 				return err
