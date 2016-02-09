@@ -36,16 +36,16 @@ func (s S2K) HasIV() bool {
 }
 
 //Get parsing S2K information
-func (s *S2K) Get() *items.Item {
+func (s *S2K) Get() (*items.Item, error) {
 	ss, err := s.reader.ReadByte()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	s2kAlg := values.S2KAlg(ss)
 	s2k := s2kAlg.Get()
 	h, err := s.reader.ReadByte()
 	if err != nil {
-		return s2k
+		return s2k, err
 	}
 	s2k.AddSub(values.HashAlg(h).Get())
 	switch s2kAlg {
@@ -59,7 +59,7 @@ func (s *S2K) Get() *items.Item {
 		s.hasIV = false
 		var mrk [4]byte
 		if _, err := s.reader.Read(mrk[0:]); err != nil {
-			return s2k
+			return s2k, err
 		}
 		gpg := items.NewItem("GnuPG Unknown", string(mrk[:]), "", values.DumpByte(mrk[0:]))
 		switch string(mrk[:]) {
@@ -71,17 +71,17 @@ func (s *S2K) Get() *items.Item {
 			gpg.Note = "s2k 1001"
 			l, err := s.reader.ReadByte()
 			if err != nil {
-				return s2k
+				return s2k, err
 			}
 			ser := make([]byte, l)
 			if _, err := s.reader.Read(ser); err != nil {
-				return s2k
+				return s2k, err
 			}
 			gpg.AddSub(values.NewRawData("Serial Number", "", ser, true).Get())
 		}
 		s2k.AddSub(gpg)
 	}
-	return s2k
+	return s2k, nil
 }
 
 func (s *S2K) getSalt() *items.Item {

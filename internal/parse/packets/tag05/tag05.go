@@ -85,7 +85,11 @@ func ParseSec(opt *options.Options, reader *bytes.Reader, item *items.Item, ver 
 		sym := values.SymAlg(sy)
 		item.AddSub(sym.Get())
 		s2k := s2k.New(opt, reader)
-		item.AddSub(s2k.Get())
+		s2ki, err := s2k.Get()
+		if err != nil {
+			return err
+		}
+		item.AddSub(s2ki)
 		if s2k.HasIV() {
 			iv := make([]byte, sym.IVLen())
 			if _, err := reader.Read(iv); err != nil {

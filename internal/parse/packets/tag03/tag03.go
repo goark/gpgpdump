@@ -33,7 +33,11 @@ func (t Tag03) Parse() (*items.Item, error) {
 
 	pckt.AddSub(version.Get())
 	pckt.AddSub(sym.Get())
-	pckt.AddSub(s2k.Get())
+	s2ki, err := s2k.Get()
+	if err != nil {
+		return pckt, err
+	}
+	pckt.AddSub(s2ki)
 	if s2k.Left() > 0 {
 		pckt.AddSub(items.NewItem("Encrypted session key", "", "sym alg(1 bytes) + session key", ""))
 	}
