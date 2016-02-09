@@ -73,6 +73,7 @@ func parseSPType03(sp *sub.Packets, op *packet.OpaqueSubpacket, item *items.Item
 	exp := values.SigExpire(op.Contents, sp.SigCreationTime, sp.Uflag).Get()
 	st.Value = exp.Value
 	st.Note = exp.Note
+	st.Dump = values.DumpByte(op.Contents)
 	sp.SigCreationTime = 0
 	item.AddSub(st)
 	return nil
@@ -131,7 +132,9 @@ func parseSPType09(sp *sub.Packets, op *packet.OpaqueSubpacket, item *items.Item
 	exp := values.SigExpire(op.Contents, sp.KeyCreationTime, sp.Uflag).Get()
 	st.Value = exp.Value
 	st.Note = exp.Note
+	st.Dump = values.DumpByte(op.Contents)
 	sp.KeyCreationTime = 0
+	item.AddSub(st)
 	return nil
 }
 
