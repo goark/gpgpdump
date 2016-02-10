@@ -26,14 +26,14 @@ func (mpi *MPI) Get() *items.Item {
 
 //GetMPI returns parsing MPI
 func GetMPI(reader io.Reader, note string, dump bool) (*MPI, error) {
-	var bitlength [2]byte
-	if _, err := io.ReadFull(reader, bitlength[0:]); err != nil {
+	bitlength, err := GetBytes(reader, 2)
+	if err != nil {
 		return nil, err
 	}
-	bl := uint16(Octets2Int(bitlength[:]))
+	bl := uint16(Octets2Int(bitlength))
 	bytelength := (int(bl) + 7) / 8
-	buf := make([]byte, bytelength)
-	if _, err := io.ReadFull(reader, buf); err != nil {
+	buf, err := GetBytes(reader, bytelength)
+	if err != nil {
 		return &MPI{Raw: nil, BitLength: bl}, err
 	}
 	raw := NewRawData("Multi-precision integer", note, buf, dump)

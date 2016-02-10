@@ -4,6 +4,9 @@ import "io"
 
 //GetBytes returns byte slice from stream
 func GetBytes(reader io.Reader, size int) ([]byte, error) {
+	if size <= 0 {
+		return nil, nil
+	}
 	buf := make([]byte, size)
 	_, err := io.ReadFull(reader, buf)
 	if err == io.EOF || err == io.ErrUnexpectedEOF {

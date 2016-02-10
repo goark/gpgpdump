@@ -7,16 +7,12 @@ import (
 
 //OID returns RawData instance with parsing OID
 func OID(reader io.Reader) (*RawData, error) {
-	var length [1]byte
-	if _, err := io.ReadFull(reader, length[0:]); err != nil {
-		if err == io.EOF {
-			return nil, nil
-		}
+	length, err := GetBytes(reader, 1)
+	if err != nil {
 		return nil, err
 	}
-	l := length[0]
-	buf := make([]byte, l)
-	if _, err := io.ReadFull(reader, buf); err != nil {
+	buf, err := GetBytes(reader, int(length[0]))
+	if err != nil {
 		return nil, err
 	}
 	return NewRawData("ECC OID", oidString(buf), buf, true), nil

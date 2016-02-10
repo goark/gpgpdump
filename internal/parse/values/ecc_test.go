@@ -2,6 +2,7 @@ package values
 
 import (
 	"bytes"
+	"io"
 	"testing"
 )
 
@@ -100,7 +101,7 @@ func TestEccUnknown(t *testing.T) {
 func TestEccError(t *testing.T) {
 	var data = []byte{0x05, 0x01, 0x02, 0x03, 0x04}
 	reader := bytes.NewReader(data)
-	if _, err := OID(reader); err == nil {
-		t.Error("OID = nil, want \"unexpected EOF\".")
+	if _, err := OID(reader); err != io.ErrUnexpectedEOF {
+		t.Errorf("OID = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
 	}
 }

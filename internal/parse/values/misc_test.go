@@ -1,6 +1,42 @@
 package values
 
-import "testing"
+import (
+	"bytes"
+	"io"
+	"testing"
+)
+
+func TestGetBytes(t *testing.T) {
+	var data = []byte{0x01, 0x02}
+	reader := bytes.NewReader(data)
+	v, err := GetBytes(reader, 2)
+	if err != nil {
+		t.Errorf("GetBytes() = \"%v\", want nil.", err)
+	}
+	if len(v) != 2 || v[0] != 0x01 || v[1] != 0x02 {
+		t.Errorf("GetBytes() = %v, want %v.", v, data)
+	}
+}
+
+func TestGetBytes0(t *testing.T) {
+	var data = []byte{0x01, 0x02}
+	reader := bytes.NewReader(data)
+	v, err := GetBytes(reader, 0)
+	if err != nil {
+		t.Errorf("GetBytes() = \"%v\", want nil.", err)
+	}
+	if v != nil {
+		t.Errorf("GetBytes() = %v, want nil.", v)
+	}
+}
+
+func TestGetBytesErr(t *testing.T) {
+	var data = []byte{0x01, 0x02}
+	reader := bytes.NewReader(data)
+	if _, err := GetBytes(reader, 4); err != io.ErrUnexpectedEOF {
+		t.Errorf("GetBytes() = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
+	}
+}
 
 func TestOctets2Int2(t *testing.T) {
 	var data = []byte{0x01, 0x02}
