@@ -1,5 +1,16 @@
 package values
 
+import "io"
+
+//GetBytes returns byte slice from stream
+func GetBytes(reader io.Reader, size int) ([]byte, error) {
+	buf := make([]byte, size)
+	_, err := io.ReadFull(reader, buf)
+	if err == io.EOF || err == io.ErrUnexpectedEOF {
+	}
+	return buf, err
+}
+
 // Octets2Int returns integer from two-octets data
 func Octets2Int(octets []byte) uint64 {
 	rtn := uint64(0)

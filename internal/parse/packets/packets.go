@@ -6,6 +6,7 @@ import (
 
 	"golang.org/x/crypto/openpgp/packet"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/private"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/packets/tag01"
@@ -109,7 +110,7 @@ func (p *Packets) Next() (*Packet, error) {
 	op, err := p.reader.Next()
 	if err != nil {
 		if err != io.EOF {
-			return nil, err
+			return nil, errs.ErrPacketInvalidData(err.Error())
 		}
 		return nil, nil
 	}

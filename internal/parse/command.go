@@ -2,18 +2,13 @@ package parse
 
 import (
 	"bytes"
-	"errors"
 	"io"
 	"io/ioutil"
 	"os"
 
 	"github.com/spiegel-im-spiegel/gocli"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
-)
-
-// Errors
-var (
-	ErrNotArmor = errors.New("binary input is not allowed")
 )
 
 // Context for gpgpdump
@@ -37,9 +32,9 @@ func (c *Context) Run() error {
 
 	reader := bytes.NewReader(data)
 	content, err := parseArmor(c.Options, reader)
-	if err == io.EOF {
+	if err == io.EOF || err == io.ErrUnexpectedEOF {
 		if c.Aflag {
-			err = ErrNotArmor
+			err = errs.ErrNotArmor
 		} else {
 			//retry parse by parseBinary()
 			reader := bytes.NewReader(data)
