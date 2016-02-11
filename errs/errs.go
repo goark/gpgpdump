@@ -8,7 +8,8 @@ import (
 
 // Errors
 var (
-	ErrNotArmor = errors.New("binary input is not allowed")
+	ErrNotArmor     = errors.New("binary input is not allowed")
+	ErrPanicOccured = errors.New("panic occured")
 )
 
 //ErrPacketInvalidData - invalid data error for parsing packets

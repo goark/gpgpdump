@@ -5,9 +5,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/spiegel-im-spiegel/gocli"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse"
 )
 
@@ -42,9 +44,23 @@ func NewFacade(appName, version, goVer string, ui *gocli.UI) *Facade {
 }
 
 // Run Application
-func (f *Facade) Run(args []string) (int, error) {
-	f.command = parse.Command(f.UI)
+func (f *Facade) Run(args []string) (code int, err error) {
+	code = ExitFailure
+	err = errs.ErrPanicOccured
+	defer func() {
+		if err := recover(); err != nil {
+			f.OutputErrln(fmt.Sprintf("Panic: %v", err))
+			for depth := 1; ; depth++ {
+				pc, _, line, ok := runtime.Caller(depth)
+				if !ok {
+					break
+				}
+				f.OutputErrln(fmt.Sprintf(" -> %d: %s (%d)", depth, runtime.FuncForPC(pc).Name(), line))
+			}
+		}
+	}()
 
+	f.command = parse.Command(f.UI)
 	flags := flag.NewFlagSet(f.Name, flag.ContinueOnError)
 	flags.BoolVar(&f.command.Hflag, "h", false, "output this help")
 	flags.BoolVar(&f.command.Vflag, "v", false, "output version")
