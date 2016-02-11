@@ -2,8 +2,9 @@ package values
 
 import (
 	"bytes"
-	"io"
 	"testing"
+
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 )
 
 func TestEccNITSP256(t *testing.T) {
@@ -101,7 +102,9 @@ func TestEccUnknown(t *testing.T) {
 func TestEccError(t *testing.T) {
 	var data = []byte{0x05, 0x01, 0x02, 0x03, 0x04}
 	reader := bytes.NewReader(data)
-	if _, err := OID(reader); err != io.ErrUnexpectedEOF {
-		t.Errorf("OID = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
+	if _, err := OID(reader); err != nil {
+		if _, ok := err.(errs.ErrPacketInvalidData); !ok {
+			t.Errorf("OID = \"%v\", want ErrPacketInvalidData.", err)
+		}
 	}
 }

@@ -21,7 +21,7 @@ func TestRun(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"--ftest"}
 
 	rtn, err := fcd.Run(args)
@@ -39,6 +39,9 @@ func TestRun(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -70,7 +73,7 @@ func TestRunHflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-h"}
 
 	rtn, err := fcd.Run(args)
@@ -88,6 +91,9 @@ func TestRunHflag(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -122,7 +128,7 @@ func TestRunVflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-v"}
 
 	rtn, err := fcd.Run(args)
@@ -140,6 +146,9 @@ func TestRunVflag(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -174,7 +183,7 @@ func TestRunAflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-ftest", "-a"}
 
 	rtn, err := fcd.Run(args)
@@ -192,6 +201,64 @@ func TestRunAflag(t *testing.T) {
 	}
 	if !fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
+	}
+	if fcd.command.Gflag {
+		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
+	}
+	if fcd.command.Iflag {
+		t.Errorf("command.Iflag = %v.", fcd.command.Iflag)
+	}
+	if fcd.command.Jflag {
+		t.Errorf("command.Jflag = %v.", fcd.command.Iflag)
+	}
+	if fcd.command.Lflag {
+		t.Errorf("command.Lflag = %v.", fcd.command.Lflag)
+	}
+	if fcd.command.Mflag {
+		t.Errorf("command.Mflag = %v.", fcd.command.Mflag)
+	}
+	if fcd.command.Pflag {
+		t.Errorf("command.Pflag = %v.", fcd.command.Pflag)
+	}
+	if fcd.command.Uflag {
+		t.Errorf("command.Uflag = %v.", fcd.command.Uflag)
+	}
+	if fcd.command.InputFile != "" {
+		t.Errorf("command.InputFile = \"%v\", want empty.", fcd.command.InputFile)
+	}
+}
+
+func TestRunDflag(t *testing.T) {
+	name := "gpgpgdump"
+	version := "0.0.0"
+	inpmsg := ""
+	outBuf := new(bytes.Buffer)
+	errBuf := new(bytes.Buffer)
+	ui := GetUI(inpmsg, outBuf, errBuf)
+	fcd := NewFacade(name, version, "", ui)
+	args := []string{"-ftest", "-d"}
+
+	rtn, err := fcd.Run(args)
+	if rtn != 0 {
+		t.Errorf("facade.Run() = %v, want 0.", rtn)
+	}
+	if err != ErrFacadeTest {
+		t.Errorf("facade.Run() = \"%v\", want \"%v\".", err, ErrFacadeTest)
+	}
+	if fcd.command.Hflag {
+		t.Errorf("command.Hflag = %v.", fcd.command.Hflag)
+	}
+	if fcd.command.Vflag {
+		t.Errorf("command.Vflag = %v.", fcd.command.Vflag)
+	}
+	if fcd.command.Aflag {
+		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if !fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -226,7 +293,7 @@ func TestRunGflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-ftest", "-g"}
 
 	rtn, err := fcd.Run(args)
@@ -244,6 +311,9 @@ func TestRunGflag(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -278,7 +348,7 @@ func TestRunIflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-ftest", "-i"}
 
 	rtn, err := fcd.Run(args)
@@ -296,6 +366,9 @@ func TestRunIflag(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -330,7 +403,7 @@ func TestRunJflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-ftest", "-j"}
 
 	rtn, err := fcd.Run(args)
@@ -348,6 +421,9 @@ func TestRunJflag(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -382,7 +458,7 @@ func TestRunLflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-ftest", "-l"}
 
 	rtn, err := fcd.Run(args)
@@ -400,6 +476,9 @@ func TestRunLflag(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -434,7 +513,7 @@ func TestRunMflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-ftest", "-m"}
 
 	rtn, err := fcd.Run(args)
@@ -452,6 +531,9 @@ func TestRunMflag(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -486,7 +568,7 @@ func TestRunPflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-ftest", "-p"}
 
 	rtn, err := fcd.Run(args)
@@ -504,6 +586,9 @@ func TestRunPflag(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -538,7 +623,7 @@ func TestRunUflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"-ftest", "-u"}
 
 	rtn, err := fcd.Run(args)
@@ -556,6 +641,9 @@ func TestRunUflag(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)
@@ -591,7 +679,7 @@ func TestRunFile(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, ui)
+	fcd := NewFacade(name, version, "", ui)
 	args := []string{"--ftest", fileName}
 
 	rtn, err := fcd.Run(args)
@@ -609,6 +697,9 @@ func TestRunFile(t *testing.T) {
 	}
 	if fcd.command.Aflag {
 		t.Errorf("command.Aflag = %v.", fcd.command.Aflag)
+	}
+	if fcd.command.Dflag {
+		t.Errorf("command.Dflag = %v.", fcd.command.Dflag)
 	}
 	if fcd.command.Gflag {
 		t.Errorf("command.Gflag = %v.", fcd.command.Gflag)

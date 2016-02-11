@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path"
 	"strings"
 
 	"github.com/spiegel-im-spiegel/gocli"
@@ -31,13 +30,15 @@ type Facade struct {
 	Name string
 	//Version of application
 	Version string
+	// GoVersion of go version
+	GoVersion string
 	//command for parsing
 	command *parse.Context
 }
 
 // NewFacade returns a new Facade instance
-func NewFacade(appName, version string, ui *gocli.UI) *Facade {
-	return &Facade{UI: ui, Name: appName, Version: version}
+func NewFacade(appName, version, goVer string, ui *gocli.UI) *Facade {
+	return &Facade{UI: ui, Name: appName, Version: version, GoVersion: goVer}
 }
 
 // Run Application
@@ -48,6 +49,7 @@ func (f *Facade) Run(args []string) (int, error) {
 	flags.BoolVar(&f.command.Hflag, "h", false, "output this help")
 	flags.BoolVar(&f.command.Vflag, "v", false, "output version")
 	flags.BoolVar(&f.command.Aflag, "a", false, "accepts ASCII input only")
+	flags.BoolVar(&f.command.Dflag, "d", false, "for debug")
 	//flags.BoolVar(&f.command.Gflag, "g", false, "selects alternate dump format") // not used
 	flags.BoolVar(&f.command.Iflag, "i", false, "dumps multi-precision integers")
 	flags.BoolVar(&f.command.Jflag, "j", false, "output with JSON format")
@@ -99,6 +101,7 @@ OPTIONS:
    -h -- output this help
    -v -- output version
    -a -- accepts ASCII input only
+   -d -- for debug
    -i -- dumps multi-precision integers
    -j -- output with JSON format
    -l -- dumps literal packets (tag 11)
@@ -110,5 +113,11 @@ OPTIONS:
 }
 
 func (f *Facade) showVersion() {
-	f.OutputErrln(fmt.Sprintf("%s %s", path.Base(f.Name), f.Version))
+	var str string
+	if len(f.GoVersion) == 0 {
+		str = fmt.Sprintf("%s %s\nCopyright 2016 Spiegel (adapted from pgpdump)\nLicensed under Apache License, Version 2.0", f.Name, f.Version)
+	} else {
+		str = fmt.Sprintf("%s %s (by %s)\nCopyright 2016 Spiegel (adapted from pgpdump)\nLicensed under Apache License, Version 2.0", f.Name, f.Version, f.GoVersion)
+	}
+	f.OutputErrln(str)
 }

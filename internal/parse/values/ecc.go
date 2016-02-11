@@ -2,18 +2,21 @@ package values
 
 import (
 	"bytes"
+	"fmt"
 	"io"
+
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 )
 
 //OID returns RawData instance with parsing OID
 func OID(reader io.Reader) (*RawData, error) {
 	length, err := GetBytes(reader, 1)
 	if err != nil {
-		return nil, err
+		return nil, errs.ErrPacketInvalidData(fmt.Sprintf("ECC OID(size %v)", err))
 	}
 	buf, err := GetBytes(reader, int(length[0]))
 	if err != nil {
-		return nil, err
+		return nil, errs.ErrPacketInvalidData(fmt.Sprintf("ECC OID(body %v)", err))
 	}
 	return NewRawData("ECC OID", oidString(buf), buf, true), nil
 }

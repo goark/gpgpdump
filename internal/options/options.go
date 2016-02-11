@@ -36,6 +36,7 @@ type Options struct {
 	Hflag           bool //output this help
 	Vflag           bool //output version
 	Aflag           bool //accepts ASCII input only
+	Dflag           bool //for debug
 	Gflag           bool //selects alternate dump format (not used)
 	Iflag           bool //dumps multi-precision integers
 	Jflag           bool //output with JSON format

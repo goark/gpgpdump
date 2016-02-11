@@ -2,23 +2,28 @@ package main
 
 import (
 	"os"
+	"path"
+	"strings"
 
 	"github.com/spiegel-im-spiegel/gocli"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/facade"
 )
 
-const (
+var (
 	// Name of application
-	Name string = "gpgpdump"
+	Name = "gpgpdump"
 	// Version of application
-	Version string = "version 0.1.0\nCopyright 2016 Spiegel (adapted from pgpdump)\nLicensed under Apache License, Version 2.0"
+	Version = "v0.1.0"
+	// GoVersion of go version
+	GoVersion = ""
 )
 
 func setupFacade(ui *gocli.UI) *facade.Facade {
-	return facade.NewFacade(Name, Version, ui)
+	return facade.NewFacade(Name, Version, GoVersion, ui)
 }
 
 func main() {
+	Name = path.Base(strings.Replace(os.Args[0], "\\", "/", -1))
 	ui := gocli.NewUI()
 	fcd := setupFacade(ui)
 	if rtn, err := fcd.Run(os.Args[1:]); rtn != facade.ExitSuccess {

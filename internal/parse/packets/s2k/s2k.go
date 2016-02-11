@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
@@ -39,27 +40,39 @@ func (s S2K) HasIV() bool {
 func (s *S2K) Get() (*items.Item, error) {
 	ss, err := s.reader.ReadByte()
 	if err != nil {
-		return nil, err
+		return nil, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(size, %v)", err))
 	}
 	s2kAlg := values.S2KAlg(ss)
 	s2k := s2kAlg.Get()
 	h, err := s.reader.ReadByte()
 	if err != nil {
-		return s2k, err
+		return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(alg, %v)", err))
 	}
 	s2k.AddSub(values.HashAlg(h).Get())
 	switch s2kAlg {
 	case 0: //Simple S2K
 	case 1: //Salted S2K
-		s2k.AddSub(s.getSalt())
+		salt, err := s.getSalt()
+		if err != nil {
+			return s2k, err
+		}
+		s2k.AddSub(salt)
 	case 3: //Iterated and Salted S2K
-		s2k.AddSub(s.getSalt())
-		s2k.AddSub(s.getCount())
+		salt, err := s.getSalt()
+		if err != nil {
+			return s2k, err
+		}
+		s2k.AddSub(salt)
+		ct, err := s.getCount()
+		if err != nil {
+			return s2k, err
+		}
+		s2k.AddSub(ct)
 	case 101: //Private/Experimental algorithm (s2k 101)
 		s.hasIV = false
-		var mrk [4]byte
-		if _, err := s.reader.Read(mrk[0:]); err != nil {
-			return s2k, err
+		mrk, err := values.GetBytes(s.reader, 4)
+		if err != nil {
+			return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(mark, %v)", err))
 		}
 		gpg := items.NewItem("GnuPG Unknown", string(mrk[:]), "", values.DumpByte(mrk[0:]))
 		switch string(mrk[:]) {
@@ -71,11 +84,11 @@ func (s *S2K) Get() (*items.Item, error) {
 			gpg.Note = "s2k 1001"
 			l, err := s.reader.ReadByte()
 			if err != nil {
-				return s2k, err
+				return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(s/n size, %v)", err))
 			}
-			ser := make([]byte, l)
-			if _, err := s.reader.Read(ser); err != nil {
-				return s2k, err
+			ser, err := values.GetBytes(s.reader, int(l))
+			if err != nil {
+				return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(s/n, %v)", err))
 			}
 			gpg.AddSub(values.NewRawData("Serial Number", "", ser, true).Get())
 		}
@@ -84,19 +97,19 @@ func (s *S2K) Get() (*items.Item, error) {
 	return s2k, nil
 }
 
-func (s *S2K) getSalt() *items.Item {
-	var salt [8]byte
-	if _, err := s.reader.Read(salt[0:]); err != nil {
-		return nil
+func (s *S2K) getSalt() (*items.Item, error) {
+	salt, err := values.GetBytes(s.reader, 8)
+	if err != nil {
+		return nil, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(salt, %v)", err))
 	}
-	return values.NewRawData("Salt", "", salt[:], true).Get()
+	return values.NewRawData("Salt", "", salt, true).Get(), nil
 }
 
-func (s *S2K) getCount() *items.Item {
+func (s *S2K) getCount() (*items.Item, error) {
 	c, err := s.reader.ReadByte()
 	if err != nil {
-		return nil
+		return nil, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(count, %v)", err))
 	}
 	count := (uint32(16) + (uint32(c) & 15)) << ((uint32(c) >> 4) + EXPBIAS)
-	return items.NewItem("Count", strconv.Itoa(int(count)), fmt.Sprintf("coded: 0x%02x", c), "")
+	return items.NewItem("Count", strconv.Itoa(int(count)), fmt.Sprintf("coded: 0x%02x", c), ""), nil
 }

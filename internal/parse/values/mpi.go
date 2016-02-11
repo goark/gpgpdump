@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
@@ -28,13 +29,13 @@ func (mpi *MPI) Get() *items.Item {
 func GetMPI(reader io.Reader, note string, dump bool) (*MPI, error) {
 	bitlength, err := GetBytes(reader, 2)
 	if err != nil {
-		return nil, err
+		return nil, errs.ErrPacketInvalidData(fmt.Sprintf("MPI(bitlength, %v)", err))
 	}
 	bl := uint16(Octets2Int(bitlength))
 	bytelength := (int(bl) + 7) / 8
 	buf, err := GetBytes(reader, bytelength)
 	if err != nil {
-		return &MPI{Raw: nil, BitLength: bl}, err
+		return &MPI{Raw: nil, BitLength: bl}, errs.ErrPacketInvalidData(fmt.Sprintf("MPI(body %v)", err))
 	}
 	raw := NewRawData("Multi-precision integer", note, buf, dump)
 	return &MPI{Raw: raw, BitLength: bl}, nil

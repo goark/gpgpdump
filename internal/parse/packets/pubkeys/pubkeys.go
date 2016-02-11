@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse/values"
 	"github.com/spiegel-im-spiegel/gpgpdump/items"
@@ -44,13 +45,13 @@ func (p *Pubkey) ParsePub(item *items.Item) error {
 func (p *Pubkey) rsaPub(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "RSA n", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub RSA n (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "RSA e", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub RSA e (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -60,25 +61,25 @@ func (p *Pubkey) rsaPub(item *items.Item) error {
 func (p *Pubkey) dsaPub(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "DSA p", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub DSA p (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "DSA q", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub DSA q (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "DSA g", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub DSA g (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "DSA y", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub DSA y (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -88,19 +89,19 @@ func (p *Pubkey) dsaPub(item *items.Item) error {
 func (p *Pubkey) elgPub(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "ElGamal p", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub ElGamal p (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "ElGamal g", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub ElGamal g (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "ElGamal y", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub ElGamal y (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -110,13 +111,13 @@ func (p *Pubkey) elgPub(item *items.Item) error {
 func (p *Pubkey) ecdsaPub(item *items.Item) error {
 	oid, err := values.OID(p.reader)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub ECDSA OID (%v)", err))
 	}
 	item.AddSub(oid.Get())
 
-	mpi, err := values.GetMPI(p.reader, "ECDH 04 || EC point (X,Y)", p.Iflag)
+	mpi, err := values.GetMPI(p.reader, "ECDSA 04 || EC point (X,Y)", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub ECDSA point (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -126,19 +127,19 @@ func (p *Pubkey) ecdsaPub(item *items.Item) error {
 func (p *Pubkey) ecdhPub(item *items.Item) error {
 	oid, err := values.OID(p.reader)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub ECDH OID (%v)", err))
 	}
 	item.AddSub(oid.Get())
 
 	mpi, err := values.GetMPI(p.reader, "ECDH 04 || EC point (X,Y)", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub ECDH point (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
-	dat, err := getECParm(p.reader)
+	dat, err := p.getECParm()
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("pub ECDH KDF (%v)", err))
 	}
 	if dat == nil {
 		return nil
@@ -151,42 +152,6 @@ func (p *Pubkey) ecdhPub(item *items.Item) error {
 		i.Value = "Unknown"
 	}
 	item.AddSub(i)
-	return nil
-}
-
-//ParseSecPlain multi-precision integers of public key algorithm for Secret-Key Packet (plain)
-func (p *Pubkey) ParseSecPlain(item *items.Item) error {
-	switch true {
-	case p.pub.IsRSA():
-		if err := p.rsaSec(item, ""); err != nil {
-			return err
-		}
-	case p.pub.IsDSA():
-		if err := p.dsaSec(item, ""); err != nil {
-			return err
-		}
-	case p.pub.IsElgamal():
-		if err := p.elgSec(item, ""); err != nil {
-			return err
-		}
-	case p.pub.IsECDH():
-		if err := p.ecdhSec(item, ""); err != nil {
-			return err
-		}
-	case p.pub.IsECDSA():
-		if err := p.ecdsaSec(item, ""); err != nil {
-			return err
-		}
-	default:
-		item.AddSub(items.NewItem(fmt.Sprintf("Multi-precision integers of unknown secret key (pub %d)", p.pub), "", fmt.Sprintf("%d bytes", p.reader.Len()-2), ""))
-		_ = skipBytes(p.reader, p.reader.Len()-2)
-	}
-	var chk [2]byte
-	if _, err := p.reader.Read(chk[0:]); err != nil {
-		return err
-	}
-	item.AddSub(values.NewRawData("Checksum", "", chk[:], true).Get())
-
 	return nil
 }
 
@@ -206,72 +171,108 @@ func (p *Pubkey) ParseSecEnc(item *items.Item) error {
 	default:
 		item.AddSub(items.NewItem(fmt.Sprintf("Multi-precision integers of unknown encrypted key (pub %d)", p.pub), "", fmt.Sprintf("%d bytes", p.reader.Len()), ""))
 	}
-	_ = skipBytes(p.reader, p.reader.Len())
+	_ = p.skipBytes(p.reader.Len())
 	return nil
 }
 
-func (p *Pubkey) rsaSec(item *items.Item, prefix string) error {
-	mpi, err := values.GetMPI(p.reader, prefix+"RSA d", p.Iflag)
-	if err != nil {
+//ParseSecPlain multi-precision integers of public key algorithm for Secret-Key Packet (plain)
+func (p *Pubkey) ParseSecPlain(item *items.Item) error {
+	switch true {
+	case p.pub.IsRSA():
+		if err := p.rsaSec(item); err != nil {
+			return err
+		}
+	case p.pub.IsDSA():
+		if err := p.dsaSec(item); err != nil {
+			return err
+		}
+	case p.pub.IsElgamal():
+		if err := p.elgSec(item); err != nil {
+			return err
+		}
+	case p.pub.IsECDH():
+		if err := p.ecdhSec(item); err != nil {
+			return err
+		}
+	case p.pub.IsECDSA():
+		if err := p.ecdsaSec(item); err != nil {
+			return err
+		}
+	default:
+		item.AddSub(items.NewItem(fmt.Sprintf("Multi-precision integers of unknown secret key (pub %d)", p.pub), "", fmt.Sprintf("%d bytes", p.reader.Len()-2), ""))
+		_ = p.skipBytes(p.reader.Len() - 2)
+	}
+	var chk [2]byte
+	if _, err := p.reader.Read(chk[0:]); err != nil {
 		return err
 	}
-	item.AddSub(mpi.Get())
-
-	mpi, err = values.GetMPI(p.reader, prefix+"RSA p", p.Iflag)
-	if err != nil {
-		return err
-	}
-	item.AddSub(mpi.Get())
-
-	mpi, err = values.GetMPI(p.reader, prefix+"RSA q", p.Iflag)
-	if err != nil {
-		return err
-	}
-	item.AddSub(mpi.Get())
-
-	mpi, err = values.GetMPI(p.reader, prefix+"RSA u", p.Iflag)
-	if err != nil {
-		return err
-	}
-	item.AddSub(mpi.Get())
-
-	return nil
-}
-
-func (p *Pubkey) dsaSec(item *items.Item, prefix string) error {
-	mpi, err := values.GetMPI(p.reader, prefix+"DSA x", p.Iflag)
-	if err != nil {
-		return err
-	}
-	item.AddSub(mpi.Get())
-
-	return nil
-}
-
-func (p *Pubkey) elgSec(item *items.Item, prefix string) error {
-	mpi, err := values.GetMPI(p.reader, prefix+"ElGamal x", p.Iflag)
-	if err != nil {
-		return err
-	}
-	item.AddSub(mpi.Get())
+	item.AddSub(values.NewRawData("Checksum", "", chk[:], true).Get())
 
 	return nil
 }
 
-func (p *Pubkey) ecdsaSec(item *items.Item, prefix string) error {
-	mpi, err := values.GetMPI(p.reader, prefix+"ECDSA x", p.Iflag)
+func (p *Pubkey) rsaSec(item *items.Item) error {
+	mpi, err := values.GetMPI(p.reader, "RSA d", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sec RSA d (%v)", err))
+	}
+	item.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(p.reader, "RSA p", p.Iflag)
+	if err != nil {
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sec RSA p (%v)", err))
+	}
+	item.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(p.reader, "RSA q", p.Iflag)
+	if err != nil {
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sec RSA q (%v)", err))
+	}
+	item.AddSub(mpi.Get())
+
+	mpi, err = values.GetMPI(p.reader, "RSA u", p.Iflag)
+	if err != nil {
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sec RSA u (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	return nil
 }
 
-func (p *Pubkey) ecdhSec(item *items.Item, prefix string) error {
-	mpi, err := values.GetMPI(p.reader, prefix+"ECDH x", p.Iflag)
+func (p *Pubkey) dsaSec(item *items.Item) error {
+	mpi, err := values.GetMPI(p.reader, "DSA x", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sec DSA x (%v)", err))
+	}
+	item.AddSub(mpi.Get())
+
+	return nil
+}
+
+func (p *Pubkey) elgSec(item *items.Item) error {
+	mpi, err := values.GetMPI(p.reader, "ElGamal x", p.Iflag)
+	if err != nil {
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sec ElGamal x (%v)", err))
+	}
+	item.AddSub(mpi.Get())
+
+	return nil
+}
+
+func (p *Pubkey) ecdsaSec(item *items.Item) error {
+	mpi, err := values.GetMPI(p.reader, "ECDSA x", p.Iflag)
+	if err != nil {
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sec ECDSA x (%v)", err))
+	}
+	item.AddSub(mpi.Get())
+
+	return nil
+}
+
+func (p *Pubkey) ecdhSec(item *items.Item) error {
+	mpi, err := values.GetMPI(p.reader, "ECDH x", p.Iflag)
+	if err != nil {
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sec ECDH x (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -300,7 +301,7 @@ func (p *Pubkey) ParseSig(item *items.Item) error {
 func (p *Pubkey) rsaSig(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "RSA m^d mod n -> PKCS-1", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sig RSA (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -310,13 +311,13 @@ func (p *Pubkey) rsaSig(item *items.Item) error {
 func (p *Pubkey) dsaSig(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "DSA r", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sig DSA r (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "DSA s", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sig DSA s (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -326,13 +327,13 @@ func (p *Pubkey) dsaSig(item *items.Item) error {
 func (p *Pubkey) ecdsaSig(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "ECDSA r", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sig ECDSA r (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "ECDSA s", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sig ECDSA s (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -342,13 +343,13 @@ func (p *Pubkey) ecdsaSig(item *items.Item) error {
 func (p *Pubkey) elgSig(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "ElGamal a = g^k mod p", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sig ElGamal a (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "ElGamal b = (h - a*x)/k mod p - 1", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sig ElGamal b (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -377,7 +378,7 @@ func (p *Pubkey) ParseSes(item *items.Item) error {
 func (p *Pubkey) rsaSes(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "RSA m^e mod n -> m = Ses alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("ses RSA (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -387,13 +388,13 @@ func (p *Pubkey) rsaSes(item *items.Item) error {
 func (p *Pubkey) elgSes(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "ElGamal g^k mod p", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("ses ElGamal(1) (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
 	mpi, err = values.GetMPI(p.reader, "ElGamal m * y^k mod p -> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("ses ElGamal(2) (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
@@ -403,13 +404,13 @@ func (p *Pubkey) elgSes(item *items.Item) error {
 func (p *Pubkey) ecdhSes(item *items.Item) error {
 	mpi, err := values.GetMPI(p.reader, "ECDSA 04 || EC point (X,Y)", p.Iflag)
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("ses ECDH point (%v)", err))
 	}
 	item.AddSub(mpi.Get())
 
-	dat, err := getECParm(p.reader)
+	dat, err := p.getECParm()
 	if err != nil {
-		return err
+		return errs.ErrPacketInvalidData(fmt.Sprintf("ses ECDH key (%v)", err))
 	}
 	if dat != nil {
 		item.AddSub(items.NewItem("symmetric key (encoded)", "", fmt.Sprintf("%d bytes", len(dat)), ""))
@@ -417,10 +418,10 @@ func (p *Pubkey) ecdhSes(item *items.Item) error {
 	return nil
 }
 
-func getECParm(reader *bytes.Reader) ([]byte, error) {
-	length, err := reader.ReadByte()
+func (p *Pubkey) getECParm() ([]byte, error) {
+	length, err := p.reader.ReadByte()
 	if err != nil {
-		if err == io.EOF {
+		if err == io.EOF || err == io.ErrUnexpectedEOF {
 			return nil, nil
 		}
 		return nil, err
@@ -428,16 +429,16 @@ func getECParm(reader *bytes.Reader) ([]byte, error) {
 	if length == 0 {
 		return nil, nil
 	}
-	buf := make([]byte, length)
-	if _, err := reader.Read(buf); err != nil {
+	buf, err := values.GetBytes(p.reader, int(length))
+	if err != nil {
 		return nil, err
 	}
 	return buf, nil
 }
 
-func skipBytes(reader *bytes.Reader, length int) []byte {
-	buf := make([]byte, length)
-	if _, err := reader.Read(buf); err != nil {
+func (p *Pubkey) skipBytes(length int) []byte {
+	buf, err := values.GetBytes(p.reader, length)
+	if err != nil {
 		return nil
 	}
 	return buf
