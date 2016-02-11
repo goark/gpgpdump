@@ -43,12 +43,12 @@ type Packet struct {
 }
 
 // StringPacketInfo returns string of packet information
-func (p Packet) String() string {
+func (p *Packet) String() string {
 	return fmt.Sprintf("%v (%d bytes)", p.Tag, len(p.Content))
 }
 
 //Parse parsing OpenPGP packet.
-func (p Packet) Parse(opt *options.Options) (*items.Item, error) {
+func (p *Packet) Parse(opt *options.Options) (*items.Item, error) {
 	return p.getTag(opt).Parse()
 }
 

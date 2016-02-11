@@ -24,7 +24,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag02 {
 }
 
 // Parse parsing Signature Packet
-func (t Tag02) Parse() (*items.Item, error) {
+func (t *Tag02) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 
 	version := values.SigVer(t.body[0])
@@ -38,7 +38,7 @@ func (t Tag02) Parse() (*items.Item, error) {
 	return pckt, nil
 }
 
-func (t Tag02) parseV3(pckt *items.Item) (*items.Item, error) {
+func (t *Tag02) parseV3(pckt *items.Item) (*items.Item, error) {
 	//Structure of Signiture Packet (Ver3)
 	// [00] One-octet version number (3).
 	// [01] One-octet length of following hashed material.  MUST be 5.
@@ -80,7 +80,7 @@ func (t Tag02) parseV3(pckt *items.Item) (*items.Item, error) {
 	return pckt, nil
 }
 
-func (t Tag02) parseV4(pckt *items.Item) (*items.Item, error) {
+func (t *Tag02) parseV4(pckt *items.Item) (*items.Item, error) {
 	//Structure of Signiture Packet (Ver4)
 	// [00] One-octet version number (4).
 	// [01] One-octet signature type.
@@ -126,6 +126,6 @@ func (t Tag02) parseV4(pckt *items.Item) (*items.Item, error) {
 	return pckt, nil
 }
 
-func (t Tag02) hashLeft2(h []byte) *values.RawData {
+func (t *Tag02) hashLeft2(h []byte) *values.RawData {
 	return values.NewRawData("Hash left 2 bytes", "", h, true)
 }
