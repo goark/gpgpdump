@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path"
+	"runtime"
 	"strings"
 
 	"github.com/spiegel-im-spiegel/gocli"
@@ -24,6 +25,7 @@ func setupFacade(ui *gocli.UI) *facade.Facade {
 
 func main() {
 	Name = path.Base(strings.Replace(os.Args[0], "\\", "/", -1))
+	GoVersion = runtime.Version()
 	ui := gocli.NewUI()
 	fcd := setupFacade(ui)
 	if rtn, err := fcd.Run(os.Args[1:]); rtn != facade.ExitSuccess {

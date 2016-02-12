@@ -132,9 +132,9 @@ OPTIONS:
 func (f *Facade) showVersion() {
 	var str string
 	if len(f.GoVersion) == 0 {
-		str = fmt.Sprintf("%s %s\nCopyright 2016 Spiegel (adapted from pgpdump)\nLicensed under Apache License, Version 2.0", f.Name, f.Version)
+		str = fmt.Sprintf("%s %s\nCopyright 2016 Spiegel (based on pgpdump)\nLicensed under Apache License, Version 2.0", f.Name, f.Version)
 	} else {
-		str = fmt.Sprintf("%s %s (by %s)\nCopyright 2016 Spiegel (adapted from pgpdump)\nLicensed under Apache License, Version 2.0", f.Name, f.Version, f.GoVersion)
+		str = fmt.Sprintf("%s %s (%s)\nCopyright 2016 Spiegel (adapted from pgpdump)\nLicensed under Apache License, Version 2.0", f.Name, f.Version, f.GoVersion)
 	}
 	f.OutputErrln(str)
 }
