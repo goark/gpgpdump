@@ -15,4 +15,4 @@ script:
 
 after_success:
   - gox -output "dist/{.OS}_{.Arch}_{.Dir}"
-  - ghr --username spiegel.im.spiegel --token $GITHUB_TOKEN --replace --debug v0.1.1 dist/
+  - ghr --username spiegel.im.spiegel --token $GITHUB_TOKEN v0.1.2 dist/
