@@ -3,6 +3,9 @@ language: go
 go:
   - 1.5
 
+branches:
+  except: /^(feature|try|refatoring).*$/
+
 before_install:
   - go get -v github.com/mitchellh/gox
   - go get -v github.com/tcnksm/ghr

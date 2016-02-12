@@ -14,7 +14,7 @@ var (
 	// Name of application
 	Name = "gpgpdump"
 	// Version of application
-	Version = "v0.1.0"
+	Version = "v0.1.1"
 	// GoVersion of go version
 	GoVersion = ""
 )
