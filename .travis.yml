@@ -4,9 +4,9 @@ go:
   - 1.5
 
 before_install:
-  - go get github.com/mitchellh/gox
+  - go get -v github.com/mitchellh/gox
   - gox -build-toolchain
-  - go get github.com/tcnksm/ghr
+  - go get -v github.com/tcnksm/ghr
 
 script:
   - go test -v ./...
