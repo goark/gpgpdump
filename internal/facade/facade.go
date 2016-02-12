@@ -45,11 +45,9 @@ func NewFacade(appName, version, goVer string, ui *gocli.UI) *Facade {
 
 // Run Application
 func (f *Facade) Run(args []string) (code int, err error) {
-	code = ExitFailure
-	err = errs.ErrPanicOccured
 	defer func() {
-		if err := recover(); err != nil {
-			f.OutputErrln(fmt.Sprintf("Panic: %v", err))
+		if r := recover(); r != nil {
+			f.OutputErrln(fmt.Sprintf("Panic: %v", r))
 			for depth := 1; ; depth++ {
 				pc, _, line, ok := runtime.Caller(depth)
 				if !ok {
@@ -57,6 +55,8 @@ func (f *Facade) Run(args []string) (code int, err error) {
 				}
 				f.OutputErrln(fmt.Sprintf(" -> %d: %s (%d)", depth, runtime.FuncForPC(pc).Name(), line))
 			}
+			code = ExitFailure
+			err = errs.ErrPanicOccured
 		}
 	}()
 
@@ -100,6 +100,7 @@ func (f *Facade) Run(args []string) (code int, err error) {
 	}
 
 	if *ftest { // for facade test
+		//panic("test")
 		return ExitSuccess, ErrFacadeTest
 	}
 	if err := f.command.Run(); err != nil {
