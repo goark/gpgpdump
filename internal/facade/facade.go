@@ -13,7 +13,7 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/internal/parse"
 )
 
-// Exit Status
+// Exit Status List
 const (
 	ExitSuccess = iota
 	ExitFailure
