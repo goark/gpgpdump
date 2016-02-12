@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - 1.5
+  - 1.5.3
 
 branches:
   except: /^(feature|try|refatoring).*$/
@@ -14,5 +14,5 @@ script:
   - go test -v ./...
 
 after_success:
-  - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
+  - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags "-X main.Version=`git tag | tail -1`"
   - ghr --username spiegel-im-spiegel --token $GITHUB_TOKEN `git tag | tail -1` dist/
