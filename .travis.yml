@@ -16,4 +16,4 @@ script:
 after_success:
   - gox -output "goxdist/{{.OS}}_{{.Arch}}_`git tag | tail -1`/{{.Dir}}" -ldflags "-X main.Version=`git tag | tail -1`"
   - sh scripts/package.sh
-  - ghr --username spiegel-im-spiegel --token $GITHUB_TOKEN -replace `git tag | tail -1` goxdist/dist/
+  - ghr --username spiegel-im-spiegel --token $GITHUB_TOKEN --replace `git tag | tail -1` goxdist/dist/
