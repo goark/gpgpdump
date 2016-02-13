@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/spiegel-im-spiegel/gpgpdump.svg?branch=master)](https://travis-ci.org/spiegel-im-spiegel/gpgpdump)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/spiegel-im-spiegel/gpgpdump/master/LICENSE)
-[![GitHub release](http://img.shields.io/github/release/spiegel-im-spiegel/gpgpdump.svg)]
+[![GitHub release](http://img.shields.io/github/release/spiegel-im-spiegel/gpgpdump.svg)](https://github.com/spiegel-im-spiegel/gpgpdump/releases/latest)
 
 [gpgpdump](https://github.com/spiegel-im-spiegel/gpgpdump) is a OpenPGP ([RFC 4880](https://tools.ietf.org/html/rfc4880)) packet visualizer by [golang](https://golang.org/).
 
