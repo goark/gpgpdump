@@ -14,5 +14,5 @@ script:
   - go test -v ./...
 
 after_success:
-  - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags "-X main.Version=`git tag | tail -1`"
+  - gox -output "dist/{{.Dir}}_{{.OS}}_{{.Arch}}" -ldflags "-X main.Version=`git tag | tail -1`"
   - ghr --username spiegel-im-spiegel --token $GITHUB_TOKEN `git tag | tail -1` dist/
