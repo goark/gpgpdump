@@ -19,7 +19,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag19 {
 }
 
 // Parse parsing Modification Detection Code Packet
-func (t Tag19) Parse() (*items.Item, error) {
+func (t *Tag19) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 	pckt.AddSub(items.NewItem("MDC", "", "SHA-1 (20 bytes)", ""))
 	return pckt, nil

@@ -19,7 +19,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag18 {
 }
 
 // Parse parsing Sym. Encrypted Integrity Protected Data Packet
-func (t Tag18) Parse() (*items.Item, error) {
+func (t *Tag18) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 
 	switch true {

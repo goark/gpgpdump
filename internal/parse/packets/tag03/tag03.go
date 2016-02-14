@@ -22,7 +22,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag03 {
 }
 
 // Parse parsing Symmetric-Key Encrypted Session Key Packet
-func (t Tag03) Parse() (*items.Item, error) {
+func (t *Tag03) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 	// [00] one-octet version number
 	// [01] one-octet number describing the symmetric algorithm used.

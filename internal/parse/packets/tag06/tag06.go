@@ -24,7 +24,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag06 {
 }
 
 // Parse parsing Public-Key Packet
-func (t Tag06) Parse() (*items.Item, error) {
+func (t *Tag06) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 	reader := bytes.NewReader(t.body)
 

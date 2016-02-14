@@ -20,7 +20,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag17 {
 }
 
 // Parse parsingUser Attribute Packet
-func (t Tag17) Parse() (*items.Item, error) {
+func (t *Tag17) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 	sp, err := sub.New(t.Options, "Subpacket", t.body)
 	if err != nil {

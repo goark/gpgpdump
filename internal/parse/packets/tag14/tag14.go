@@ -20,6 +20,6 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag14 {
 }
 
 // Parse parsing Public-Subkey Packet
-func (t Tag14) Parse() (*items.Item, error) {
+func (t *Tag14) Parse() (*items.Item, error) {
 	return tag06.New(t.Options, t.tag, t.body).Parse() //redirect to Tag06
 }
