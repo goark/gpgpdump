@@ -15,17 +15,14 @@ var (
 	Name = "gpgpdump"
 	// Version of application
 	Version = "v0.1.2"
-	// GoVersion of go version
-	GoVersion = ""
 )
 
 func setupFacade(ui *gocli.UI) *facade.Facade {
-	return facade.NewFacade(Name, Version, GoVersion, ui)
+	return facade.NewFacade(Name, Version, runtime.Version(), ui)
 }
 
 func main() {
 	Name = path.Base(strings.Replace(os.Args[0], "\\", "/", -1))
-	GoVersion = runtime.Version()
 	ui := gocli.NewUI()
 	fcd := setupFacade(ui)
 	if rtn, err := fcd.Run(os.Args[1:]); rtn != facade.ExitSuccess {
