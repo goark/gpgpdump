@@ -3,6 +3,11 @@ package sub
 import (
 	"fmt"
 	"testing"
+
+	"golang.org/x/crypto/openpgp/packet"
+
+	"github.com/spiegel-im-spiegel/gpgpdump/internal/options"
+	"github.com/spiegel-im-spiegel/gpgpdump/items"
 )
 
 var testSubpacketNames = []string{
@@ -42,8 +47,6 @@ var testSubpacketNames = []string{
 	"Unknown (sub 33)",                                //33
 }
 
-var testSubpacketFunctions = Functions{}
-
 func TestPacketType(t *testing.T) {
 	for tp := 0; tp <= 33; tp++ {
 		i := PacketType(tp).Get()
@@ -69,7 +72,58 @@ func TestPacketType(t *testing.T) {
 	}
 }
 
+var testSubpacketFunctions = Functions{}
+
 func TestParseSub(t *testing.T) {
-	for tp := 0; tp <= 33; tp++ {
+	sp := &Packets{Options: &options.Options{}, Title: "test"}
+	osp := &packet.OpaqueSubpacket{SubType: 0, Contents: []byte{0x01, 0x02}}
+	s := items.NewItem(sp.Title, "", "", "")
+	err := testSubpacketFunctions.Get(int(osp.SubType), ParseSPReserved)(sp, osp, s)
+	if err != nil {
+		t.Errorf("ParseSPReserved err = \"%v\", want nil.", err)
+	}
+	if len(s.Item) != 1 {
+		t.Errorf("ParseSPReserved.Item len = \"%d\", want q.", len(s.Item))
+	} else {
+		i := s.Item[0]
+		if i.Name != testSubpacketNames[0] {
+			t.Errorf("Tag.Name = \"%s\", want \"%s\".", i.Name, testSubpacketNames[0])
+		}
+		if i.Value != "" {
+			t.Errorf("Tag.Value = \"%s\", want \"\".", i.Value)
+		}
+		if i.Note != "2 bytes" {
+			t.Errorf("Tag.Note = \"%s\", want \"2 bytes\"", i.Note)
+		}
+		if i.Dump != "" {
+			t.Errorf("Tag.Dump = \"%s\", want \"\".", i.Dump)
+		}
+	}
+}
+
+func TestStringFlagInfoSet(t *testing.T) {
+	i := StringFlagInfo(0x01, "test")
+	if i == nil {
+		t.Error("Flag = nil, not want nil.")
+	} else {
+		if i.Name != "Flag" {
+			t.Errorf("Flag.Name = \"%s\", want \"Flag\".", i.Name)
+		}
+		if i.Value != "" {
+			t.Errorf("Flag.Value = \"%s\", want \"\".", i.Value)
+		}
+		if i.Note != "test" {
+			t.Errorf("Flag.Note = \"%s\", want \"test\"", i.Note)
+		}
+		if i.Dump != "" {
+			t.Errorf("Flag.Dump = \"%s\", want \"\".", i.Dump)
+		}
+	}
+}
+
+func TestStringFlagInfoUnset(t *testing.T) {
+	i := StringFlagInfo(0x00, "test")
+	if i != nil {
+		t.Error("Flag = not nil, want nil.")
 	}
 }
