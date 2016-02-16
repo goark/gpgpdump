@@ -67,17 +67,16 @@ func (s PacketType) String() string {
 // Packets - Sub Packets
 type Packets struct {
 	*options.Options
-	Title            string
-	OpaqueSubpackets []*packet.OpaqueSubpacket
+	Title string
 }
 
 //New returns new Packets instance
-func New(opt *options.Options, title string, body []byte) (*Packets, error) {
-	osp, err := packet.OpaqueSubpackets(body)
+func New(opt *options.Options, title string, body []byte) (*Packets, []*packet.OpaqueSubpacket, error) {
+	osps, err := packet.OpaqueSubpackets(body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return &Packets{Options: opt, Title: title, OpaqueSubpackets: osp}, nil
+	return &Packets{Options: opt, Title: title}, osps, nil
 }
 
 // ParseSubpacket is function value of parsing sub-packet
