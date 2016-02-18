@@ -1,6 +1,7 @@
 # gpgpdump - OpenPGP packet visualizer
 
 [![Build Status](https://travis-ci.org/spiegel-im-spiegel/gpgpdump.svg?branch=master)](https://travis-ci.org/spiegel-im-spiegel/gpgpdump)
+[![Dependency Status](https://david-dm.org/spiegel-im-spiegel/gpgpdump.svg)](https://david-dm.org/spiegel-im-spiegel/gpgpdump)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/spiegel-im-spiegel/gpgpdump/master/LICENSE)
 [![GitHub release](http://img.shields.io/github/release/spiegel-im-spiegel/gpgpdump.svg)](https://github.com/spiegel-im-spiegel/gpgpdump/releases/latest)
 
