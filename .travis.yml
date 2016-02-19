@@ -11,6 +11,6 @@ before_deploy:
   - go get -v github.com/tcnksm/ghr
 
 after_deploy:
-  - gox -output "goxdist/{{.OS}}_{{.Arch}}_`git tag | tail -1`/{{.Dir}}" -ldflags "-X main.Version=`git tag | tail -1`"
+  - gox -output "goxdist/{{.OS}}_{{.Arch}}_${TRAVIS_TAG}/{{.Dir}}" -ldflags "-X main.Version=${TRAVIS_TAG}"
   - sh scripts/package.sh
-  - ghr --username spiegel-im-spiegel --token $GITHUB_TOKEN `git tag | tail -1` goxdist/dist/
+  - ghr --username spiegel-im-spiegel --token $GITHUB_TOKEN ${TRAVIS_TAG} goxdist/dist/
