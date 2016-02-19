@@ -27,12 +27,12 @@ func New(opt *options.Options, reader *bytes.Reader) *S2K {
 }
 
 //Left returns left bytes
-func (s S2K) Left() int {
+func (s *S2K) Left() int {
 	return s.reader.Len()
 }
 
 //HasIV returns true if it has IV
-func (s S2K) HasIV() bool {
+func (s *S2K) HasIV() bool {
 	return s.hasIV
 }
 
@@ -40,24 +40,34 @@ func (s S2K) HasIV() bool {
 func (s *S2K) Get() (*items.Item, error) {
 	ss, err := s.reader.ReadByte()
 	if err != nil {
-		return nil, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(size, %v)", err))
+		return nil, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(alg, %v)", err))
 	}
 	s2kAlg := values.S2KAlg(ss)
 	s2k := s2kAlg.Get()
-	h, err := s.reader.ReadByte()
-	if err != nil {
-		return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(alg, %v)", err))
-	}
-	s2k.AddSub(values.HashAlg(h).Get())
 	switch s2kAlg {
 	case 0: //Simple S2K
+		h, err := s.reader.ReadByte()
+		if err != nil {
+			return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(hash-alg0, %v)", err))
+		}
+		s2k.AddSub(values.HashAlg(h).Get())
 	case 1: //Salted S2K
+		h, err := s.reader.ReadByte()
+		if err != nil {
+			return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(hash-alg1, %v)", err))
+		}
+		s2k.AddSub(values.HashAlg(h).Get())
 		salt, err := s.getSalt()
 		if err != nil {
 			return s2k, err
 		}
 		s2k.AddSub(salt)
 	case 3: //Iterated and Salted S2K
+		h, err := s.reader.ReadByte()
+		if err != nil {
+			return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(hash-alg3, %v)", err))
+		}
+		s2k.AddSub(values.HashAlg(h).Get())
 		salt, err := s.getSalt()
 		if err != nil {
 			return s2k, err
@@ -69,30 +79,39 @@ func (s *S2K) Get() (*items.Item, error) {
 		}
 		s2k.AddSub(ct)
 	case 101: //Private/Experimental algorithm (s2k 101)
-		s.hasIV = false
-		mrk, err := values.GetBytes(s.reader, 4)
+		//GNU-divert-to-card S2K format
+		//refs https://lists.gnupg.org/pipermail/gnupg-users/2015-February/052769.html
+		if s.Left() < 4 {
+			return s2k, nil
+		}
+		mrk, err := values.GetBytes(s.reader, 3)
 		if err != nil {
-			return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(mark, %v)", err))
+			return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(gnu-div, %v)", err))
 		}
-		gpg := items.NewItem("GnuPG Unknown", string(mrk[:]), "", values.DumpByte(mrk[0:]))
-		switch string(mrk[:]) {
-		case "GNU1":
-			gpg.Name = "GnuPG gnu-dummy"
-			gpg.Note = "s2k 1001"
-		case "GNU2":
-			gpg.Name = "GnuPG gnu-divert-to-card"
-			gpg.Note = "s2k 1001"
-			l, err := s.reader.ReadByte()
+		if bytes.Compare(mrk, []byte("GNU")) == 0 {
+			s.hasIV = false
+			n, err := s.reader.ReadByte()
 			if err != nil {
-				return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(s/n size, %v)", err))
+				return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(gnu-div num, %v)", err))
 			}
-			ser, err := values.GetBytes(s.reader, int(l))
-			if err != nil {
-				return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(s/n, %v)", err))
+			enum := 1000 + int(n)
+			gnu := items.NewItem("GNU-divert-to-card", fmt.Sprintf("Extension Number %d", enum), "", "")
+			switch enum {
+			case 1002:
+				l, err := s.reader.ReadByte()
+				if err != nil {
+					return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(gnu-div s/n size, %v)", err))
+				}
+				ser, err := values.GetBytes(s.reader, int(l))
+				if err != nil {
+					return s2k, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(gnu-div s/n, %v)", err))
+				}
+				gnu.AddSub(values.NewRawData("Serial Number", "", ser, true).Get())
 			}
-			gpg.AddSub(values.NewRawData("Serial Number", "", ser, true).Get())
+			s2k.AddSub(gnu)
+		} else if _, err := s.reader.Seek(-3, 1); err != nil {
+			return s2k, err
 		}
-		s2k.AddSub(gpg)
 	}
 	return s2k, nil
 }
@@ -110,6 +129,6 @@ func (s *S2K) getCount() (*items.Item, error) {
 	if err != nil {
 		return nil, errs.ErrPacketInvalidData(fmt.Sprintf("S2K(count, %v)", err))
 	}
-	count := (uint32(16) + (uint32(c) & 15)) << ((uint32(c) >> 4) + EXPBIAS)
+	count := (uint32(16) + (uint32(c) & 0x0f)) << ((uint32(c) >> 4) + EXPBIAS)
 	return items.NewItem("Count", strconv.Itoa(int(count)), fmt.Sprintf("coded: 0x%02x", c), ""), nil
 }

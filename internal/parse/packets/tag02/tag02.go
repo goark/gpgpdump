@@ -104,20 +104,20 @@ func (t *Tag02) parseV4(pckt *items.Item) (*items.Item, error) {
 	pckt.AddSub(pub.Get())
 	pckt.AddSub(hash.Get())
 	if sizeHS > 0 {
-		sp, err := sub.New(t.Options, "Hashed Subpacket", t.body[6:6+sizeHS])
+		sp, osps, err := sub.New(t.Options, "Hashed Subpacket", t.body[6:6+sizeHS])
 		if err != nil {
 			return pckt, err
 		}
-		if err := ParseSub(sp, pckt); err != nil {
+		if err := ParseSub(sp, osps, pckt); err != nil {
 			return pckt, err
 		}
 	}
 	if sizeUS > 0 {
-		sp, err := sub.New(t.Options, "Unhashed Subpacket", t.body[8+sizeHS:8+sizeHS+sizeUS])
+		sp, osps, err := sub.New(t.Options, "Unhashed Subpacket", t.body[8+sizeHS:8+sizeHS+sizeUS])
 		if err != nil {
 			return pckt, err
 		}
-		if err := ParseSub(sp, pckt); err != nil {
+		if err := ParseSub(sp, osps, pckt); err != nil {
 			return pckt, err
 		}
 	}

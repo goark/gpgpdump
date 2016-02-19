@@ -19,6 +19,6 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Unknown {
 }
 
 // Parse parsing Unknown Packet
-func (t Unknown) Parse() (*items.Item, error) {
+func (t *Unknown) Parse() (*items.Item, error) {
 	return t.tag.Get(len(t.body)), nil
 }

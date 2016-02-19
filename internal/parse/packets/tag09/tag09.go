@@ -19,7 +19,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag09 {
 }
 
 // Parse parsing Symmetrically Encrypted Data Packe
-func (t Tag09) Parse() (*items.Item, error) {
+func (t *Tag09) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 
 	switch true {

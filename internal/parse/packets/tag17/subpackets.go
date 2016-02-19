@@ -16,9 +16,9 @@ var parseSubpacketFunctions = sub.Functions{
 }
 
 //ParseSub parsing Sub Packets
-func ParseSub(sp *sub.Packets, pckt *items.Item) error {
+func ParseSub(sp *sub.Packets, osps []*packet.OpaqueSubpacket, pckt *items.Item) error {
 	s := items.NewItem(sp.Title, "", "", "")
-	for _, p := range sp.OpaqueSubpackets {
+	for _, p := range osps {
 		if err := parseSubpacketFunctions.Get(int(p.SubType), sub.ParseSPReserved)(sp, p, s); err != nil {
 			return err
 		}

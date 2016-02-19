@@ -21,7 +21,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag04 {
 }
 
 // Parse parsing One-Pass Signature Packet
-func (t Tag04) Parse() (*items.Item, error) {
+func (t *Tag04) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 	// [00] one-octet version number
 	// [01] one-octet signature type

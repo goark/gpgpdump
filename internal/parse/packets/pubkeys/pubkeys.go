@@ -202,11 +202,11 @@ func (p *Pubkey) ParseSecPlain(item *items.Item) error {
 		item.AddSub(items.NewItem(fmt.Sprintf("Multi-precision integers of unknown secret key (pub %d)", p.pub), "", fmt.Sprintf("%d bytes", p.reader.Len()-2), ""))
 		_ = p.skipBytes(p.reader.Len() - 2)
 	}
-	var chk [2]byte
-	if _, err := p.reader.Read(chk[0:]); err != nil {
-		return err
+	chk, err := values.GetBytes(p.reader, 2)
+	if err != nil {
+		return errs.ErrPacketInvalidData(fmt.Sprintf("sec checksum (%v)", err))
 	}
-	item.AddSub(values.NewRawData("Checksum", "", chk[:], true).Get())
+	item.AddSub(values.NewRawData("Checksum", "", chk, true).Get())
 
 	return nil
 }

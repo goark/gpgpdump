@@ -19,7 +19,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Private {
 }
 
 // Parse parsing Private Packet
-func (t Private) Parse() (*items.Item, error) {
+func (t *Private) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 	pckt.Dump = values.NewRawData("Private", "", t.body, t.Pflag).Get().Dump
 	return pckt, nil

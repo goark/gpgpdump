@@ -22,7 +22,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag01 {
 }
 
 // Parse parsing Public-Key Encrypted Session Key Packet
-func (t Tag01) Parse() (*items.Item, error) {
+func (t *Tag01) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 	// [00] one-octet number giving the version number of the packet type.
 	// [01] eight-octet number that gives the Key ID of the public key to which the session key is encrypted.

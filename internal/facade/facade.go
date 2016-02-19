@@ -46,6 +46,7 @@ func NewFacade(appName, version, goVer string, ui *gocli.UI) *Facade {
 // Run Application
 func (f *Facade) Run(args []string) (code int, err error) {
 	defer func() {
+		//panic handling
 		if r := recover(); r != nil {
 			f.OutputErrln(fmt.Sprintf("Panic: %v", r))
 			for depth := 1; ; depth++ {
@@ -132,9 +133,9 @@ OPTIONS:
 func (f *Facade) showVersion() {
 	var str string
 	if len(f.GoVersion) == 0 {
-		str = fmt.Sprintf("%s %s\nCopyright 2016 Spiegel (based on pgpdump)\nLicensed under Apache License, Version 2.0", f.Name, f.Version)
+		str = fmt.Sprintf("%s %s\nCopyright 2016 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0", f.Name, f.Version)
 	} else {
-		str = fmt.Sprintf("%s %s (%s)\nCopyright 2016 Spiegel (based on pgpdump)\nLicensed under Apache License, Version 2.0", f.Name, f.Version, f.GoVersion)
+		str = fmt.Sprintf("%s %s (%s)\nCopyright 2016 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0", f.Name, f.Version, f.GoVersion)
 	}
 	f.OutputErrln(str)
 }

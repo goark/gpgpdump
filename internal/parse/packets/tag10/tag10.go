@@ -19,7 +19,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag10 {
 }
 
 // Parse parsing Marker Packet (Obsolete Literal Packet)
-func (t Tag10) Parse() (*items.Item, error) {
+func (t *Tag10) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 	pckt.AddSub(values.LiteralData(t.body, t.Mflag).Get())
 	return pckt, nil

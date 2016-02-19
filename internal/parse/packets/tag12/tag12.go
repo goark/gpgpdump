@@ -19,7 +19,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag12 {
 }
 
 // Parse parsing Trust Packet
-func (t Tag12) Parse() (*items.Item, error) {
+func (t *Tag12) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 	pckt.AddSub(values.NewRawData("Trust", "", t.body, true).Get())
 	return pckt, nil

@@ -19,7 +19,7 @@ func New(opt *options.Options, tag values.Tag, body []byte) *Tag11 {
 }
 
 // Parse parsing Literal Data Packet
-func (t Tag11) Parse() (*items.Item, error) {
+func (t *Tag11) Parse() (*items.Item, error) {
 	pckt := t.tag.Get(len(t.body))
 
 	f := values.LiteralFormat(t.body[0])

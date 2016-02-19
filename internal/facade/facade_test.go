@@ -2,7 +2,9 @@ package facade
 
 import (
 	"bytes"
+	"fmt"
 	"io"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -119,6 +121,14 @@ func TestRunHflag(t *testing.T) {
 	if fcd.command.InputFile != "" {
 		t.Errorf("command.InputFile = \"%v\", want empty.", fcd.command.InputFile)
 	}
+	if outBuf.Len() > 0 {
+		t.Errorf("stdout = \"%v\", want empty.", outBuf)
+	}
+	if errBuf.Len() == 0 {
+		t.Error("stderr = empty.")
+	} else {
+		fmt.Println(errBuf)
+	}
 }
 
 func TestRunVflag(t *testing.T) {
@@ -128,7 +138,7 @@ func TestRunVflag(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	ui := GetUI(inpmsg, outBuf, errBuf)
-	fcd := NewFacade(name, version, "", ui)
+	fcd := NewFacade(name, version, runtime.Version(), ui)
 	args := []string{"-v"}
 
 	rtn, err := fcd.Run(args)
@@ -173,6 +183,14 @@ func TestRunVflag(t *testing.T) {
 	}
 	if fcd.command.InputFile != "" {
 		t.Errorf("command.InputFile = \"%v\", want empty.", fcd.command.InputFile)
+	}
+	if outBuf.Len() > 0 {
+		t.Errorf("stdout = \"%v\", want empty.", outBuf)
+	}
+	if errBuf.Len() == 0 {
+		t.Error("stderr = empty.")
+	} else {
+		fmt.Println(errBuf)
 	}
 }
 

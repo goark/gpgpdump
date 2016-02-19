@@ -38,9 +38,9 @@ var parseSubpacketFunctions = sub.Functions{
 }
 
 //ParseSub parsing sub-packets
-func ParseSub(sp *sub.Packets, pckt *items.Item) error {
+func ParseSub(sp *sub.Packets, osps []*packet.OpaqueSubpacket, pckt *items.Item) error {
 	s := items.NewItem(sp.Title, "", "", "")
-	for _, p := range sp.OpaqueSubpackets {
+	for _, p := range osps {
 		if p.SubType == 32 {
 			// recursive call in parseSPType32()
 			if err := parseSPType32(sp, p, s); err != nil {
