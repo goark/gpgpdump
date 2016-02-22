@@ -10,6 +10,7 @@ for PLATFORM in $(find ./goxdist -mindepth 1 -maxdepth 1 -type d); do
     fi
 
     cd ${PLATFORM}
+    cp ${DIR}/LICENSE ${DIR}/README.md .
     zip ${DIR}/goxdist/dist/${PLATFORM_NAME}.zip ./*
     cd ${DIR}
 done
