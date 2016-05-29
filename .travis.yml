@@ -3,9 +3,6 @@ language: go
 go:
   - 1.5.3
 
-branches:
-  only: master
-
 before_install:
   - go get -v github.com/mitchellh/gox
   - go get -v github.com/tcnksm/ghr
