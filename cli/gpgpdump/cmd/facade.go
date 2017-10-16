@@ -47,7 +47,7 @@ func (c ExitCode) String() string {
 
 var (
 	versionFlag bool      //version flag
-	reader      io.Reader //input file reader (maybe os.Stdin)
+	reader      io.Reader //input reader (maybe os.Stdin)
 	result      string    //result by parsing OpenPGP packets
 )
 
@@ -60,12 +60,11 @@ var RootCmd = &cobra.Command{
 			return nil
 		}
 		opts := parseOpt(cmd)
-		//fmt.Println("Options: ", opts)
 
 		//open PGP file
 		if len(args) > 0 {
-			file, err := os.Open(args[0])
-			if err != nil { //maybe file path
+			file, err := os.Open(args[0]) //args[0] is maybe file path
+			if err != nil {
 				return err
 			}
 			defer file.Close()
@@ -79,17 +78,15 @@ var RootCmd = &cobra.Command{
 			return err
 		}
 
-		//marshaling
-		var res string
+		//marshal packet info
 		if opts.JSON() {
-			res, err = info.JSON()
+			result, err = info.JSON()
 		} else {
-			res, err = info.TOML()
+			result, err = info.TOML()
 		}
 		if err != nil {
 			return err
 		}
-		result = res //result
 		return nil
 	},
 }
@@ -108,15 +105,17 @@ func Execute(cui *gocli.UI) (exit ExitCode) {
 				}
 				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ": line", line)
 			}
-			exit = 1
+			exit = Abnormal
 		}
 	}()
 
 	//execution
-	reader = cui.Reader() //default reader
+	exit = Normal
+	reader = cui.Reader() //default reader; maybe os.Stdin
+	result = ""
 	if err := RootCmd.Execute(); err != nil {
 		//cui.OutputErrln(err) //no need to output error
-		exit = 1
+		exit = Abnormal
 		return
 	}
 	if versionFlag {
