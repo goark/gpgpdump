@@ -13,47 +13,47 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestMarshalTOMLNull(t *testing.T) {
+func TestTOMLNull(t *testing.T) {
 	info := (*Info)(nil)
-	res, err := info.MarshalTOML()
+	res, err := info.TOML()
 	if err != nil {
-		t.Errorf("MarshalTOML() err = %v, want nil.", err)
+		t.Errorf("TOML() err = %v, want nil.", err)
 	}
 	if string(res) != "" {
-		t.Errorf("MarshalTOML() = %v, want nil.", string(res))
+		t.Errorf("TOML() = %v, want nil.", string(res))
 	}
 }
 
-func TestMarshalTOMLEmpty(t *testing.T) {
-	info := &Info{}
-	res, err := info.MarshalTOML()
+func TestTOMLEmpty(t *testing.T) {
+	info := NewInfo()
+	res, err := info.TOML()
 	if err != nil {
-		t.Errorf("MarshalTOML() err = %v, want nil.", err)
+		t.Errorf("TOML() err = %v, want nil.", err)
 	}
 	if string(res) != "" {
-		t.Errorf("MarshalTOML() = %v, want nil.", string(res))
+		t.Errorf("TOML() = %v, want nil.", string(res))
 	}
 }
 
-func TestMarshalJSONNull(t *testing.T) {
+func TestJSONNull(t *testing.T) {
 	info := (*Info)(nil)
-	res, err := info.MarshalJSON()
+	res, err := info.JSON()
 	if err != nil {
-		t.Errorf("MarshalTOML() err = %v, want nil.", err)
+		t.Errorf("TOML() err = %v, want nil.", err)
 	}
 	if string(res) != "" {
-		t.Errorf("MarshalTOML() = %v, want nil.", string(res))
+		t.Errorf("TOML() = %v, want nil.", string(res))
 	}
 }
 
-func TestMarshalJSONEmpty(t *testing.T) {
-	info := &Info{}
-	res, err := info.MarshalJSON()
+func TestJSONEmpty(t *testing.T) {
+	info := NewInfo()
+	res, err := info.JSON()
 	if err != nil {
-		t.Errorf("MarshalTOML() err = %v, want nil.", err)
+		t.Errorf("TOML() err = %v, want nil.", err)
 	}
 	if string(res) != "{}" {
-		t.Errorf("MarshalTOML() = %v, want {}.", string(res))
+		t.Errorf("TOML() = %v, want {}.", string(res))
 	}
 
 }

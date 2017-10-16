@@ -20,7 +20,7 @@ func NewParse(o *Options, r io.Reader) *Parse {
 //Run is method for parsing packets
 func (p *Parse) Run() (*packet.Info, error) {
 	//stab
-	return &packet.Info{}, nil
+	return packet.NewInfo(), nil
 }
 
 /* Copyright 2017 Spiegel

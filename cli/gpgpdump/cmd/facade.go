@@ -82,12 +82,12 @@ var RootCmd = &cobra.Command{
 			return err
 		}
 
-		//,arshaling
+		//marshaling
 		var res []byte
 		if opts.JSON() {
-			res, err = info.MarshalJSON()
+			res, err = info.JSON()
 		} else {
-			res, err = info.MarshalTOML()
+			res, err = info.TOML()
 		}
 		if err != nil {
 			return err

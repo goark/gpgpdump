@@ -13,28 +13,40 @@ type Info struct {
 	Packets []*Item `toml:"packets,omitempty" json:"packets,omitempty"`
 }
 
-//MarshalTOML returns TOML format string
-func (i *Info) MarshalTOML() ([]byte, error) {
+//NewInfo returns Info instance
+func NewInfo() *Info {
+	return &Info{}
+}
+
+//Add add item in Packets.
+func (i *Info) Add(a *Item) {
+	if a != nil {
+		i.Packets = append(i.Packets, a)
+	}
+}
+
+//TOML returns TOML format string
+func (i *Info) TOML() ([]byte, error) {
 	if i == nil {
 		return nil, nil
 	}
 	buf := new(bytes.Buffer)
 	if err := toml.NewEncoder(buf).Encode(i); err != nil {
-		return nil, errors.Wrap(err, "marshaling error by MarshalTOML() function")
+		return nil, errors.Wrap(err, "marshaling error by TOML() function")
 	}
 	return buf.Bytes(), nil
 }
 
-//MarshalJSON returns JSON format string
-func (i *Info) MarshalJSON() ([]byte, error) {
+//JSON returns JSON format string
+func (i *Info) JSON() ([]byte, error) {
 	if i == nil {
 		return nil, nil
 	}
-	buf, err := json.MarshalIndent(*i, "", "  ")
+	j, err := json.MarshalIndent(i, "", "  ")
 	if err != nil {
-		return nil, errors.Wrap(err, "marshaling error by MarshalJSON() function")
+		return nil, errors.Wrap(err, "marshaling error by JSON() function")
 	}
-	return buf, nil
+	return j, nil
 }
 
 //Item is information item class
@@ -43,7 +55,7 @@ type Item struct {
 	Value string  `toml:"value,omitempty" json:"value,omitempty"`
 	Dump  string  `toml:"dump,omitempty" json:"dump,omitempty"`
 	Note  string  `toml:"note,omitempty" json:"note,omitempty"`
-	Item  []*Item `toml:"Item,omitempty" json:"Item,omitempty"`
+	Items []*Item `toml:"items,omitempty" json:"items,omitempty"`
 }
 
 /* Copyright 2016,2017 Spiegel
