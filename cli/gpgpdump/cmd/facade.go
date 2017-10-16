@@ -1,10 +1,8 @@
 package facade
 
 import (
-	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"runtime"
 
@@ -51,7 +49,6 @@ var (
 	versionFlag bool      //version flag
 	reader      io.Reader //input file reader (maybe os.Stdin)
 	result      string    //result by parsing OpenPGP packets
-	//info        *packet.Info //result by parsing OpenPGP packets
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -83,7 +80,7 @@ var RootCmd = &cobra.Command{
 		}
 
 		//marshaling
-		var res []byte
+		var res string
 		if opts.JSON() {
 			res, err = info.JSON()
 		} else {
@@ -92,7 +89,7 @@ var RootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		result = string(res) //result
+		result = res //result
 		return nil
 	},
 }
@@ -116,9 +113,9 @@ func Execute(cui *gocli.UI) (exit ExitCode) {
 	}()
 
 	//execution
-	reader = cui.Reader()
+	reader = cui.Reader() //default reader
 	if err := RootCmd.Execute(); err != nil {
-		//cui.OutputErrln(err)
+		//cui.OutputErrln(err) //no need to output error
 		exit = 1
 		return
 	}
@@ -141,7 +138,6 @@ func init() {
 	RootCmd.Flags().BoolP(gpgpdump.MarkerOpt, "m", false, "dumps marker packets (tag 10)")
 	RootCmd.Flags().BoolP(gpgpdump.PrivateOpt, "p", false, "dumps private packets (tag 60-63)")
 	RootCmd.Flags().BoolP(gpgpdump.UTCOpt, "u", false, "output UTC time")
-	reader = ioutil.NopCloser(bytes.NewReader(nil))
 }
 
 func getBool(cmd *cobra.Command, name string) bool {

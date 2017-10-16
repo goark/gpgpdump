@@ -19,8 +19,8 @@ func TestTOMLNull(t *testing.T) {
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
 	}
-	if string(res) != "" {
-		t.Errorf("TOML() = %v, want nil.", string(res))
+	if res != "" {
+		t.Errorf("TOML() = %v, want nil.", res)
 	}
 }
 
@@ -30,8 +30,8 @@ func TestTOMLEmpty(t *testing.T) {
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
 	}
-	if string(res) != "" {
-		t.Errorf("TOML() = %v, want nil.", string(res))
+	if res != "" {
+		t.Errorf("TOML() = %v, want nil.", res)
 	}
 }
 
@@ -41,8 +41,8 @@ func TestJSONNull(t *testing.T) {
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
 	}
-	if string(res) != "" {
-		t.Errorf("TOML() = %v, want nil.", string(res))
+	if res != "" {
+		t.Errorf("TOML() = %v, want nil.", res)
 	}
 }
 
@@ -52,8 +52,8 @@ func TestJSONEmpty(t *testing.T) {
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
 	}
-	if string(res) != "{}" {
-		t.Errorf("TOML() = %v, want {}.", string(res))
+	if res != "{}" {
+		t.Errorf("TOML() = %v, want {}.", res)
 	}
 
 }

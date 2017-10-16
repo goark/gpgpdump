@@ -26,27 +26,27 @@ func (i *Info) Add(a *Item) {
 }
 
 //TOML returns TOML format string
-func (i *Info) TOML() ([]byte, error) {
+func (i *Info) TOML() (string, error) {
 	if i == nil {
-		return nil, nil
+		return "", nil
 	}
 	buf := new(bytes.Buffer)
 	if err := toml.NewEncoder(buf).Encode(i); err != nil {
-		return nil, errors.Wrap(err, "marshaling error by TOML() function")
+		return "", errors.Wrap(err, "marshaling error by TOML() function")
 	}
-	return buf.Bytes(), nil
+	return buf.String(), nil
 }
 
 //JSON returns JSON format string
-func (i *Info) JSON() ([]byte, error) {
+func (i *Info) JSON() (string, error) {
 	if i == nil {
-		return nil, nil
+		return "", nil
 	}
 	j, err := json.MarshalIndent(i, "", "  ")
 	if err != nil {
-		return nil, errors.Wrap(err, "marshaling error by JSON() function")
+		return "", errors.Wrap(err, "marshaling error by JSON() function")
 	}
-	return j, nil
+	return string(j), nil
 }
 
 //Item is information item class
