@@ -34,8 +34,8 @@
 [[projects]]
   name = "github.com/spiegel-im-spiegel/gocli"
   packages = ["."]
-  revision = "ce636bb89975d5155422ab297943a3ffe95ee951"
-  version = "v0.4.0"
+  revision = "39e9e4c46d50e094908cc97db3242a14893bc006"
+  version = "v0.4.1"
 
 [solve-meta]
   analyzer-name = "dep"

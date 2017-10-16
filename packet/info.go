@@ -10,7 +10,7 @@ import (
 
 //Info is information class for OpenPGP packets
 type Info struct {
-	Packets []*Item `toml:"packets,omitempty" json:"packets,omitempty"`
+	Packets []*Item `toml:"Packet,omitempty" json:"Packet,omitempty"`
 }
 
 //NewInfo returns Info instance
@@ -20,7 +20,7 @@ func NewInfo() *Info {
 
 //Add add item in Packets.
 func (i *Info) Add(a *Item) {
-	if a != nil {
+	if a != nil && i != nil {
 		i.Packets = append(i.Packets, a)
 	}
 }
@@ -32,7 +32,7 @@ func (i *Info) TOML() (string, error) {
 	}
 	buf := new(bytes.Buffer)
 	if err := toml.NewEncoder(buf).Encode(i); err != nil {
-		return "", errors.Wrap(err, "marshaling error by TOML() function")
+		return "", errors.Wrap(err, "error by TOML() function")
 	}
 	return buf.String(), nil
 }
@@ -44,7 +44,7 @@ func (i *Info) JSON() (string, error) {
 	}
 	j, err := json.MarshalIndent(i, "", "  ")
 	if err != nil {
-		return "", errors.Wrap(err, "marshaling error by JSON() function")
+		return "", errors.Wrap(err, "error by JSON() function")
 	}
 	return string(j), nil
 }
@@ -55,7 +55,57 @@ type Item struct {
 	Value string  `toml:"value,omitempty" json:"value,omitempty"`
 	Dump  string  `toml:"dump,omitempty" json:"dump,omitempty"`
 	Note  string  `toml:"note,omitempty" json:"note,omitempty"`
-	Items []*Item `toml:"items,omitempty" json:"items,omitempty"`
+	Items []*Item `toml:"Item,omitempty" json:"Item,omitempty"`
+}
+
+//ItemOpt is self-referential function for functional options pattern
+type ItemOpt func(*Item)
+
+// NewItem returns a new Item instance
+func NewItem(opts ...ItemOpt) *Item {
+	i := &Item{}
+	i.optins(opts...)
+	return i
+}
+func (i *Item) optins(opts ...ItemOpt) {
+	for _, opt := range opts {
+		opt(i)
+	}
+}
+
+//Add add sub-item in item.
+func (i *Item) Add(a *Item) {
+	if a != nil && i != nil {
+		i.Items = append(i.Items, a)
+	}
+}
+
+//Name returns closure as type ItemOpt
+func Name(name string) ItemOpt {
+	return func(i *Item) {
+		i.Name = name
+	}
+}
+
+//Value returns closure as type ItemOpt
+func Value(value string) ItemOpt {
+	return func(i *Item) {
+		i.Value = value
+	}
+}
+
+//DumpStr returns closure as type ItemOpt
+func DumpStr(str string) ItemOpt {
+	return func(i *Item) {
+		i.Dump = str
+	}
+}
+
+//Note returns closure as type ItemOpt
+func Note(note string) ItemOpt {
+	return func(i *Item) {
+		i.Note = note
+	}
 }
 
 /* Copyright 2016,2017 Spiegel

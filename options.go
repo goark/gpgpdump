@@ -42,8 +42,13 @@ type OptFunc func(*Options)
 // NewOptions returns a new UI instance
 func NewOptions(opts ...OptFunc) *Options {
 	o := &Options{}
-	o.Option(opts...)
+	o.options(opts...)
 	return o
+}
+func (o *Options) options(opts ...OptFunc) {
+	for _, opt := range opts {
+		opt(o)
+	}
 }
 
 //Set returns closure as type OptFunc
@@ -74,13 +79,6 @@ func (o *Options) Set(name string, f bool) {
 		o.privateFlag = f
 	case UTCOpt:
 		o.utcFlag = f
-	}
-}
-
-//Option sets options to Options.
-func (o *Options) Option(opts ...OptFunc) {
-	for _, opt := range opts {
-		opt(o)
 	}
 }
 

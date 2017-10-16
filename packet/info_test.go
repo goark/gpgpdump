@@ -2,6 +2,7 @@ package packet
 
 import (
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -15,6 +16,7 @@ func TestMain(m *testing.M) {
 
 func TestTOMLNull(t *testing.T) {
 	info := (*Info)(nil)
+	info.Add(nil)
 	res, err := info.TOML()
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
@@ -35,8 +37,49 @@ func TestTOMLEmpty(t *testing.T) {
 	}
 }
 
+func TestTOML(t *testing.T) {
+	norm := `
+[[Packet]]
+  name = "name1"
+  value = "value1"
+  dump = "00 01 02"
+  note = "note1"
+
+  [[Packet.Item]]
+    name = "name2"
+    dump = "03 04 05"
+    note = "note2"
+`
+	output := strings.Trim(norm, " \t\n\r") + "\n"
+
+	info := NewInfo()
+	item1 := NewItem(
+		Name("name1"),
+		Value("value1"),
+		Note("note1"),
+		DumpStr("00 01 02"),
+	)
+	item2 := NewItem(
+		Name("name2"),
+		Note("note2"),
+		DumpStr("03 04 05"),
+	)
+	item1.Add(item2)
+	item1.Add(nil) //abnormal
+	info.Add(item1)
+	info.Add(nil) //abnormal
+	toml, err := info.TOML()
+	if err != nil {
+		t.Errorf("MarshalTOML() = \"%v\"want nil.", err)
+	}
+	if toml != output {
+		t.Errorf("TOML output = \n%s\n want \n%s\n", toml, output)
+	}
+}
+
 func TestJSONNull(t *testing.T) {
 	info := (*Info)(nil)
+	info.Add(nil)
 	res, err := info.JSON()
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
@@ -56,6 +99,51 @@ func TestJSONEmpty(t *testing.T) {
 		t.Errorf("TOML() = %v, want {}.", res)
 	}
 
+}
+
+func TestJSON(t *testing.T) {
+	norm := `
+{
+  "Packet": [
+    {
+      "name": "name1",
+      "value": "value1",
+      "dump": "00 01 02",
+      "note": "note1",
+      "Item": [
+        {
+          "name": "name2",
+          "dump": "03 04 05",
+          "note": "note2"
+        }
+      ]
+    }
+  ]
+}
+`
+	output := strings.Trim(norm, " \t\n\r")
+
+	info := NewInfo()
+	item1 := NewItem(
+		Name("name1"),
+		Value("value1"),
+		Note("note1"),
+		DumpStr("00 01 02"),
+	)
+	item2 := NewItem(
+		Name("name2"),
+		Note("note2"),
+		DumpStr("03 04 05"),
+	)
+	item1.Add(item2)
+	info.Add(item1)
+	json, err := info.JSON()
+	if err != nil {
+		t.Errorf("MarshalTOML() = \"%v\"want nil.", err)
+	}
+	if json != output {
+		t.Errorf("TOML output = \n%s\n want \n%s\n", json, output)
+	}
 }
 
 /* Copyright 2017 Spiegel
