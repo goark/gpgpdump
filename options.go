@@ -46,7 +46,7 @@ func NewOptions(opts ...OptFunc) *Options {
 	return o
 }
 
-//Set returns closure as type option
+//Set returns closure as type OptFunc
 func Set(name string, f bool) OptFunc {
 	return func(o *Options) {
 		o.Set(name, f)
