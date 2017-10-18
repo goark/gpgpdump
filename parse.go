@@ -3,7 +3,7 @@ package gpgpdump
 import (
 	"io"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/packet"
+	"github.com/spiegel-im-spiegel/gpgpdump/info"
 )
 
 //Parse is for parsing packets class
@@ -18,9 +18,9 @@ func NewParse(o *Options, r io.Reader) *Parse {
 }
 
 //Run is method for parsing packets
-func (p *Parse) Run() (*packet.Info, error) {
+func (p *Parse) Run() (*info.Info, error) {
 	//stab
-	return packet.NewInfo(), nil
+	return info.NewInfo(), nil
 }
 
 /* Copyright 2017 Spiegel
