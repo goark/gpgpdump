@@ -2,25 +2,28 @@ package gpgpdump
 
 import (
 	"io"
+	"io/ioutil"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
+	"github.com/spiegel-im-spiegel/gpgpdump/options"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet"
 )
 
-//Parse is for parsing packets class
-type Parse struct {
-	*Options
-	reader io.Reader //OpenPGP data
-}
+//var (
+//	ErrNoData = errors.New("cannot parse data")
+//)
 
-//NewParse returns Parse instance
-func NewParse(o *Options, r io.Reader) *Parse {
-	return &Parse{Options: o, reader: r}
-}
-
-//Run is method for parsing packets
-func (p *Parse) Run() (*info.Info, error) {
-	//stab
-	return info.NewInfo(), nil
+//Parse returns packet info.
+func Parse(r io.Reader, o *options.Options) (*info.Info, error) {
+	data, err := ioutil.ReadAll(r) //buffering to []byte
+	if err != nil {
+		return nil, err
+	}
+	reader, err := packet.NewReader(data, o)
+	if err != nil {
+		return nil, err
+	}
+	return reader.Parse()
 }
 
 /* Copyright 2017 Spiegel

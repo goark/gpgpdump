@@ -46,3 +46,7 @@ ignored = [
 [[constraint]]
   name = "github.com/BurntSushi/toml"
   version = "~0.3.0"
+
+[[constraint]]
+  name = "golang.org/x/crypto"
+  branch = "master"
