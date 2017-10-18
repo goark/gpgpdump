@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spiegel-im-spiegel/gocli"
 	"github.com/spiegel-im-spiegel/gpgpdump"
+	"github.com/spiegel-im-spiegel/gpgpdump/options"
 )
 
 const (
@@ -72,8 +73,7 @@ var RootCmd = &cobra.Command{
 		}
 
 		//parse OpenPGP packets
-		p := gpgpdump.NewParse(opts, reader)
-		info, err := p.Run()
+		info, err := gpgpdump.Parse(reader, opts)
 		if err != nil {
 			return err
 		}
@@ -128,15 +128,15 @@ func Execute(cui *gocli.UI) (exit ExitCode) {
 
 func init() {
 	RootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "version for "+Name)
-	RootCmd.Flags().BoolP(gpgpdump.ArmorOpt, "a", false, "accepts ASCII input only")
-	//RootCmd.Flags().BoolP(gpgpdump.DebugOpt, "d", false, "for debug") //not use
-	//RootCmd.Flags().BoolP(gpgpdump.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
-	RootCmd.Flags().BoolP(gpgpdump.IntegerOpt, "i", false, "dumps multi-precision integers")
-	RootCmd.Flags().BoolP(gpgpdump.JSONOpt, "j", false, "output with JSON format")
-	RootCmd.Flags().BoolP(gpgpdump.LiteralOpt, "l", false, "dumps literal packets (tag 11)")
-	RootCmd.Flags().BoolP(gpgpdump.MarkerOpt, "m", false, "dumps marker packets (tag 10)")
-	RootCmd.Flags().BoolP(gpgpdump.PrivateOpt, "p", false, "dumps private packets (tag 60-63)")
-	RootCmd.Flags().BoolP(gpgpdump.UTCOpt, "u", false, "output UTC time")
+	RootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
+	//RootCmd.Flags().BoolP(options.DebugOpt, "d", false, "for debug") //not use
+	//RootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
+	RootCmd.Flags().BoolP(options.IntegerOpt, "i", false, "dumps multi-precision integers")
+	RootCmd.Flags().BoolP(options.JSONOpt, "j", false, "output with JSON format")
+	RootCmd.Flags().BoolP(options.LiteralOpt, "l", false, "dumps literal packets (tag 11)")
+	RootCmd.Flags().BoolP(options.MarkerOpt, "m", false, "dumps marker packets (tag 10)")
+	RootCmd.Flags().BoolP(options.PrivateOpt, "p", false, "dumps private packets (tag 60-63)")
+	RootCmd.Flags().BoolP(options.UTCOpt, "u", false, "output UTC time")
 }
 
 func getBool(cmd *cobra.Command, name string) bool {
@@ -147,17 +147,17 @@ func getBool(cmd *cobra.Command, name string) bool {
 	return f
 }
 
-func parseOpt(cmd *cobra.Command) *gpgpdump.Options {
-	return gpgpdump.NewOptions(
-		gpgpdump.Set(gpgpdump.ArmorOpt, getBool(cmd, gpgpdump.ArmorOpt)),
-		//gpgpdump.Set(gpgpdump.DebugOpt, getBool(cmd, gpgpdump.DebugOpt)), //not use
-		//gpgpdump.Set(gpgpdump.GDumpOpt, getBool(cmd, gpgpdump.GDumpOpt)), //not use
-		gpgpdump.Set(gpgpdump.IntegerOpt, getBool(cmd, gpgpdump.IntegerOpt)),
-		gpgpdump.Set(gpgpdump.JSONOpt, getBool(cmd, gpgpdump.JSONOpt)),
-		gpgpdump.Set(gpgpdump.LiteralOpt, getBool(cmd, gpgpdump.LiteralOpt)),
-		gpgpdump.Set(gpgpdump.MarkerOpt, getBool(cmd, gpgpdump.MarkerOpt)),
-		gpgpdump.Set(gpgpdump.PrivateOpt, getBool(cmd, gpgpdump.PrivateOpt)),
-		gpgpdump.Set(gpgpdump.UTCOpt, getBool(cmd, gpgpdump.UTCOpt)),
+func parseOpt(cmd *cobra.Command) *options.Options {
+	return options.NewOptions(
+		options.Set(options.ArmorOpt, getBool(cmd, options.ArmorOpt)),
+		//options.Set(options.DebugOpt, getBool(cmd, options.DebugOpt)), //not use
+		//options.Set(options.GDumpOpt, getBool(cmd, options.GDumpOpt)), //not use
+		options.Set(options.IntegerOpt, getBool(cmd, options.IntegerOpt)),
+		options.Set(options.JSONOpt, getBool(cmd, options.JSONOpt)),
+		options.Set(options.LiteralOpt, getBool(cmd, options.LiteralOpt)),
+		options.Set(options.MarkerOpt, getBool(cmd, options.MarkerOpt)),
+		options.Set(options.PrivateOpt, getBool(cmd, options.PrivateOpt)),
+		options.Set(options.UTCOpt, getBool(cmd, options.UTCOpt)),
 	)
 }
 

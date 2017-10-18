@@ -1,4 +1,4 @@
-package gpgpdump
+package options
 
 import (
 	"os"
