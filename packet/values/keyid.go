@@ -1,33 +1,33 @@
-package gpgpdump
+package values
 
 import (
-	"io"
-	"io/ioutil"
+	"encoding/binary"
+	"fmt"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
-	"github.com/spiegel-im-spiegel/gpgpdump/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/packet"
 )
 
-//Parse returns packet info (from io.Reader stream).
-func Parse(r io.Reader, o *options.Options) (*info.Info, error) {
-	data, err := ioutil.ReadAll(r) //buffering to []byte
-	if err != nil {
-		return nil, err
-	}
-	return ParseByte(data, o)
+// KeyID is Key ID
+type KeyID uint64
+
+//NewKeyID returns KeyID instance from octets
+func NewKeyID(octets []byte) KeyID {
+	return KeyID(binary.BigEndian.Uint64(octets))
 }
 
-//ParseByte returns packet info (from []byte data).
-func ParseByte(data []byte, o *options.Options) (*info.Info, error) {
-	parser, err := packet.NewParser(data, o)
-	if err != nil {
-		return nil, err
-	}
-	return parser.Parse()
+//ToItem returns Item instance
+func (k KeyID) ToItem() *info.Item {
+	return info.NewItem(
+		info.Name("Key ID"),
+		info.Value(k.String()),
+	)
 }
 
-/* Copyright 2017 Spiegel
+func (k KeyID) String() string {
+	return fmt.Sprintf("0x%X", uint64(k))
+}
+
+/* Copyright 2016 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

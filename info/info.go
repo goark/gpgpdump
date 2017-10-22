@@ -25,28 +25,43 @@ func (i *Info) Add(a *Item) {
 	}
 }
 
-//TOML returns TOML format string
+//TOML returns TOML formated string
 func (i *Info) TOML() (string, error) {
 	if i == nil {
 		return "", nil
 	}
 	buf := new(bytes.Buffer)
-	if err := toml.NewEncoder(buf).Encode(i); err != nil {
-		return "", errors.Wrap(err, "error by TOML() function")
+	encoder := toml.NewEncoder(buf)
+	encoder.Indent = "  "
+	if err := encoder.Encode(i); err != nil {
+		return "", errors.Wrap(err, "error in info.Info.TOML() function")
 	}
 	return buf.String(), nil
 }
 
-//JSON returns JSON format string
+//JSON returns JSON formated string
 func (i *Info) JSON() (string, error) {
 	if i == nil {
 		return "", nil
 	}
-	j, err := json.MarshalIndent(i, "", "  ")
-	if err != nil {
-		return "", errors.Wrap(err, "error by JSON() function")
+	buf := new(bytes.Buffer)
+	encoder := json.NewEncoder(buf)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(i); err != nil {
+		return "", errors.Wrap(err, "error info info.Info.JSON() function")
 	}
-	return string(j), nil
+	return buf.String(), nil
+	//j, err := json.MarshalIndent(i, "", "  ")
+	//if err != nil {
+	//	return "", errors.Wrap(err, "error info info.Info.JSON() function")
+	//}
+	//return string(j), nil
+}
+
+//Stringer as TOML format
+func (i *Info) String() string {
+	str, _ := i.TOML()
+	return str
 }
 
 //Item is information item class

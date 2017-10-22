@@ -11,7 +11,7 @@ const (
 	GDumpOpt = "gdump"
 	//IntegerOpt is name of int option
 	IntegerOpt = "int"
-	//JSONOpt is name of json option
+	//JSONOpt is name of json option (CLI only)
 	JSONOpt = "json"
 	//LiteralOpt is name of literal option
 	LiteralOpt = "literal"
@@ -29,7 +29,6 @@ type Options struct {
 	debugFlag   bool //for debug
 	gdumpFlag   bool //selects alternate (GnuPG type) dump format (not used)
 	intFlag     bool //dumps multi-precision integers
-	jsonFlag    bool //output with JSON format
 	literalFlag bool //dumps literal packets (tag 11)
 	markerFlag  bool //dumps marker packets (tag 10)
 	privateFlag bool //dumps private packets (tag 60-63)
@@ -69,8 +68,6 @@ func (o *Options) Set(name string, f bool) {
 		o.gdumpFlag = f
 	case IntegerOpt:
 		o.intFlag = f
-	case JSONOpt:
-		o.jsonFlag = f
 	case LiteralOpt:
 		o.literalFlag = f
 	case MarkerOpt:
@@ -94,9 +91,6 @@ func (o *Options) GDump() bool { return o.gdumpFlag }
 //Integer return flag value of intFlag
 func (o *Options) Integer() bool { return o.intFlag }
 
-//JSON return flag value of jsonFlag
-func (o *Options) JSON() bool { return o.jsonFlag }
-
 //Literal return flag value of literalFlag
 func (o *Options) Literal() bool { return o.literalFlag }
 
@@ -116,7 +110,6 @@ func (o *Options) String() string {
 		DebugOpt, ":", o.Debug(), ",",
 		GDumpOpt, ":", o.GDump(), ",",
 		IntegerOpt, ":", o.Integer(), ",",
-		JSONOpt, ":", o.JSON(), ",",
 		LiteralOpt, ":", o.Literal(), ",",
 		MarkerOpt, ":", o.Marker(), ",",
 		PrivateOpt, ":", o.Private(), ",",

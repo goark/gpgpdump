@@ -1,33 +1,27 @@
-package gpgpdump
+package tags
 
 import (
-	"io"
-	"io/ioutil"
-
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
-	"github.com/spiegel-im-spiegel/gpgpdump/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/packet"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
-//Parse returns packet info (from io.Reader stream).
-func Parse(r io.Reader, o *options.Options) (*info.Info, error) {
-	data, err := ioutil.ReadAll(r) //buffering to []byte
-	if err != nil {
-		return nil, err
-	}
-	return ParseByte(data, o)
+// tag07 class for Secret-Subkey Packet
+type tag07 tagInfo
+
+//newTag07 return tag07 instance
+func newTag07(cxt *context.Context, tag values.TagID, body []byte) Tags {
+	return &tag07{cxt: cxt, tag: tag, reader: reader.NewReader(body)}
 }
 
-//ParseByte returns packet info (from []byte data).
-func ParseByte(data []byte, o *options.Options) (*info.Info, error) {
-	parser, err := packet.NewParser(data, o)
-	if err != nil {
-		return nil, err
-	}
-	return parser.Parse()
+// Parse parsing Secret-Subkey Packet
+func (t *tag07) Parse() (*info.Item, error) {
+	body, _ := t.reader.Read2EOF()
+	return newTag05(t.cxt, t.tag, body).Parse() //redirect to Tag05
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2016 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

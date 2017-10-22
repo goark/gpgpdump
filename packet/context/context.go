@@ -1,33 +1,24 @@
-package gpgpdump
+package context
 
 import (
-	"io"
-	"io/ioutil"
-
-	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/packet"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
-//Parse returns packet info (from io.Reader stream).
-func Parse(r io.Reader, o *options.Options) (*info.Info, error) {
-	data, err := ioutil.ReadAll(r) //buffering to []byte
-	if err != nil {
-		return nil, err
-	}
-	return ParseByte(data, o)
+//Context class fir parsing packets
+type Context struct {
+	*options.Options
+	SymAlgMode
+	SigCreationTime *values.DateTime
+	KeyCreationTime *values.DateTime
 }
 
-//ParseByte returns packet info (from []byte data).
-func ParseByte(data []byte, o *options.Options) (*info.Info, error) {
-	parser, err := packet.NewParser(data, o)
-	if err != nil {
-		return nil, err
-	}
-	return parser.Parse()
+//NewContext returns Context instance
+func NewContext(o *options.Options) *Context {
+	return &Context{Options: o, SymAlgMode: ModeNotSpecified}
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2016 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -1,33 +1,34 @@
-package gpgpdump
+package values
 
 import (
-	"io"
-	"io/ioutil"
+	"fmt"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
-	"github.com/spiegel-im-spiegel/gpgpdump/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/packet"
 )
 
-//Parse returns packet info (from io.Reader stream).
-func Parse(r io.Reader, o *options.Options) (*info.Info, error) {
-	data, err := ioutil.ReadAll(r) //buffering to []byte
-	if err != nil {
-		return nil, err
-	}
-	return ParseByte(data, o)
+var compIDNames = Msgs{
+	0: "Uncompressed",
+	1: "ZIP",
+	2: "ZLIB",
+	3: "BZip2",
 }
 
-//ParseByte returns packet info (from []byte data).
-func ParseByte(data []byte, o *options.Options) (*info.Info, error) {
-	parser, err := packet.NewParser(data, o)
-	if err != nil {
-		return nil, err
-	}
-	return parser.Parse()
+//CompID is Compression Algorithm ID
+type CompID byte
+
+// ToItem returns Item instance
+func (ca CompID) ToItem() *info.Item {
+	return info.NewItem(
+		info.Name("Compression Algorithm"),
+		info.Value(ca.String()),
+	)
 }
 
-/* Copyright 2017 Spiegel
+func (ca CompID) String() string {
+	return fmt.Sprintf("%s (comp %d)", compIDNames.Get(int(ca), Unknown), ca)
+}
+
+/* Copyright 2016 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

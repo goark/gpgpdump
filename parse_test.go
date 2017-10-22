@@ -1,30 +1,48 @@
 package gpgpdump
 
 import (
-	"io"
-	"io/ioutil"
+	"fmt"
+	"strings"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
-	"github.com/spiegel-im-spiegel/gpgpdump/packet"
 )
 
-//Parse returns packet info (from io.Reader stream).
-func Parse(r io.Reader, o *options.Options) (*info.Info, error) {
-	data, err := ioutil.ReadAll(r) //buffering to []byte
+const (
+	openpgpStr = `
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iF4EARMIAAYFAlTDCN8ACgkQMfv9qV+7+hg2HwEA6h2iFFuCBv3VrsSf2BREQaT1
+T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
+=ZOTN
+-----END PGP SIGNATURE-----
+`
+)
+
+var (
+	openpgpData = []byte(openpgpStr)
+	reader      = strings.NewReader(openpgpStr)
+	optionss    = options.NewOptions()
+)
+
+func ExampleParse() {
+	info, err := Parse(reader, optionss)
 	if err != nil {
-		return nil, err
+		return
 	}
-	return ParseByte(data, o)
+	fmt.Println(info.Packets[0].Value)
+	// Output:
+	// Signature Packet (tag 2)
 }
 
-//ParseByte returns packet info (from []byte data).
-func ParseByte(data []byte, o *options.Options) (*info.Info, error) {
-	parser, err := packet.NewParser(data, o)
+func ExampleParseByte() {
+	info, err := ParseByte(openpgpData, optionss)
 	if err != nil {
-		return nil, err
+		return
 	}
-	return parser.Parse()
+	fmt.Println(info.Packets[0].Value)
+	// Output:
+	// Signature Packet (tag 2)
 }
 
 /* Copyright 2017 Spiegel

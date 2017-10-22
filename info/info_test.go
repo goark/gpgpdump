@@ -1,18 +1,10 @@
 package info
 
 import (
-	"os"
+	"fmt"
 	"strings"
 	"testing"
 )
-
-func TestMain(m *testing.M) {
-	//start test
-	code := m.Run()
-
-	//termination
-	os.Exit(code)
-}
 
 func TestTOMLNull(t *testing.T) {
 	info := (*Info)(nil)
@@ -75,6 +67,21 @@ func TestTOML(t *testing.T) {
 	if toml != output {
 		t.Errorf("TOML output = \n%s\n want \n%s\n", toml, output)
 	}
+	if info.String() != output {
+		t.Errorf("TOML output = \n%s\n want \n%s\n", info.String(), output)
+	}
+}
+
+func ExampleNewInfo() {
+	item := NewItem(
+		Name("name"),
+		Value("value"),
+		Note("note"),
+		DumpStr("00 01 02"),
+	)
+	fmt.Println(item.Dump)
+	// Output:
+	// 00 01 02
 }
 
 func TestJSONNull(t *testing.T) {

@@ -48,6 +48,7 @@ func (c ExitCode) String() string {
 
 var (
 	versionFlag bool      //version flag
+	jsonFlag    bool      //output with JSON format
 	reader      io.Reader //input reader (maybe os.Stdin)
 	result      string    //result by parsing OpenPGP packets
 )
@@ -79,7 +80,7 @@ var RootCmd = &cobra.Command{
 		}
 
 		//marshal packet info
-		if opts.JSON() {
+		if jsonFlag {
 			result, err = info.JSON()
 		} else {
 			result, err = info.TOML()
@@ -128,11 +129,11 @@ func Execute(cui *gocli.UI) (exit ExitCode) {
 
 func init() {
 	RootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "version for "+Name)
+	RootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
 	RootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
 	//RootCmd.Flags().BoolP(options.DebugOpt, "d", false, "for debug") //not use
 	//RootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
 	RootCmd.Flags().BoolP(options.IntegerOpt, "i", false, "dumps multi-precision integers")
-	RootCmd.Flags().BoolP(options.JSONOpt, "j", false, "output with JSON format")
 	RootCmd.Flags().BoolP(options.LiteralOpt, "l", false, "dumps literal packets (tag 11)")
 	RootCmd.Flags().BoolP(options.MarkerOpt, "m", false, "dumps marker packets (tag 10)")
 	RootCmd.Flags().BoolP(options.PrivateOpt, "p", false, "dumps private packets (tag 60-63)")
@@ -153,7 +154,6 @@ func parseOpt(cmd *cobra.Command) *options.Options {
 		//options.Set(options.DebugOpt, getBool(cmd, options.DebugOpt)), //not use
 		//options.Set(options.GDumpOpt, getBool(cmd, options.GDumpOpt)), //not use
 		options.Set(options.IntegerOpt, getBool(cmd, options.IntegerOpt)),
-		options.Set(options.JSONOpt, getBool(cmd, options.JSONOpt)),
 		options.Set(options.LiteralOpt, getBool(cmd, options.LiteralOpt)),
 		options.Set(options.MarkerOpt, getBool(cmd, options.MarkerOpt)),
 		options.Set(options.PrivateOpt, getBool(cmd, options.PrivateOpt)),
