@@ -3,6 +3,7 @@ package packet
 import (
 	"bytes"
 	"io"
+	"os"
 
 	openpgp "golang.org/x/crypto/openpgp/packet"
 
@@ -22,16 +23,24 @@ type Parser struct {
 }
 
 //NewParser returns Parser for parsing packet
-func NewParser(data []byte, o *options.Options) (*Parser, error) {
+func NewParser(reader io.Reader, o *options.Options) (*Parser, error) {
+	if reader == nil {
+		return nil, errors.Wrap(os.ErrInvalid, "error in packet.NewParser() function (null data)")
+	}
 	if o == nil {
 		o = options.NewOptions()
 	}
-	r, err := newParserArmor(bytes.NewReader(data))
-	if err == io.EOF || err == io.ErrUnexpectedEOF {
-		if o.Armor() {
-			return nil, err
+	var r io.Reader
+	var err error
+	if o.Armor() {
+		r, err = newParserArmor(reader)
+	} else {
+		buf := new(bytes.Buffer)
+		tee := io.TeeReader(reader, buf)
+		r, err = newParserArmor(tee)
+		if err != nil {
+			r, err = buf, nil
 		}
-		r, err = bytes.NewReader(data), nil
 	}
 	return &Parser{opaqueReader: openpgp.NewOpaqueReader(r), cxt: context.NewContext(o), info: info.NewInfo()}, err
 }
@@ -40,7 +49,7 @@ func NewParser(data []byte, o *options.Options) (*Parser, error) {
 func newParserArmor(r io.Reader) (io.Reader, error) {
 	block, err := armor.Decode(r)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error in packet.newParserArmor() function (not ASCII Armor format)")
 	}
 	return block.Body, nil
 }
