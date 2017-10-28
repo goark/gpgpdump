@@ -1,8 +1,8 @@
 package gpgpdump
 
 import (
+	"bytes"
 	"io"
-	"io/ioutil"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
@@ -11,20 +11,16 @@ import (
 
 //Parse returns packet info (from io.Reader stream).
 func Parse(r io.Reader, o *options.Options) (*info.Info, error) {
-	data, err := ioutil.ReadAll(r) //buffering to []byte
-	if err != nil {
-		return nil, err
-	}
-	return ParseByte(data, o)
-}
-
-//ParseByte returns packet info (from []byte data).
-func ParseByte(data []byte, o *options.Options) (*info.Info, error) {
-	parser, err := packet.NewParser(data, o)
+	parser, err := packet.NewParser(r, o)
 	if err != nil {
 		return nil, err
 	}
 	return parser.Parse()
+}
+
+//ParseByte returns packet info (from []byte data).
+func ParseByte(data []byte, o *options.Options) (*info.Info, error) {
+	return Parse(bytes.NewReader(data), o)
 }
 
 /* Copyright 2017 Spiegel
