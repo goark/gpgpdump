@@ -47,10 +47,9 @@ func (c ExitCode) String() string {
 }
 
 var (
-	versionFlag bool      //version flag
-	jsonFlag    bool      //output with JSON format
-	reader      io.Reader //input reader (maybe os.Stdin)
-	result      string    //result by parsing OpenPGP packets
+	versionFlag bool            //version flag
+	jsonFlag    bool            //output with JSON format
+	cui         = gocli.NewUI() //CUI instance
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -64,6 +63,7 @@ var RootCmd = &cobra.Command{
 		opts := parseOpt(cmd)
 
 		//open PGP file
+		reader := cui.Reader()
 		if len(args) > 0 {
 			file, err := os.Open(args[0]) //args[0] is maybe file path
 			if err != nil {
@@ -80,6 +80,7 @@ var RootCmd = &cobra.Command{
 		}
 
 		//marshal packet info
+		var result io.Reader
 		if jsonFlag {
 			result, err = info.JSON()
 		} else {
@@ -88,13 +89,14 @@ var RootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		cui.WriteFrom(result)
 		return nil
 	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute(cui *gocli.UI) (exit ExitCode) {
+func Execute(ui *gocli.UI) (exit ExitCode) {
 	defer func() {
 		//panic hundling
 		if r := recover(); r != nil {
@@ -111,19 +113,16 @@ func Execute(cui *gocli.UI) (exit ExitCode) {
 	}()
 
 	//execution
+	cui = ui
 	exit = Normal
-	reader = cui.Reader() //default reader; maybe os.Stdin
-	result = ""
 	if err := RootCmd.Execute(); err != nil {
-		//cui.OutputErrln(err) //no need to output error
 		exit = Abnormal
 		return
 	}
 	if versionFlag {
-		cui.OutputErrln(version())
+		ui.OutputErrln(version())
 		return
 	}
-	cui.Outputln(result)
 	return
 }
 
@@ -162,7 +161,7 @@ func parseOpt(cmd *cobra.Command) *options.Options {
 }
 
 func version() string {
-	return fmt.Sprintf("%s %s\nCopyright 2016,2017 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n", Name, Version)
+	return fmt.Sprintf("%s %s\nCopyright 2016,2017 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0", Name, Version)
 }
 
 /* Copyright 2017 Spiegel

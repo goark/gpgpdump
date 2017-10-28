@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/spiegel-im-spiegel/gocli"
-	"github.com/spiegel-im-spiegel/gpgpdump/cli/gpgpdump/cmd"
+	"github.com/spiegel-im-spiegel/gpgpdump/cli/gpgpdump/facade"
 )
 
 func main() {

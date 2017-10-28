@@ -20,10 +20,10 @@
   version = "v0.8.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/spf13/cobra"
   packages = ["."]
   revision = "7b2c5ac9fc04fc5efafb60700713d4fa609b777b"
+  version = "v0.0.1"
 
 [[projects]]
   name = "github.com/spf13/pflag"
@@ -34,18 +34,18 @@
 [[projects]]
   name = "github.com/spiegel-im-spiegel/gocli"
   packages = ["."]
-  revision = "39e9e4c46d50e094908cc97db3242a14893bc006"
-  version = "v0.4.1"
+  revision = "4fd5a75acbf2699359935398f109f7d740bcf6d5"
+  version = "v0.4.2"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["cast5","openpgp/armor","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k"]
-  revision = "9419663f5a44be8b34ca85f08abc5fe1be11f8a3"
+  revision = "2509b142fb2b797aa7587dad548f113b2c0f20ce"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "07d15118cfc389b46f78f7330f0f2211eb051766ec0b201129e877582c9e7823"
+  inputs-digest = "38d1fe9bc280d7267c04d68559db7d09974f203ea7421312e633e3e7b549f950"
   solver-name = "gps-cdcl"
   solver-version = 1

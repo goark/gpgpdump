@@ -33,19 +33,19 @@ ignored = [
 
 [[constraint]]
   name = "github.com/spf13/cobra"
-  branch = "master"
+  version = "~0.0.1"
 
 [[constraint]]
   name = "github.com/spiegel-im-spiegel/gocli"
-  version = "~0.4.0"
+  version = "^0.4.0"
 
 [[constraint]]
   name = "github.com/pkg/errors"
-  version = "~0.8.0"
+  version = "^0.8.0"
 
 [[constraint]]
   name = "github.com/BurntSushi/toml"
-  version = "~0.3.0"
+  version = "^0.3.0"
 
 [[constraint]]
   name = "golang.org/x/crypto"
