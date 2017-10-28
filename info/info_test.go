@@ -1,7 +1,9 @@
 package info
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"strings"
 	"testing"
 )
@@ -12,9 +14,12 @@ func TestTOMLNull(t *testing.T) {
 	res, err := info.TOML()
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
+		return
 	}
-	if res != "" {
-		t.Errorf("TOML() = %v, want nil.", res)
+	buf := new(bytes.Buffer)
+	io.Copy(buf, res)
+	if buf.String() != "" {
+		t.Errorf("TOML() = %v, want \"\".", buf.String())
 	}
 }
 
@@ -23,9 +28,12 @@ func TestTOMLEmpty(t *testing.T) {
 	res, err := info.TOML()
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
+		return
 	}
-	if res != "" {
-		t.Errorf("TOML() = %v, want nil.", res)
+	buf := new(bytes.Buffer)
+	io.Copy(buf, res)
+	if buf.String() != "" {
+		t.Errorf("TOML() = %v, want \"\".", buf.String())
 	}
 }
 
@@ -63,9 +71,13 @@ func TestTOML(t *testing.T) {
 	toml, err := info.TOML()
 	if err != nil {
 		t.Errorf("MarshalTOML() = \"%v\"want nil.", err)
+		return
 	}
-	if toml != output {
-		t.Errorf("TOML output = \n%s\n want \n%s\n", toml, output)
+	buf := new(bytes.Buffer)
+	io.Copy(buf, toml)
+	str := buf.String()
+	if str != output {
+		t.Errorf("TOML output = \n%s\n want \n%s\n", str, output)
 	}
 	if info.String() != output {
 		t.Errorf("TOML output = \n%s\n want \n%s\n", info.String(), output)
@@ -90,9 +102,12 @@ func TestJSONNull(t *testing.T) {
 	res, err := info.JSON()
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
+		return
 	}
-	if res != "" {
-		t.Errorf("TOML() = %v, want nil.", res)
+	buf := new(bytes.Buffer)
+	io.Copy(buf, res)
+	if buf.String() != "" {
+		t.Errorf("TOML() = %v, want \"\".", buf.String())
 	}
 }
 
@@ -101,9 +116,13 @@ func TestJSONEmpty(t *testing.T) {
 	res, err := info.JSON()
 	if err != nil {
 		t.Errorf("TOML() err = %v, want nil.", err)
+		return
 	}
-	if res != "{}" {
-		t.Errorf("TOML() = %v, want {}.", res)
+	buf := new(bytes.Buffer)
+	io.Copy(buf, res)
+	str := buf.String()
+	if str != "{}\n" {
+		t.Errorf("TOML() = %v, want {}.", str)
 	}
 
 }
@@ -147,9 +166,13 @@ func TestJSON(t *testing.T) {
 	json, err := info.JSON()
 	if err != nil {
 		t.Errorf("MarshalTOML() = \"%v\"want nil.", err)
+		return
 	}
-	if json != output {
-		t.Errorf("TOML output = \n%s\n want \n%s\n", json, output)
+	buf := new(bytes.Buffer)
+	io.Copy(buf, json)
+	str := buf.String()
+	if str != output+"\n" {
+		t.Errorf("TOML output = \"%s\" want \"%s\"", str, output)
 	}
 }
 

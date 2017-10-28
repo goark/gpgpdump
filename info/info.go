@@ -3,6 +3,8 @@ package info
 import (
 	"bytes"
 	"encoding/json"
+	"io"
+	"io/ioutil"
 
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
@@ -26,42 +28,39 @@ func (i *Info) Add(a *Item) {
 }
 
 //TOML returns TOML formated string
-func (i *Info) TOML() (string, error) {
+func (i *Info) TOML() (io.Reader, error) {
 	if i == nil {
-		return "", nil
+		return ioutil.NopCloser(bytes.NewReader(nil)), nil
 	}
 	buf := new(bytes.Buffer)
 	encoder := toml.NewEncoder(buf)
 	encoder.Indent = "  "
 	if err := encoder.Encode(i); err != nil {
-		return "", errors.Wrap(err, "error in info.Info.TOML() function")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errors.Wrap(err, "error in info.Info.TOML() function")
 	}
-	return buf.String(), nil
+	return buf, nil
 }
 
 //JSON returns JSON formated string
-func (i *Info) JSON() (string, error) {
+func (i *Info) JSON() (io.Reader, error) {
 	if i == nil {
-		return "", nil
+		return ioutil.NopCloser(bytes.NewReader(nil)), nil
 	}
 	buf := new(bytes.Buffer)
 	encoder := json.NewEncoder(buf)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(i); err != nil {
-		return "", errors.Wrap(err, "error info info.Info.JSON() function")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errors.Wrap(err, "error info info.Info.JSON() function")
 	}
-	return buf.String(), nil
-	//j, err := json.MarshalIndent(i, "", "  ")
-	//if err != nil {
-	//	return "", errors.Wrap(err, "error info info.Info.JSON() function")
-	//}
-	//return string(j), nil
+	return buf, nil
 }
 
 //Stringer as TOML format
 func (i *Info) String() string {
-	str, _ := i.TOML()
-	return str
+	buf := new(bytes.Buffer)
+	r, _ := i.TOML()
+	io.Copy(buf, r)
+	return buf.String()
 }
 
 //Item is information item class
