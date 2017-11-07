@@ -11,40 +11,66 @@
 - Support [RFC 5581](http://tools.ietf.org/html/rfc5581)
 - Support [RFC 6637](http://tools.ietf.org/html/rfc6637)
 
-## Dependencies
-
-- [`github.com/spiegel-im-spiegel/gocli`](https://github.com/spiegel-im-spiegel/gocli)
-- [`github.com/BurntSushi/toml`](https://github.com/BurntSushi/toml)
-- [`golang.org/x/crypto/openpgp/armor`](https://godoc.org/golang.org/x/crypto/openpgp/armor)
-- [`golang.org/x/crypto/openpgp/packet`](https://godoc.org/golang.org/x/crypto/openpgp/packet)
-
 ## Install
 
 ```
 $ go get -v github.com/spiegel-im-spiegel/gpgpdump
 ```
 
+Installing by [dep].
+
+```
+$ dep ensure -add github.com/spiegel-im-spiegel/godump
+```
+
+### Usage
+
+```go
+const (
+	openpgpStr = `
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iF4EARMIAAYFAlTDCN8ACgkQMfv9qV+7+hg2HwEA6h2iFFuCBv3VrsSf2BREQaT1
+T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
+=ZOTN
+-----END PGP SIGNATURE-----
+`
+)
+
+info, err := gpgpdump.Parse(strings.NewReader(openpgpStr), options.NewOptions())
+if err != nil {
+	return
+}
+fmt.Println(info.Packets[0].Value)
+// Output:
+// Signature Packet (tag 2)
+
+```
+
+## Command-Line Interface
+
 ### Binaries
 
 See [latest release](https://github.com/spiegel-im-spiegel/gpgpdump/releases/latest).
 
-## Usage
+### Usage
 
 ```
 $ gpgpdump -h
-USAGE:
-   gpgpdump [options] [OpenPGP file]
+Usage:
+  gpgpdump [flags] [PGPfile]
 
-OPTIONS:
-   -h -- output this help
-   -v -- output version
-   -a -- accepts ASCII input only
-   -i -- dumps multi-precision integers
-   -j -- output with JSON format
-   -l -- dumps literal packets (tag 11)
-   -m -- dumps marker packets (tag 10)
-   -p -- dumps private packets (tag 60-63)
-   -u -- output UTC time
+Flags:
+  -a, --armor     accepts ASCII input only
+  -h, --help      help for gpgpdump
+  -i, --int       dumps multi-precision integers
+  -j, --json      output with JSON format
+  -l, --literal   dumps literal packets (tag 11)
+  -m, --marker    dumps marker packets (tag 10)
+  -p, --private   dumps private packets (tag 60-63)
+  -u, --utc       output with UTC time
+  -v, --version   output version of gpgpdump
 
 $ cat sig
 -----BEGIN PGP SIGNATURE-----
@@ -64,7 +90,6 @@ $ cat sig | gpgpdump
   [[Packet.Item]]
     name = "Version"
     value = "4"
-    dump = "04"
     note = "new"
 
   [[Packet.Item]]
@@ -81,18 +106,19 @@ $ cat sig | gpgpdump
 
   [[Packet.Item]]
     name = "Hashed Subpacket"
+    note = "6 bytes"
 
     [[Packet.Item.Item]]
       name = "Signature Creation Time (sub 2)"
       value = "2015-01-24T11:52:15+09:00"
-      dump = "54 c3 08 df"
 
   [[Packet.Item]]
     name = "Unhashed Subpacket"
+    note = "10 bytes"
 
     [[Packet.Item.Item]]
       name = "Issuer (sub 16)"
-      value = "0x31FBFDA95FBBFA18"
+      value = "0x31fbfda95fbbfa18"
 
   [[Packet.Item]]
     name = "Hash left 2 bytes"
@@ -100,12 +126,10 @@ $ cat sig | gpgpdump
 
   [[Packet.Item]]
     name = "Multi-precision integer"
-    dump = "..."
     note = "ECDSA r (256 bits)"
 
   [[Packet.Item]]
     name = "Multi-precision integer"
-    dump = "..."
     note = "ECDSA s (252 bits)"
 
 $ cat sig | gpgpdump -j
@@ -119,7 +143,6 @@ $ cat sig | gpgpdump -j
         {
           "name": "Version",
           "value": "4",
-          "dump": "04",
           "note": "new"
         },
         {
@@ -136,20 +159,21 @@ $ cat sig | gpgpdump -j
         },
         {
           "name": "Hashed Subpacket",
+          "note": "6 bytes",
           "Item": [
             {
               "name": "Signature Creation Time (sub 2)",
-              "value": "2015-01-24T11:52:15+09:00",
-              "dump": "54 c3 08 df"
+              "value": "2015-01-24T11:52:15+09:00"
             }
           ]
         },
         {
           "name": "Unhashed Subpacket",
+          "note": "10 bytes",
           "Item": [
             {
               "name": "Issuer (sub 16)",
-              "value": "0x31FBFDA95FBBFA18"
+              "value": "0x31fbfda95fbbfa18"
             }
           ]
         },
@@ -159,12 +183,10 @@ $ cat sig | gpgpdump -j
         },
         {
           "name": "Multi-precision integer",
-          "dump": "...",
           "note": "ECDSA r (256 bits)"
         },
         {
           "name": "Multi-precision integer",
-          "dump": "...",
           "note": "ECDSA s (252 bits)"
         }
       ]
@@ -173,7 +195,10 @@ $ cat sig | gpgpdump -j
 }
 ```
 
-## License
+## Dependencies
 
-Copyright 2016 Spiegel.
-Licensed under [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+```
+dep status -dot | dot -Tpng -o dependency.png
+```
+
+[![Dependencies](dependency.png)](dependency.png)
