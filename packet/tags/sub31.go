@@ -22,12 +22,12 @@ func (s *sub31) Parse() (*info.Item, error) {
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.PubID(pubid).ToItem())
+	rootInfo.Add(values.PubID(pubid).ToItem(s.cxt.Debug()))
 	hashid, err := s.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.HashID(hashid).ToItem())
+	rootInfo.Add(values.HashID(hashid).ToItem(s.cxt.Debug()))
 	rootInfo.Add(values.RawData(s.reader, "Hash", true))
 	return rootInfo, nil
 }

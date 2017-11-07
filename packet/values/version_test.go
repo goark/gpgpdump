@@ -8,7 +8,7 @@ func TestVersionNew(t *testing.T) {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
 	}
 
-	i := v.ToItem()
+	i := v.ToItem(true)
 	if i.Name != "Version" {
 		t.Errorf("Version.Name = \"%v\", want \"Version\".", i.Name)
 	}
@@ -18,8 +18,8 @@ func TestVersionNew(t *testing.T) {
 	if i.Note != "new" {
 		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
 	}
-	if i.Dump != "" {
-		t.Errorf("Version.Dump = \"%v\", want \"\".", i.Dump)
+	if i.Dump != "04" {
+		t.Errorf("Version.Dump = \"%v\", want \"04\".", i.Dump)
 	}
 }
 
@@ -36,7 +36,7 @@ func TestVersionOld(t *testing.T) {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
 	}
 
-	i := v.ToItem()
+	i := v.ToItem(true)
 	if i.Name != "Version" {
 		t.Errorf("Version.Name = \"%v\", want \"Version\".", i.Name)
 	}
@@ -46,8 +46,8 @@ func TestVersionOld(t *testing.T) {
 	if i.Note != "old" {
 		t.Errorf("Version.Note = \"%v\", want \"old\"", i.Note)
 	}
-	if i.Dump != "" {
-		t.Errorf("Version.Dump = \"%v\", want \"\".", i.Dump)
+	if i.Dump != "03" {
+		t.Errorf("Version.Dump = \"%v\", want \"03\".", i.Dump)
 	}
 }
 
@@ -60,7 +60,7 @@ func TestVersionOldNil(t *testing.T) {
 
 func TestVersionToItemNil(t *testing.T) {
 	v := (*Version)(nil)
-	if v.ToItem() != nil {
+	if v.ToItem(true) != nil {
 		t.Error("Version to Item: not nil, want nil.")
 	}
 }
@@ -71,7 +71,7 @@ func TestVersionUnknown(t *testing.T) {
 		t.Errorf("Version.IsUnknown = %v, want true.", v.IsUnknown())
 	}
 
-	i := v.ToItem()
+	i := v.ToItem(true)
 	if i.Name != "Version" {
 		t.Errorf("Version.Name = \"%v\", want \"Version\".", i.Name)
 	}
@@ -81,13 +81,13 @@ func TestVersionUnknown(t *testing.T) {
 	if i.Note != "unknown" {
 		t.Errorf("Version.Note = \"%v\", want \"unknown\"", i.Note)
 	}
-	if i.Dump != "" {
-		t.Errorf("Version.Dump = \"%v\", want \"\".", i.Dump)
+	if i.Dump != "05" {
+		t.Errorf("Version.Dump = \"%v\", want \"05\".", i.Dump)
 	}
 }
 
 func TestPubVer4(t *testing.T) {
-	i := PubVer(4).ToItem()
+	i := PubVer(4).ToItem(true)
 
 	if i.Note != "new" {
 		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
@@ -95,7 +95,7 @@ func TestPubVer4(t *testing.T) {
 }
 
 func TestSigVer4(t *testing.T) {
-	i := SigVer(4).ToItem()
+	i := SigVer(4).ToItem(true)
 
 	if i.Note != "new" {
 		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
@@ -103,7 +103,7 @@ func TestSigVer4(t *testing.T) {
 }
 
 func TestOneSigVer3(t *testing.T) {
-	i := OneSigVer(3).ToItem()
+	i := OneSigVer(3).ToItem(true)
 
 	if i.Note != "new" {
 		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
@@ -111,7 +111,7 @@ func TestOneSigVer3(t *testing.T) {
 }
 
 func TestPubSessKeyVer3(t *testing.T) {
-	i := PubSessKeyVer(3).ToItem()
+	i := PubSessKeyVer(3).ToItem(true)
 
 	if i.Note != "new" {
 		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
@@ -119,7 +119,7 @@ func TestPubSessKeyVer3(t *testing.T) {
 }
 
 func TestSymSessKeyVer4(t *testing.T) {
-	i := SymSessKeyVer(4).ToItem()
+	i := SymSessKeyVer(4).ToItem(true)
 
 	if i.Note != "new" {
 		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)

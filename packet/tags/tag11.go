@@ -36,7 +36,7 @@ func (t *tag11) Parse() (*info.Item, error) {
 	if err2 != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.FileTimeItem(ftime, true))
+	rootInfo.Add(values.FileTimeItem(ftime, t.cxt.Debug()))
 	rootInfo.Add(values.RawData(t.reader, "Literal data", t.cxt.Literal()))
 	return rootInfo, nil
 }

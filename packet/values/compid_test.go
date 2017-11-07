@@ -12,7 +12,7 @@ var testCompIDNames = []string{
 
 func TestCompID(t *testing.T) {
 	for tag := 0; tag <= 4; tag++ {
-		i := CompID(tag).ToItem()
+		i := CompID(tag).ToItem(false)
 		if i.Name != "Compression Algorithm" {
 			t.Errorf("CompID.Name = \"%s\", want \"Compression Algorithm\".", i.Name)
 		}

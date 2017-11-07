@@ -12,11 +12,11 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 )
 
-const (
+var (
 	//Name is applicatin name
 	Name = "gpgpdump"
 	//Version is version for applicatin
-	Version = "v0.2.0dev"
+	Version string
 )
 
 var (
@@ -25,12 +25,19 @@ var (
 	cui         = gocli.NewUI() //CUI instance
 )
 
-// RootCmd represents the base command when called without any subcommands
-var RootCmd = &cobra.Command{
+// rootCmd represents the base command when called without any subcommands
+var rootCmd = &cobra.Command{
 	Use: Name + " [flags] [PGPfile]",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		//parse options
 		if versionFlag {
+			cui.OutputErr(Name)
+			if len(Version) > 0 {
+				cui.OutputErr(fmt.Sprintf(" v%s", Version))
+			}
+			cui.OutputErrln()
+			cui.OutputErrln("Copyright 2016,2017 Spiegel (based on pgpdump by kazu-yamamoto)")
+			cui.OutputErrln("Licensed under Apache License, Version 2.0")
 			return nil
 		}
 		opts := parseOpt(cmd)
@@ -67,51 +74,6 @@ var RootCmd = &cobra.Command{
 	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute(ui *gocli.UI) (exit ExitCode) {
-	defer func() {
-		//panic hundling
-		if r := recover(); r != nil {
-			cui.OutputErrln("Panic:", r)
-			for depth := 0; ; depth++ {
-				pc, _, line, ok := runtime.Caller(depth)
-				if !ok {
-					break
-				}
-				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ": line", line)
-			}
-			exit = ExitAbnormal
-		}
-	}()
-
-	//execution
-	cui = ui
-	exit = ExitNormal
-	if err := RootCmd.Execute(); err != nil {
-		exit = ExitAbnormal
-		return
-	}
-	if versionFlag {
-		ui.OutputErrln(version())
-		return
-	}
-	return
-}
-
-func init() {
-	RootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "version for "+Name)
-	RootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
-	RootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
-	//RootCmd.Flags().BoolP(options.DebugOpt, "d", false, "for debug") //not use
-	//RootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
-	RootCmd.Flags().BoolP(options.IntegerOpt, "i", false, "dumps multi-precision integers")
-	RootCmd.Flags().BoolP(options.LiteralOpt, "l", false, "dumps literal packets (tag 11)")
-	RootCmd.Flags().BoolP(options.MarkerOpt, "m", false, "dumps marker packets (tag 10)")
-	RootCmd.Flags().BoolP(options.PrivateOpt, "p", false, "dumps private packets (tag 60-63)")
-	RootCmd.Flags().BoolP(options.UTCOpt, "u", false, "output UTC time")
-}
-
 func getBool(cmd *cobra.Command, name string) bool {
 	f, err := cmd.Flags().GetBool(name)
 	if err != nil {
@@ -133,8 +95,46 @@ func parseOpt(cmd *cobra.Command) *options.Options {
 	)
 }
 
-func version() string {
-	return fmt.Sprintf("%s %s\nCopyright 2016,2017 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0", Name, Version)
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute(ui *gocli.UI, args []string) (exit ExitCode) {
+	defer func() {
+		//panic hundling
+		if r := recover(); r != nil {
+			cui.OutputErrln("Panic:", r)
+			for depth := 0; ; depth++ {
+				pc, _, line, ok := runtime.Caller(depth)
+				if !ok {
+					break
+				}
+				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ": line", line)
+			}
+			exit = ExitAbnormal
+		}
+	}()
+
+	//execution
+	cui = ui
+	rootCmd.SetArgs(args)
+	rootCmd.SetOutput(ui.ErrorWriter())
+	exit = ExitNormal
+	if err := rootCmd.Execute(); err != nil {
+		exit = ExitAbnormal
+	}
+	return
+}
+
+func init() {
+	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
+	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
+	rootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
+	//rootCmd.Flags().BoolP(options.DebugOpt, "d", false, "for debug") //not use
+	//rootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
+	rootCmd.Flags().BoolP(options.IntegerOpt, "i", false, "dumps multi-precision integers")
+	rootCmd.Flags().BoolP(options.LiteralOpt, "l", false, "dumps literal packets (tag 11)")
+	rootCmd.Flags().BoolP(options.MarkerOpt, "m", false, "dumps marker packets (tag 10)")
+	rootCmd.Flags().BoolP(options.PrivateOpt, "p", false, "dumps private packets (tag 60-63)")
+	rootCmd.Flags().BoolP(options.UTCOpt, "u", false, "output with UTC time")
 }
 
 /* Copyright 2017 Spiegel

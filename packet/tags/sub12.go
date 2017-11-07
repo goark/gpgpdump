@@ -43,7 +43,7 @@ func (s *sub12) Parse() (*info.Item, error) {
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.PubID(pubid).ToItem())
+	rootInfo.Add(values.PubID(pubid).ToItem(s.cxt.Debug()))
 	rootInfo.Add(values.RawData(s.reader, "Fingerprint", true))
 
 	return rootInfo, nil

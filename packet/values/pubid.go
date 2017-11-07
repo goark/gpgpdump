@@ -23,10 +23,11 @@ var pubIDNames = Msgs{
 type PubID byte
 
 //ToItem returns Item instance
-func (pi PubID) ToItem() *info.Item {
+func (pi PubID) ToItem(dumpFlag bool) *info.Item {
 	return info.NewItem(
 		info.Name("Public-key Algorithm"),
 		info.Value(pi.String()),
+		info.DumpStr(DumpByteString(byte(pi), dumpFlag)),
 	)
 }
 

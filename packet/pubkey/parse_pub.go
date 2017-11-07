@@ -102,12 +102,12 @@ func (p *Pubkey) ecdhPub(item *info.Item) error {
 		return err
 	}
 	i := ep.ToItem("KDF parameters", p.cxt.Integer())
-	l := len(ep)
-	if l == 0 {
+	ln := len(ep)
+	if ln == 0 {
 		i.Value = values.Unknown
-	} else if ep[0] == 0x01 && l > 2 {
-		i.Add(values.HashID(ep[1]).ToItem())
-		i.Add(values.SymID(ep[2]).ToItem())
+	} else if ep[0] == 0x01 && ln > 2 {
+		i.Add(values.HashID(ep[1]).ToItem(p.cxt.Debug()))
+		i.Add(values.SymID(ep[2]).ToItem(p.cxt.Debug()))
 	} else {
 		i.Value = values.Unknown
 	}

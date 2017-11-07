@@ -12,16 +12,31 @@ func TestDump(t *testing.T) {
 
 	res := DumpBytes(data, true).String()
 	if res != will {
-		t.Errorf("Tag.Name = \"%s\", want \"%s\".", res, will)
+		t.Errorf("DumpBytes( = \"%s\", want \"%s\".", res, will)
 	}
 }
 
 func TestDumpMask(t *testing.T) {
 	var data = []byte{0x01, 0x02, 0x03, 0x04}
-	will := "..."
+	//will := "..."
+	will := ""
 	res := Dump(reader.NewReader(data), false).String()
 	if res != will {
-		t.Errorf("Tag.Name = \"%s\", want \"%s\".", res, will)
+		t.Errorf("Dump = \"%s\", want \"%s\".", res, will)
+	}
+}
+
+func TestDumpByte(t *testing.T) {
+	str := DumpByteString(0x12, true)
+	if str != "12" {
+		t.Errorf("DumpByteString = \"%s\", want \"12\".", str)
+	}
+}
+
+func TestDumpByteMask(t *testing.T) {
+	str := DumpByteString(0x12, false)
+	if DumpByteString(0x12, false) != "" {
+		t.Errorf("DumpByteString = \"%s\", want \"\".", str)
 	}
 }
 

@@ -24,7 +24,7 @@ func (t *tag06) Parse() (*info.Item, error) {
 		return rootInfo, err
 	}
 	version := values.PubVer(v)
-	rootInfo.Add(version.ToItem())
+	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
 	if err := newPubkey(t.cxt, t.reader, version).Parse(rootInfo); err != nil {
 		return rootInfo, err

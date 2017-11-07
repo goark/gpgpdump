@@ -28,7 +28,7 @@ func (t *tag02) Parse() (*info.Item, error) {
 		return rootInfo, err
 	}
 	version := values.SigVer(v)
-	rootInfo.Add(version.ToItem())
+	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
 	if version.IsOld() {
 		_, err2 := t.parseV3(rootInfo)
@@ -69,18 +69,18 @@ func (t *tag02) parseV3(rootInfo *info.Item) (*info.Item, error) {
 		if err2 != nil {
 			return rootInfo, err2
 		}
-		hm.Dump = values.DumpBytes(b, true).String()
+		hm.Dump = values.DumpBytes(b, t.cxt.Debug()).String()
 	} else {
 		sig, err2 := t.reader.ReadByte()
 		if err2 != nil {
 			return rootInfo, err2
 		}
-		hm.Add(values.SigID(sig).ToItem())
+		hm.Add(values.SigID(sig).ToItem(t.cxt.Debug()))
 		tm, err2 := values.NewDateTime(t.reader, t.cxt.UTC())
 		if err2 != nil {
 			return rootInfo, err2
 		}
-		hm.Add(values.SigTimeItem(tm, true))
+		hm.Add(values.SigTimeItem(tm, t.cxt.Debug()))
 	}
 	// [07] Eight-octet Key ID of signer.
 	keyid, err := t.reader.ReadBytes(8)
@@ -93,13 +93,13 @@ func (t *tag02) parseV3(rootInfo *info.Item) (*info.Item, error) {
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.PubID(pubid).ToItem())
+	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
 	// [16] One-octet hash algorithm.
 	hashid, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.HashID(hashid).ToItem())
+	rootInfo.Add(values.HashID(hashid).ToItem(t.cxt.Debug()))
 	// [17] Two-octet field holding left 16 bits of signed hash value.
 	hv, err := t.reader.ReadBytes(2)
 	if err != nil {
@@ -120,19 +120,19 @@ func (t *tag02) parseV4(rootInfo *info.Item) (*info.Item, error) {
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.SigID(sig).ToItem())
+	rootInfo.Add(values.SigID(sig).ToItem(t.cxt.Debug()))
 	// [02] One-octet public-key algorithm.
 	pubid, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.PubID(pubid).ToItem())
+	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
 	// [03] One-octet hash algorithm.
 	hashid, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.HashID(hashid).ToItem())
+	rootInfo.Add(values.HashID(hashid).ToItem(t.cxt.Debug()))
 	// [04] Two-octet scalar octet count for following hashed subpacket data.(= HS)
 	s, err := t.reader.ReadBytes(2)
 	if err != nil {

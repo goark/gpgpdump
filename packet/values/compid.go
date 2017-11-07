@@ -17,10 +17,11 @@ var compIDNames = Msgs{
 type CompID byte
 
 // ToItem returns Item instance
-func (ca CompID) ToItem() *info.Item {
+func (ca CompID) ToItem(dumpFlag bool) *info.Item {
 	return info.NewItem(
 		info.Name("Compression Algorithm"),
 		info.Value(ca.String()),
+		info.DumpStr(DumpByteString(byte(ca), dumpFlag)),
 	)
 }
 

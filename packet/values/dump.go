@@ -1,6 +1,8 @@
 package values
 
 import (
+	"fmt"
+
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -8,6 +10,13 @@ import (
 type Dumpdata struct {
 	reader *reader.Reader
 	dump   bool
+}
+
+func (d *Dumpdata) String() string {
+	if !d.dump {
+		return ""
+	}
+	return d.reader.DumpString(0)
 }
 
 //Dump returns Dumpdata instance
@@ -20,11 +29,12 @@ func DumpBytes(data []byte, f bool) *Dumpdata {
 	return Dump(reader.NewReader(data), f)
 }
 
-func (d *Dumpdata) String() string {
-	if !d.dump {
-		return "..."
+//DumpByteString returns string
+func DumpByteString(data byte, f bool) string {
+	if !f {
+		return ""
 	}
-	return d.reader.DumpString(0)
+	return fmt.Sprintf("%02x", data)
 }
 
 /* Copyright 2016 Spiegel

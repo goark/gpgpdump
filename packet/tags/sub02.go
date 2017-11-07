@@ -17,14 +17,11 @@ func newSub02(cxt *context.Context, subID values.SuboacketID, body []byte) Subs 
 
 // Parse parsing Signature Creation Time Sub-packet
 func (s *sub02) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
-	tm, err := values.NewDateTime(s.reader, s.cxt.UTC())
-	if err != nil {
-		return rootInfo, err
-	}
-	rootInfo.Add(values.SigTimeItem(tm, true))
+	tm, _ := values.NewDateTime(s.reader, s.cxt.UTC())
+	sigTime := values.SigTimeItem(tm, s.cxt.Debug())
+	sigTime.Name = s.subID.ToItem(s.reader, s.cxt.Debug()).Name
 	s.cxt.SigCreationTime = tm
-	return rootInfo, nil
+	return sigTime, nil
 }
 
 /* Copyright 2016 Spiegel

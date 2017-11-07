@@ -24,7 +24,7 @@ func (t *tag05) Parse() (*info.Item, error) {
 		return rootInfo, err
 	}
 	version := values.PubVer(v)
-	rootInfo.Add(version.ToItem())
+	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
 	pub := info.NewItem(info.Name("Public-Key"))
 	rootInfo.Add(pub)

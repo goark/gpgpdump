@@ -8,7 +8,14 @@ import (
 )
 
 func main() {
-	os.Exit(facade.Execute(gocli.NewUI(gocli.Reader(os.Stdin), gocli.Writer(os.Stdout), gocli.ErrorWriter(os.Stderr))).Int())
+	os.Exit(facade.Execute(
+		gocli.NewUI(
+			gocli.Reader(os.Stdin),
+			gocli.Writer(os.Stdout),
+			gocli.ErrorWriter(os.Stderr),
+		),
+		os.Args[1:],
+	).Int())
 }
 
 /* Copyright 2017 Spiegel

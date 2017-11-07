@@ -1,7 +1,6 @@
 package facade
 
 import (
-	"os"
 	"testing"
 )
 
@@ -11,20 +10,10 @@ type ecodeTestCase struct { //Test case for ExitCode
 	str string
 }
 
-var ecodeTests []ecodeTestCase //Test cases for ExitCode
-
-func TestMain(m *testing.M) {
-	ecodeTests = []ecodeTestCase{
-		{ExitNormal, 0, "normal end"},
-		{ExitAbnormal, 1, "abnormal end"},
-		{ExitCode(2), 2, "unknown"},
-	}
-
-	//start test
-	code := m.Run()
-
-	//termination
-	os.Exit(code)
+var ecodeTests = []ecodeTestCase{ //Test cases for ExitCode
+	{ExitNormal, 0, "normal end"},
+	{ExitAbnormal, 1, "abnormal end"},
+	{ExitCode(2), 2, "unknown"},
 }
 
 func TestExitCode(t *testing.T) {

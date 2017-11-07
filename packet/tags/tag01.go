@@ -26,7 +26,7 @@ func (t *tag01) Parse() (*info.Item, error) {
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.PubSessKeyVer(ver).ToItem())
+	rootInfo.Add(values.PubSessKeyVer(ver).ToItem(t.cxt.Debug()))
 	// [01] eight-octet number that gives the Key ID of the public key to which the session key is encrypted.
 	keyid, err := t.reader.ReadBytes(8)
 	if err != nil {
@@ -38,7 +38,7 @@ func (t *tag01) Parse() (*info.Item, error) {
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.PubID(pubid).ToItem())
+	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
 	// [10] string of octets that is the encrypted session key.
 	if err := pubkey.New(t.cxt, values.PubID(pubid), t.reader).ParseSes(rootInfo); err != nil {
 		return rootInfo, err

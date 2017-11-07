@@ -36,8 +36,8 @@ func TestTag01(t *testing.T) {
 	if i.Note != "126 bytes" {
 		t.Errorf("Tag.Note = \"%s\", want \"126 bytes\"", i.Note)
 	}
-	if i.Dump != "..." {
-		t.Errorf("Tag.Dump = \"%s\", want \"...\".", i.Dump)
+	if i.Dump != "" {
+		t.Errorf("Tag.Dump = \"%s\", want \"\".", i.Dump)
 	}
 }
 
@@ -58,8 +58,8 @@ func TestTag02(t *testing.T) {
 	if i.Note != "94 bytes" {
 		t.Errorf("Tag.Note = \"%s\", want \"94 bytes\"", i.Note)
 	}
-	if i.Dump != "..." {
-		t.Errorf("Tag.Dump = \"%s\", want \"...\".", i.Dump)
+	if i.Dump != "" {
+		t.Errorf("Tag.Dump = \"%s\", want \"\".", i.Dump)
 	}
 }
 

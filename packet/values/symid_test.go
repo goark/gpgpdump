@@ -25,7 +25,7 @@ var testSymIDNames = []string{
 
 func TestSymID(t *testing.T) {
 	for tag := 0; tag <= 14; tag++ {
-		i := SymID(tag).ToItem()
+		i := SymID(tag).ToItem(false)
 		if i.Name != "Symmetric Algorithm" {
 			t.Errorf("SymID.Name = \"%s\", want \"Symmetric Algorithm\".", i.Name)
 		}
@@ -40,7 +40,7 @@ func TestSymID(t *testing.T) {
 		}
 	}
 	for tag := 100; tag <= 110; tag++ {
-		i := SymID(tag).ToItem()
+		i := SymID(tag).ToItem(false)
 		value := fmt.Sprintf("Private/Experimental algorithm (sym %d)", tag)
 		if i.Value != value {
 			t.Errorf("SymID.Value = \"%s\", want \"%s\".", i.Value, value)

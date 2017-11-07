@@ -34,14 +34,14 @@
 [[projects]]
   name = "github.com/spiegel-im-spiegel/gocli"
   packages = ["."]
-  revision = "4fd5a75acbf2699359935398f109f7d740bcf6d5"
-  version = "v0.4.2"
+  revision = "663c5d5d717eb8076219a392d2dd2b15e35a17bd"
+  version = "v0.4.3"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["cast5","openpgp/armor","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k"]
-  revision = "2509b142fb2b797aa7587dad548f113b2c0f20ce"
+  revision = "687d4b818545e443c8ba223cbef20b1721afd4db"
 
 [solve-meta]
   analyzer-name = "dep"

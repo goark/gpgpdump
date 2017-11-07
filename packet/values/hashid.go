@@ -25,10 +25,11 @@ var hashIDNames = Msgs{
 type HashID byte
 
 //ToItem returns Item instance
-func (ha HashID) ToItem() *info.Item {
+func (ha HashID) ToItem(dumpFlag bool) *info.Item {
 	return info.NewItem(
 		info.Name("Hash Algorithm"),
 		info.Value(ha.String()),
+		info.DumpStr(DumpByteString(byte(ha), dumpFlag)),
 	)
 }
 

@@ -23,7 +23,7 @@ var testHashIDNames = []string{
 
 func TestHashID(t *testing.T) {
 	for tag := 0; tag <= 12; tag++ {
-		i := HashID(tag).ToItem()
+		i := HashID(tag).ToItem(false)
 		if i.Name != "Hash Algorithm" {
 			t.Errorf("HashAlg.Name = \"%s\", want \"Hash Algorithm\".", i.Name)
 		}
@@ -38,7 +38,7 @@ func TestHashID(t *testing.T) {
 		}
 	}
 	for tag := 100; tag <= 110; tag++ {
-		i := HashID(tag).ToItem()
+		i := HashID(tag).ToItem(false)
 		value := fmt.Sprintf("Private/Experimental algorithm (hash %d)", tag)
 		if i.Value != value {
 			t.Errorf("HashAlg.Value = \"%s\", want \"%s\".", i.Value, value)

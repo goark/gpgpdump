@@ -60,7 +60,7 @@ func (p *pubkeyInfo) parseV3(parent *info.Item) error {
 		return errors.Wrap(err, "error in tags.pubkey,parseV3() function (pub id)")
 	}
 	p.pubID = values.PubID(pubid)
-	parent.Add(p.pubID.ToItem())
+	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
 	// [08] series of multiprecision integers comprising the key material
 	return pubkey.New(p.cxt, p.pubID, p.reader).ParsePub(parent)
 }
@@ -80,7 +80,7 @@ func (p *pubkeyInfo) parseV4(parent *info.Item) error {
 		return errors.Wrap(err, "error in tags.pubkey,parseV3() function (pub id)")
 	}
 	p.pubID = values.PubID(pubid)
-	parent.Add(p.pubID.ToItem())
+	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
 	// [06] series of multiprecision integers comprising the key material.
 	return pubkey.New(p.cxt, p.pubID, p.reader).ParsePub(parent)
 }

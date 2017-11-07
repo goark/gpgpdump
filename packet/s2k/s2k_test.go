@@ -11,7 +11,7 @@ import (
 func TestS2KNil(t *testing.T) {
 	parent := info.NewItem()
 	s2k := (*S2K)(nil)
-	if err := s2k.Parse(parent); err != nil {
+	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
 	}
 	if parent.Items != nil {
@@ -23,7 +23,7 @@ func TestS2KEmpty(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{}
 	s2k := New(reader.NewReader(data))
-	if err := s2k.Parse(parent); err == nil {
+	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
 		fmt.Println("info:", err)
@@ -38,7 +38,7 @@ func TestSimpleS2K(t *testing.T) {
 	var data = []byte{0x00, 0x08, 0xff, 0xff}
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err != nil {
+	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -53,8 +53,8 @@ func TestSimpleS2K(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "00" {
+			t.Errorf("S2K.Dump = \"%v\", want \"00\".", i.Dump)
 		}
 		if len(i.Items) != 1 {
 			t.Errorf("S2K.Item count = %d, want 1.", len(i.Items))
@@ -69,8 +69,8 @@ func TestSimpleS2K(t *testing.T) {
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)
 			}
-			if hash.Dump != "" {
-				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"\".", hash.Dump)
+			if hash.Dump != "08" {
+				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"08\".", hash.Dump)
 			}
 		}
 		if reader.Rest() != 2 {
@@ -86,7 +86,7 @@ func TestSimpleS2Kerr(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{0x00}
 	s2k := New(reader.NewReader(data))
-	if err := s2k.Parse(parent); err == nil {
+	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
 		fmt.Println("info:", err)
@@ -104,8 +104,8 @@ func TestSimpleS2Kerr(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "00" {
+			t.Errorf("S2K.Dump = \"%v\", want \"00\".", i.Dump)
 		}
 		if len(i.Items) != 0 {
 			t.Errorf("S2K.Item count = %d, want 0.", len(i.Items))
@@ -119,7 +119,7 @@ func TestSaltedS2K(t *testing.T) {
 	saltDump := "01 02 03 04 05 06 07 08"
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err != nil {
+	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -134,8 +134,8 @@ func TestSaltedS2K(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "01" {
+			t.Errorf("S2K.Dump = \"%v\", want \"01\".", i.Dump)
 		}
 		if len(i.Items) != 2 {
 			t.Errorf("S2K.Item count = %d, want 2.", len(i.Items))
@@ -150,8 +150,8 @@ func TestSaltedS2K(t *testing.T) {
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)
 			}
-			if hash.Dump != "" {
-				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"\".", hash.Dump)
+			if hash.Dump != "08" {
+				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"08\".", hash.Dump)
 			}
 			salt := i.Items[1]
 			if salt.Name != "Salt" {
@@ -181,7 +181,7 @@ func TestSaltedS2Kerr(t *testing.T) {
 	var data = []byte{0x01, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err == nil {
+	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
 		fmt.Println("info:", err)
@@ -196,8 +196,8 @@ func TestSaltedS2Kerr(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "01" {
+			t.Errorf("S2K.Dump = \"%v\", want \"01\".", i.Dump)
 		}
 		if len(i.Items) != 1 {
 			t.Errorf("S2K.Item count = %d, want 1.", len(i.Items))
@@ -212,8 +212,8 @@ func TestSaltedS2Kerr(t *testing.T) {
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)
 			}
-			if hash.Dump != "" {
-				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"\".", hash.Dump)
+			if hash.Dump != "08" {
+				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"08\".", hash.Dump)
 			}
 		}
 	}
@@ -225,7 +225,7 @@ func TestIteratedSaltedS2K(t *testing.T) {
 	saltDump := "01 02 03 04 05 06 07 08"
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err != nil {
+	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -240,8 +240,8 @@ func TestIteratedSaltedS2K(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "03" {
+			t.Errorf("S2K.Dump = \"%v\", want \"03\".", i.Dump)
 		}
 		if len(i.Items) != 3 {
 			t.Errorf("S2K.Item count = %d, want 3.", len(i.Items))
@@ -256,8 +256,8 @@ func TestIteratedSaltedS2K(t *testing.T) {
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)
 			}
-			if hash.Dump != "" {
-				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"\".", hash.Dump)
+			if hash.Dump != "08" {
+				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"08\".", hash.Dump)
 			}
 			salt := i.Items[1]
 			if salt.Name != "Salt" {
@@ -279,11 +279,11 @@ func TestIteratedSaltedS2K(t *testing.T) {
 			if count.Value != "4980736" {
 				t.Errorf("S2K.Count.Value = \"%s\", want \"4980736\".", count.Value)
 			}
-			if count.Note != "coded: 0xc3" {
-				t.Errorf("S2K.Count.Note = \"%s\", want \"coded: 0xc3\"", count.Note)
+			if count.Note != "" {
+				t.Errorf("S2K.Count.Note = \"%s\", want \"\"", count.Note)
 			}
-			if count.Dump != "" {
-				t.Errorf("S2K.Count.Dump = \"%s\", want \"\".", salt.Dump)
+			if count.Dump != "c3" {
+				t.Errorf("S2K.Count.Dump = \"%s\", want \"c3\".", salt.Dump)
 			}
 		}
 		if reader.Rest() != 2 {
@@ -301,7 +301,7 @@ func TestIteratedSaltedS2Kerr(t *testing.T) {
 	saltDump := "01 02 03 04 05 06 07 08"
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err == nil {
+	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
 		fmt.Println("info:", err)
@@ -319,8 +319,8 @@ func TestIteratedSaltedS2Kerr(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "03" {
+			t.Errorf("S2K.Dump = \"%v\", want \"03\".", i.Dump)
 		}
 		if len(i.Items) != 2 {
 			t.Errorf("S2K.Item count = %d, want 2.", len(i.Items))
@@ -335,8 +335,8 @@ func TestIteratedSaltedS2Kerr(t *testing.T) {
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)
 			}
-			if hash.Dump != "" {
-				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"\".", hash.Dump)
+			if hash.Dump != "08" {
+				t.Errorf("S2K.HashAlg.Dump = \"%s\", want \"08\".", hash.Dump)
 			}
 			salt := i.Items[1]
 			if salt.Name != "Salt" {
@@ -360,7 +360,7 @@ func TestUnknownS2K(t *testing.T) {
 	var data = []byte{0x02, 0xff, 0xff}
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err != nil {
+	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -375,8 +375,8 @@ func TestUnknownS2K(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "02" {
+			t.Errorf("S2K.Dump = \"%v\", want \"02\".", i.Dump)
 		}
 		if len(i.Items) != 0 {
 			t.Errorf("S2K.Item count = %d, want 1.", len(i.Items))
@@ -395,7 +395,7 @@ func TestExpS2K(t *testing.T) {
 	var data = []byte{101, 0xff, 0xff, 0xff, 0xff}
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err != nil {
+	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -410,8 +410,8 @@ func TestExpS2K(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "65" {
+			t.Errorf("S2K.Dump = \"%v\", want \"65\".", i.Dump)
 		}
 		if len(i.Items) != 0 {
 			t.Errorf("S2K.Item count = %d, want 0.", len(i.Items))
@@ -430,7 +430,7 @@ func TestExpS2Kb(t *testing.T) {
 	var data = []byte{101, 0xff, 0xff, 0xff}
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err != nil {
+	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -445,8 +445,8 @@ func TestExpS2Kb(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "65" {
+			t.Errorf("S2K.Dump = \"%v\", want \"65\".", i.Dump)
 		}
 		if len(i.Items) != 0 {
 			t.Errorf("S2K.Item count = %d, want 0.", len(i.Items))
@@ -465,7 +465,7 @@ func TestExpS2Kgnu1(t *testing.T) {
 	var data = []byte{101, 'G', 'N', 'U', 0x01, 0xff, 0xff}
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err != nil {
+	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -480,8 +480,8 @@ func TestExpS2Kgnu1(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "65" {
+			t.Errorf("S2K.Dump = \"%v\", want \"65\".", i.Dump)
 		}
 		if len(i.Items) != 1 {
 			t.Errorf("S2K.Item count = %d, want 0.", len(i.Items))
@@ -518,7 +518,7 @@ func TestExpS2Kgnu2(t *testing.T) {
 	snDumo := "01 02 03 04"
 	reader := reader.NewReader(data)
 	s2k := New(reader)
-	if err := s2k.Parse(parent); err != nil {
+	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -533,8 +533,8 @@ func TestExpS2Kgnu2(t *testing.T) {
 		if i.Note != "" {
 			t.Errorf("S2K.Note = \"%v\", want \"\"", i.Note)
 		}
-		if i.Dump != "" {
-			t.Errorf("S2K.Dump = \"%v\", want \"\".", i.Dump)
+		if i.Dump != "65" {
+			t.Errorf("S2K.Dump = \"%v\", want \"65\".", i.Dump)
 		}
 		if len(i.Items) != 1 {
 			t.Errorf("S2K.Item count = %d, want 0.", len(i.Items))

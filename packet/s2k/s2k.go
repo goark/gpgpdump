@@ -23,7 +23,7 @@ func New(r *reader.Reader) *S2K {
 }
 
 //Parse is parsing S2K packet
-func (s *S2K) Parse(parent *info.Item) error {
+func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 	if s == nil {
 		return nil
 	}
@@ -32,7 +32,7 @@ func (s *S2K) Parse(parent *info.Item) error {
 		return errors.Wrap(err, "error in s2k.S2K.Parse() function (s2k ID)")
 	}
 	s2kID := values.S2KID(ss)
-	itm := s2kID.ToItem()
+	itm := s2kID.ToItem(dumpFlag)
 	parent.Add(itm)
 	if s2kID == 0x00 || s2kID == 0x01 || s2kID == 0x03 {
 		//0x00: Simple S2K
@@ -42,7 +42,7 @@ func (s *S2K) Parse(parent *info.Item) error {
 		if err != nil {
 			return errors.Wrap(err, "error in s2k.S2K.Parse() function (hash ID)")
 		}
-		itm.Add(values.HashID(hashid).ToItem())
+		itm.Add(values.HashID(hashid).ToItem(dumpFlag))
 		if s2kID != 0x00 {
 			//0x01: Salted S2K
 			//0x03: Iterated and Salted S2K

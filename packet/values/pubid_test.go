@@ -34,7 +34,7 @@ var testPubIDNames = []string{
 
 func TestPubID(t *testing.T) {
 	for tag := 0; tag <= 23; tag++ {
-		i := PubID(tag).ToItem()
+		i := PubID(tag).ToItem(false)
 		if i.Name != "Public-key Algorithm" {
 			t.Errorf("PubID.Name = \"%s\", want \"Public-key Algorithm\".", i.Name)
 		}
@@ -49,7 +49,7 @@ func TestPubID(t *testing.T) {
 		}
 	}
 	for tag := 100; tag <= 110; tag++ {
-		i := PubID(tag).ToItem()
+		i := PubID(tag).ToItem(false)
 		value := fmt.Sprintf("Private/Experimental algorithm (pub %d)", tag)
 		if i.Value != value {
 			t.Errorf("PubID.Value = \"%s\", want \"%s\".", i.Value, value)

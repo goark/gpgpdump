@@ -39,7 +39,7 @@ func (v *Version) IsUnknown() bool {
 }
 
 //ToItem returns Item instance
-func (v *Version) ToItem() *info.Item {
+func (v *Version) ToItem(dumpFlag bool) *info.Item {
 	if v == nil {
 		return nil
 	}
@@ -56,6 +56,7 @@ func (v *Version) ToItem() *info.Item {
 		info.Name("Version"),
 		info.Value(v.String()),
 		info.Note(note),
+		info.DumpStr(DumpByteString(v.ver, dumpFlag)),
 	)
 }
 

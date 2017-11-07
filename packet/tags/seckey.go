@@ -35,7 +35,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 	switch sid {
 	case 1:
 		parent.Note = "the secret-key data is not encrypted."
-		parent.Add(p.pubVer.ToItem())
+		parent.Add(p.pubVer.ToItem(p.cxt.Debug()))
 		if !p.pubVer.IsUnknown() {
 			if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecPlain(parent); err != nil {
 				return err
@@ -56,9 +56,9 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		if err != nil {
 			return errors.Wrap(err, "error in tags.seckeyInfo.Parse() function (sym id)")
 		}
-		parent.Add(values.SymID(symid).ToItem())
+		parent.Add(values.SymID(symid).ToItem(p.cxt.Debug()))
 		s2k := s2k.New(p.reader)
-		if err := s2k.Parse(parent); err != nil {
+		if err := s2k.Parse(parent, p.cxt.Debug()); err != nil {
 			return errors.Wrap(err, "error in tags.seckeyInfo.Parse() function (s2k)")
 		}
 		if s2k.HasIV() {
@@ -84,7 +84,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		if err != nil {
 			return errors.Wrap(err, "error in tags.seckeyInfo.Parse() function (sym id)")
 		}
-		parent.Add(values.SymID(symid).ToItem())
+		parent.Add(values.SymID(symid).ToItem(p.cxt.Debug()))
 		iv, err := p.iv(values.SymID(symid))
 		if err != nil {
 			return err

@@ -24,7 +24,7 @@ func (k KeyID) ToItem() *info.Item {
 }
 
 func (k KeyID) String() string {
-	return fmt.Sprintf("0x%X", uint64(k))
+	return fmt.Sprintf("%#016x", uint64(k))
 }
 
 /* Copyright 2016 Spiegel

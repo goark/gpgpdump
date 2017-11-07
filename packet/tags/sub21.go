@@ -20,7 +20,7 @@ func (s *sub21) Parse() (*info.Item, error) {
 	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
 	algs, _ := s.reader.Read2EOF()
 	for _, alg := range algs {
-		rootInfo.Add(values.HashID(alg).ToItem())
+		rootInfo.Add(values.HashID(alg).ToItem(s.cxt.Debug()))
 	}
 	return rootInfo, nil
 }

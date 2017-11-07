@@ -27,16 +27,16 @@ func (t *tag03) Parse() (*info.Item, error) {
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.SymSessKeyVer(v).ToItem())
+	rootInfo.Add(values.SymSessKeyVer(v).ToItem(t.cxt.Debug()))
 	// [01] one-octet number describing the symmetric algorithm used.
 	symid, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.SymID(symid).ToItem())
+	rootInfo.Add(values.SymID(symid).ToItem(t.cxt.Debug()))
 	// [02] string-to-key (S2K) specifier
 	s2k := s2k.New(t.reader)
-	if err := s2k.Parse(rootInfo); err != nil {
+	if err := s2k.Parse(rootInfo, t.cxt.Debug()); err != nil {
 		return rootInfo, err
 	}
 

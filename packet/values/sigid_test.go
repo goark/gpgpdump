@@ -7,7 +7,7 @@ import (
 
 func TestSigIS(t *testing.T) {
 	for tag := 0; tag <= 0x51; tag++ {
-		i := SigID(tag).ToItem()
+		i := SigID(tag).ToItem(false)
 		var value string
 		switch tag {
 		case 0x00:

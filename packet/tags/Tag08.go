@@ -23,7 +23,7 @@ func (t *tag08) Parse() (*info.Item, error) {
 		return rootInfo, err
 	}
 	version := values.CompID(compID)
-	rootInfo.Add(version.ToItem())
+	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
 	if t.reader.Rest() > 0 {
 		rootInfo.Add(values.RawData(t.reader, "Compressed data", t.cxt.Debug()))

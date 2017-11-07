@@ -1,6 +1,7 @@
 package packet
 
 import (
+	"bytes"
 	"io"
 	"testing"
 
@@ -32,19 +33,46 @@ const (
         {
           "name": "Version",
           "value": "4",
+          "dump": "04",
           "note": "new"
         },
         {
           "name": "Signiture Type",
-          "value": "Signature of a canonical text document (0x01)"
+          "value": "Signature of a canonical text document (0x01)",
+          "dump": "01"
         },
         {
           "name": "Public-key Algorithm",
-          "value": "ECDSA public key algorithm (pub 19)"
+          "value": "ECDSA public key algorithm (pub 19)",
+          "dump": "13"
         },
         {
           "name": "Hash Algorithm",
-          "value": "SHA256 (hash 8)"
+          "value": "SHA256 (hash 8)",
+          "dump": "08"
+        },
+        {
+          "name": "Hashed Subpacket",
+          "dump": "05 02 54 c3 08 df",
+          "note": "6 bytes",
+          "Item": [
+            {
+              "name": "Signature Creation Time (sub 2)",
+              "value": "2015-01-24T11:52:15+09:00",
+              "dump": "54 c3 08 df"
+            }
+          ]
+        },
+        {
+          "name": "Unhashed Subpacket",
+          "dump": "09 10 31 fb fd a9 5f bb fa 18",
+          "note": "10 bytes",
+          "Item": [
+            {
+              "name": "Issuer (sub 16)",
+              "value": "0x31fbfda95fbbfa18"
+            }
+          ]
         },
         {
           "name": "Hash left 2 bytes",
@@ -52,12 +80,10 @@ const (
         },
         {
           "name": "Multi-precision integer",
-          "dump": "...",
           "note": "ECDSA r (256 bits)"
         },
         {
           "name": "Multi-precision integer",
-          "dump": "...",
           "note": "ECDSA s (252 bits)"
         }
       ]
@@ -67,36 +93,21 @@ const (
 `
 )
 
-func TestParseNil(t *testing.T) {
-	parser, err := NewParser(nil, nil)
+func TestParseNilOption(t *testing.T) {
+	_, err := NewParser(bytes.NewBufferString(sample1), nil)
 	if err != nil {
-		t.Errorf("NewParser()  = %v, want nil error.", err)
-		return
-	}
-	info, err := parser.Parse()
-	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
-		return
-	}
-	str, err := info.JSON()
-	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
-		return
-	}
-	if str != result1 {
-		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result1)
+		t.Errorf("NewParser()  = \"%v\", want nil error.", err)
 	}
 }
 
-func TestParseNilASCII(t *testing.T) {
+func TestParseNilData(t *testing.T) {
 	opts := options.NewOptions(
 		options.Set(options.ArmorOpt, true),
 		options.Set(options.DebugOpt, true),
 	)
 	_, err := NewParser(nil, opts)
-	if err != io.EOF {
-		t.Errorf("NewParser()  = %v, want nil error.", err)
-		return
+	if err == nil {
+		t.Error("NewParser()  = nil error, not want nil error.")
 	}
 }
 
@@ -105,7 +116,7 @@ func TestParse(t *testing.T) {
 		options.Set(options.ArmorOpt, true),
 		options.Set(options.DebugOpt, true),
 	)
-	parser, err := NewParser([]byte(sample1), opts)
+	parser, err := NewParser(bytes.NewBufferString(sample1), opts)
 	if err != nil {
 		t.Errorf("NewParser()  = %v, want nil error.", err)
 		return
@@ -115,11 +126,14 @@ func TestParse(t *testing.T) {
 		t.Errorf("Parse()  = %v, want nil error.", err)
 		return
 	}
-	str, err := info.JSON()
+	json, err := info.JSON()
 	if err != nil {
 		t.Errorf("Parse()  = %v, want nil error.", err)
 		return
 	}
+	buf := new(bytes.Buffer)
+	io.Copy(buf, json)
+	str := buf.String()
 	if str != result2 {
 		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result2)
 	}

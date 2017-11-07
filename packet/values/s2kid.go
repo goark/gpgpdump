@@ -18,10 +18,11 @@ var s2kIDNames = Msgs{
 type S2KID byte
 
 // ToItem returns Item instance
-func (sa S2KID) ToItem() *info.Item {
+func (sa S2KID) ToItem(dumpFlag bool) *info.Item {
 	return info.NewItem(
 		info.Name("String-to-Key (S2K) Algorithm"),
 		info.Value(sa.String()),
+		info.DumpStr(DumpByteString(byte(sa), dumpFlag)),
 	)
 }
 
@@ -58,7 +59,7 @@ func (c Stretch) ToItem() *info.Item {
 	return info.NewItem(
 		info.Name("Count"),
 		info.Value(strconv.Itoa(int(count))),
-		info.Note(fmt.Sprintf("coded: %#02x", c)),
+		info.DumpStr(DumpByteString(byte(c), true)),
 	)
 }
 

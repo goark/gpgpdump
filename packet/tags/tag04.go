@@ -26,25 +26,25 @@ func (t *tag04) Parse() (*info.Item, error) {
 		return rootInfo, err
 	}
 	version := values.OneSigVer(v)
-	rootInfo.Add(version.ToItem())
+	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 	// [01] one-octet signature type
 	sig, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.SigID(sig).ToItem())
+	rootInfo.Add(values.SigID(sig).ToItem(t.cxt.Debug()))
 	// [02] one-octet number describing the hash algorithm used.
 	hashid, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.HashID(hashid).ToItem())
+	rootInfo.Add(values.HashID(hashid).ToItem(t.cxt.Debug()))
 	// [03] one-octet number describing the public-key algorithm used.
 	pubid, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.PubID(pubid).ToItem())
+	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
 	// [04] eight-octet number holding the Key ID of the signing key.
 	keyid, err := t.reader.ReadBytes(8)
 	if err != nil {

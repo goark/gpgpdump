@@ -19,7 +19,7 @@ func newSub09(cxt *context.Context, subID values.SuboacketID, body []byte) Subs 
 func (s *sub09) Parse() (*info.Item, error) {
 	exp, _ := values.NewExpire(s.reader, s.cxt.KeyCreationTime)
 	s.cxt.KeyCreationTime = nil
-	return exp.ToItem(s.subID.ToItem(s.reader, s.cxt.Debug()).Name, true), nil
+	return exp.ToItem(s.subID.ToItem(s.reader, s.cxt.Debug()).Name, s.cxt.Debug()), nil
 }
 
 /* Copyright 2016 Spiegel

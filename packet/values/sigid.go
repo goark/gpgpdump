@@ -28,10 +28,11 @@ var sigIDNames = Msgs{
 type SigID byte
 
 //ToItem returns Item instance
-func (s SigID) ToItem() *info.Item {
+func (s SigID) ToItem(dumpFlag bool) *info.Item {
 	return info.NewItem(
 		info.Name("Signiture Type"),
 		info.Value(s.String()),
+		info.DumpStr(DumpByteString(byte(s), dumpFlag)),
 	)
 }
 

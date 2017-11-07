@@ -44,10 +44,11 @@ var symIDIVLen = map[int]int{
 type SymID byte
 
 //ToItem returns Item instance
-func (s SymID) ToItem() *info.Item {
+func (s SymID) ToItem(dumpFlag bool) *info.Item {
 	return info.NewItem(
 		info.Name("Symmetric Algorithm"),
 		info.Value(s.String()),
+		info.DumpStr(DumpByteString(byte(s), dumpFlag)),
 	)
 }
 

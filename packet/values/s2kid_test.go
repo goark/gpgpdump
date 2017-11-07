@@ -15,7 +15,7 @@ var testS2kIDNames = []string{
 
 func TestS2KID(t *testing.T) {
 	for tag := 0; tag <= 4; tag++ {
-		i := S2KID(tag).ToItem()
+		i := S2KID(tag).ToItem(false)
 		if i.Name != "String-to-Key (S2K) Algorithm" {
 			t.Errorf("S2KID.Name = \"%s\", want \"String-to-Key (S2K) Algorithm\".", i.Name)
 		}
@@ -30,7 +30,7 @@ func TestS2KID(t *testing.T) {
 		}
 	}
 	for tag := 100; tag <= 110; tag++ {
-		i := S2KID(tag).ToItem()
+		i := S2KID(tag).ToItem(false)
 		value := fmt.Sprintf("Private/Experimental algorithm (s2k %d)", tag)
 		if i.Value != value {
 			t.Errorf("S2KID.Value = \"%s\", want \"%s\".", i.Value, value)
@@ -58,8 +58,8 @@ func TestStretch(t *testing.T) {
 	if i.Value != "4980736" {
 		t.Errorf("Stretch.Name = \"%s\", want \"4980736\".", i.Value)
 	}
-	if i.Note != "coded: 0xc3" {
-		t.Errorf("Stretch.Name = \"%s\", want \"coded: 0xc3\".", i.Note)
+	if i.Dump != "c3" {
+		t.Errorf("Stretch.Name = \"%s\", want \"c3\".", i.Dump)
 	}
 }
 
