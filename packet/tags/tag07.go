@@ -12,7 +12,7 @@ type tag07 tagInfo
 
 //newTag07 return tag07 instance
 func newTag07(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag07{cxt: cxt, tag: tag, reader: reader.NewReader(body)}
+	return &tag07{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
 // Parse parsing Secret-Subkey Packet

@@ -12,7 +12,7 @@ type sub28 subInfo
 
 //newSub28 return sub28 instance
 func newSub28(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub28{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub28{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Signer's User ID Sub-packet

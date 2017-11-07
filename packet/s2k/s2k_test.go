@@ -22,7 +22,7 @@ func TestS2KNil(t *testing.T) {
 func TestS2KEmpty(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{}
-	s2k := New(reader.NewReader(data))
+	s2k := New(reader.New(data))
 	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
@@ -36,7 +36,7 @@ func TestS2KEmpty(t *testing.T) {
 func TestSimpleS2K(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{0x00, 0x08, 0xff, 0xff}
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
@@ -85,7 +85,7 @@ func TestSimpleS2K(t *testing.T) {
 func TestSimpleS2Kerr(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{0x00}
-	s2k := New(reader.NewReader(data))
+	s2k := New(reader.New(data))
 	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
@@ -117,7 +117,7 @@ func TestSaltedS2K(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{0x01, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xff, 0xff}
 	saltDump := "01 02 03 04 05 06 07 08"
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
@@ -179,7 +179,7 @@ func TestSaltedS2K(t *testing.T) {
 func TestSaltedS2Kerr(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{0x01, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
@@ -223,7 +223,7 @@ func TestIteratedSaltedS2K(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{0x03, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xc3, 0xff, 0xff}
 	saltDump := "01 02 03 04 05 06 07 08"
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
@@ -299,7 +299,7 @@ func TestIteratedSaltedS2Kerr(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{0x03, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08}
 	saltDump := "01 02 03 04 05 06 07 08"
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
@@ -358,7 +358,7 @@ func TestIteratedSaltedS2Kerr(t *testing.T) {
 func TestUnknownS2K(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{0x02, 0xff, 0xff}
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
@@ -393,7 +393,7 @@ func TestUnknownS2K(t *testing.T) {
 func TestExpS2K(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{101, 0xff, 0xff, 0xff, 0xff}
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
@@ -428,7 +428,7 @@ func TestExpS2K(t *testing.T) {
 func TestExpS2Kb(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{101, 0xff, 0xff, 0xff}
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
@@ -463,7 +463,7 @@ func TestExpS2Kb(t *testing.T) {
 func TestExpS2Kgnu1(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{101, 'G', 'N', 'U', 0x01, 0xff, 0xff}
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)
@@ -516,7 +516,7 @@ func TestExpS2Kgnu2(t *testing.T) {
 	parent := info.NewItem()
 	var data = []byte{101, 'G', 'N', 'U', 0x02, 0x04, 0x01, 0x02, 0x03, 0x04, 0xff, 0xff}
 	snDumo := "01 02 03 04"
-	reader := reader.NewReader(data)
+	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
 		t.Errorf("S2K err = \"%v\", want nil.", err)

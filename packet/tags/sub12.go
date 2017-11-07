@@ -14,7 +14,7 @@ type sub12 subInfo
 
 //newSub12 return sub12 instance
 func newSub12(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub12{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub12{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Revocation Key Sub-packet

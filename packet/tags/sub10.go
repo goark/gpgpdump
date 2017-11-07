@@ -12,7 +12,7 @@ type sub10 subInfo
 
 //newSub10 return sub10 instance
 func newSub10(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub10{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub10{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Placeholder for backward compatibility Sub-packet

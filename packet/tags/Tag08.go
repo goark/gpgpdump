@@ -12,7 +12,7 @@ type tag08 tagInfo
 
 //newTag08 return tag08 instance
 func newTag08(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag08{cxt: cxt, tag: tag, reader: reader.NewReader(body)}
+	return &tag08{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
 // Parse parsing Compressed Data Packet

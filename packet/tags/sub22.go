@@ -12,7 +12,7 @@ type sub22 subInfo
 
 //newSub22 return sub22 instance
 func newSub22(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub22{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub22{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Preferred Compression Algorithms Sub-packet

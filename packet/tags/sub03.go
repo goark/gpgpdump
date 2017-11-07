@@ -12,7 +12,7 @@ type sub03 subInfo
 
 //newSub03 return sub03 instance
 func newSub03(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub03{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub03{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Signature Expiration Timee Sub-packet

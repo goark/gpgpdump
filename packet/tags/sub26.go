@@ -12,7 +12,7 @@ type sub26 subInfo
 
 //newSub26 return sub26 instance
 func newSub26(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub26{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub26{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Policy URI Sub-packet

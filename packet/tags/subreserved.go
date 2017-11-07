@@ -12,7 +12,7 @@ type subReserved subInfo
 
 //newSubReserved return subReserved instance
 func newSubReserved(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &subReserved{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &subReserved{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Reserved Sub-packet

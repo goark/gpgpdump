@@ -19,7 +19,7 @@ var (
 )
 
 func TestNewMPI(t *testing.T) {
-	reader := reader.NewReader(data1)
+	reader := reader.New(data1)
 	m, err := NewMPI(reader)
 	if err != nil {
 		t.Errorf("NewMPI() = \"%v\", want nil error.", err)
@@ -40,7 +40,7 @@ func TestNewMPI(t *testing.T) {
 }
 
 func TestNewMPIandNote(t *testing.T) {
-	reader := reader.NewReader(data1)
+	reader := reader.New(data1)
 	m, err := NewMPI(reader)
 	if err != nil {
 		t.Errorf("NewMPI() = \"%v\", want nil error.", err)
@@ -52,7 +52,7 @@ func TestNewMPIandNote(t *testing.T) {
 }
 
 func TestNewMPIErr(t *testing.T) {
-	reader := reader.NewReader(data2)
+	reader := reader.New(data2)
 	_, err := NewMPI(reader)
 	if err != nil {
 		if errors.Cause(err) != io.ErrUnexpectedEOF {
@@ -64,7 +64,7 @@ func TestNewMPIErr(t *testing.T) {
 }
 
 func TestNewMPIErr2(t *testing.T) {
-	reader := reader.NewReader(data3)
+	reader := reader.New(data3)
 	_, err := NewMPI(reader)
 	if err != nil {
 		if errors.Cause(err) != io.ErrUnexpectedEOF {
