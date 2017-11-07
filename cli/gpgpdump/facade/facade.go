@@ -83,7 +83,7 @@ func getBool(cmd *cobra.Command, name string) bool {
 }
 
 func parseOpt(cmd *cobra.Command) *options.Options {
-	return options.NewOptions(
+	return options.New(
 		options.Set(options.ArmorOpt, getBool(cmd, options.ArmorOpt)),
 		//options.Set(options.DebugOpt, getBool(cmd, options.DebugOpt)), //not use
 		//options.Set(options.GDumpOpt, getBool(cmd, options.GDumpOpt)), //not use

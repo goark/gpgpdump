@@ -19,7 +19,7 @@ var (
 	pubkeySigName19b = "Multi-precision integer"
 )
 
-var cxtSig = context.NewContext(options.NewOptions(
+var cxtSig = context.NewContext(options.New(
 	options.Set(options.DebugOpt, true), //not use
 	options.Set(options.GDumpOpt, true), //not use
 	options.Set(options.IntegerOpt, true),

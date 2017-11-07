@@ -21,7 +21,7 @@ var (
 
 func TestTag01(t *testing.T) {
 	op := &openpgp.OpaquePacket{Tag: 1, Contents: tag01Body}
-	cxt := context.NewContext(options.NewOptions())
+	cxt := context.NewContext(options.New())
 	i, err := NewTag(op, cxt).Parse()
 	if err != nil {
 		t.Errorf("NewTag() = %v, want nil error.", err)
@@ -43,7 +43,7 @@ func TestTag01(t *testing.T) {
 
 func TestTag02(t *testing.T) {
 	op := &openpgp.OpaquePacket{Tag: 2, Contents: tag02Body}
-	cxt := context.NewContext(options.NewOptions())
+	cxt := context.NewContext(options.New())
 	i, err := NewTag(op, cxt).Parse()
 	if err != nil {
 		t.Errorf("NewTag() = %v, want nil error.", err)
@@ -65,7 +65,7 @@ func TestTag02(t *testing.T) {
 
 func TestTagUnknown(t *testing.T) {
 	op := &openpgp.OpaquePacket{Tag: 99, Contents: []byte{0x01, 0x02, 0x03, 0x04}}
-	cxt := context.NewContext(options.NewOptions(
+	cxt := context.NewContext(options.New(
 		options.Set(options.DebugOpt, true),
 	))
 	name := "Unknown (tag 99)"

@@ -27,7 +27,7 @@ var (
 	pubkeySesNameUn  = "Multi-precision integers of Unknown (pub 100)"
 )
 
-var cxtPub = context.NewContext(options.NewOptions(
+var cxtPub = context.NewContext(options.New(
 	options.Set(options.DebugOpt, true), //not use
 	options.Set(options.GDumpOpt, true), //not use
 	options.Set(options.IntegerOpt, true),

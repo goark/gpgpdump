@@ -28,7 +28,7 @@ func NewParser(reader io.Reader, o *options.Options) (*Parser, error) {
 		return nil, errors.Wrap(os.ErrInvalid, "error in packet.NewParser() function (null data)")
 	}
 	if o == nil {
-		o = options.NewOptions()
+		o = options.New()
 	}
 	var r io.Reader
 	var err error

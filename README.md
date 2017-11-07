@@ -36,7 +36,7 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 -----END PGP SIGNATURE-----
 `
 
-info, err := gpgpdump.Parse(strings.NewReader(openpgpStr), options.NewOptions())
+info, err := gpgpdump.Parse(strings.NewReader(openpgpStr), options.New())
 if err != nil {
 	return
 }
