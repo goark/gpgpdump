@@ -1,15 +1,15 @@
-# gpgpdump - OpenPGP packet visualizer
+# [gpgpdump] - OpenPGP packet visualizer
 
 [![Build Status](https://travis-ci.org/spiegel-im-spiegel/gpgpdump.svg?branch=master)](https://travis-ci.org/spiegel-im-spiegel/gpgpdump)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/spiegel-im-spiegel/gpgpdump/master/LICENSE)
 [![GitHub release](http://img.shields.io/github/release/spiegel-im-spiegel/gpgpdump.svg)](https://github.com/spiegel-im-spiegel/gpgpdump/releases/latest)
 
-[gpgpdump](https://github.com/spiegel-im-spiegel/gpgpdump) is a OpenPGP ([RFC 4880](https://tools.ietf.org/html/rfc4880)) packet visualizer by [golang](https://golang.org/).
+[gpgpdump] is a OpenPGP ([RFC 4880]) packet visualizer by [golang](https://golang.org/).
 
 - Based on [pgpdump](https://github.com/kazu-yamamoto/pgpdump)
 - Provide [golang](https://golang.org/) package and command-line Interface
 - Output with [TOML](https://github.com/toml-lang/toml) (or [JSON](https://tools.ietf.org/html/rfc7159)) format
-- Support [RFC 5581](http://tools.ietf.org/html/rfc5581) and [RFC 6637](http://tools.ietf.org/html/rfc6637)
+- Support [RFC 5581] and [RFC 6637]
 
 ## Install
 
@@ -202,4 +202,7 @@ dep status -dot | dot -Tpng -o dependency.png
 [![Dependencies](dependency.png)](dependency.png)
 
 [gpgpdump]: https://github.com/spiegel-im-spiegel/gpgpdump "spiegel-im-spiegel/gpgpdump: gpgpdump - OpenPGP packet visualizer"
+[RFC 4880]: https://tools.ietf.org/html/rfc4880
+[RFC 5581]: http://tools.ietf.org/html/rfc5581
+[RFC 6637]: http://tools.ietf.org/html/rfc6637
 [dep]: https://github.com/golang/dep "golang/dep: Go dependency management tool"
