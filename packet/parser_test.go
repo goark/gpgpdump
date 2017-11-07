@@ -3,6 +3,7 @@ package packet
 import (
 	"bytes"
 	"io"
+	"strings"
 	"testing"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
@@ -133,9 +134,10 @@ func TestParse(t *testing.T) {
 	}
 	buf := new(bytes.Buffer)
 	io.Copy(buf, json)
-	str := buf.String()
-	if str != result2 {
-		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result2)
+	str := strings.Trim(buf.String(), "\n")
+	res := strings.Trim(result2, "\n")
+	if str != res {
+		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, res)
 	}
 }
 

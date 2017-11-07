@@ -2,6 +2,7 @@ package facade
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 
 	"github.com/spiegel-im-spiegel/gocli"
@@ -23,9 +24,10 @@ func TestArmorNormal(t *testing.T) {
 	if str != "" {
 		t.Errorf("Execute(armor) = \"%v\", want \"%v\".", str, "")
 	}
-	str = outBuf.String()
-	if str != resdataFromAscdata1 {
-		t.Errorf("Execute(armor) = \"%v\", want \"%v\".", str, resdataFromAscdata1)
+	str = strings.Trim(outBuf.String(), "\n")
+	res := strings.Trim(resdataFromAscdata1, "\n")
+	if str != res {
+		t.Errorf("Execute(armor) = \"%v\", want \"%v\".", str, res)
 	}
 }
 
