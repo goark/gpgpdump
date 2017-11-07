@@ -3,7 +3,6 @@ package packet
 import (
 	"bytes"
 	"io"
-	"strings"
 	"testing"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
@@ -59,7 +58,7 @@ const (
           "Item": [
             {
               "name": "Signature Creation Time (sub 2)",
-              "value": "2015-01-24T11:52:15+09:00",
+              "value": "2015-01-24T02:52:15Z",
               "dump": "54 c3 08 df"
             }
           ]
@@ -116,6 +115,7 @@ func TestParse(t *testing.T) {
 	opts := options.NewOptions(
 		options.Set(options.ArmorOpt, true),
 		options.Set(options.DebugOpt, true),
+		options.Set(options.UTCOpt, true),
 	)
 	parser, err := NewParser(bytes.NewBufferString(sample1), opts)
 	if err != nil {
@@ -134,10 +134,9 @@ func TestParse(t *testing.T) {
 	}
 	buf := new(bytes.Buffer)
 	io.Copy(buf, json)
-	str := strings.Trim(buf.String(), "\n")
-	res := strings.Trim(result2, "\n")
-	if str != res {
-		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, res)
+	str := buf.String()
+	if str != result2 {
+		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result2)
 	}
 }
 
