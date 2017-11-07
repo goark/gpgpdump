@@ -58,7 +58,7 @@ const (
           "Item": [
             {
               "name": "Signature Creation Time (sub 2)",
-              "value": "2015-01-24T11:52:15+09:00",
+              "value": "2015-01-24T02:52:15Z",
               "dump": "54 c3 08 df"
             }
           ]
@@ -115,6 +115,7 @@ func TestParse(t *testing.T) {
 	opts := options.NewOptions(
 		options.Set(options.ArmorOpt, true),
 		options.Set(options.DebugOpt, true),
+		options.Set(options.UTCOpt, true),
 	)
 	parser, err := NewParser(bytes.NewBufferString(sample1), opts)
 	if err != nil {

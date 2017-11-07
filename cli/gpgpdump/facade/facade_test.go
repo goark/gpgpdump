@@ -94,7 +94,7 @@ var (
 
     [[Packet.Item.Item]]
       name = "Signature Creation Time (sub 2)"
-      value = "2015-01-24T11:52:15+09:00"
+      value = "2015-01-24T02:52:15Z"
 
   [[Packet.Item]]
     name = "Unhashed Subpacket"

@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.0 2017-11-07
+
+- Rewrite all codes for v0.2
+
 ## 0.1.2 2016-02-13
 
 - Many refactoring & debug.

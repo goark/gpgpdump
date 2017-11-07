@@ -12,7 +12,7 @@ func TestArmorNormal(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := gocli.NewUI(gocli.Reader(inData), gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
-	args := []string{"-a"}
+	args := []string{"-a", "-u"}
 
 	clearFlags()
 	exit := Execute(ui, args)
