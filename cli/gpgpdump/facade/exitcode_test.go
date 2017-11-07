@@ -15,8 +15,8 @@ var ecodeTests []ecodeTestCase //Test cases for ExitCode
 
 func TestMain(m *testing.M) {
 	ecodeTests = []ecodeTestCase{
-		{Normal, 0, "normal end"},
-		{Abnormal, 1, "abnormal end"},
+		{ExitNormal, 0, "normal end"},
+		{ExitAbnormal, 1, "abnormal end"},
 		{ExitCode(2), 2, "unknown"},
 	}
 

@@ -19,33 +19,6 @@ const (
 	Version = "v0.2.0dev"
 )
 
-//ExitCode is OS exit code enumeration class
-type ExitCode int
-
-const (
-	//Normal is OS exit code "normal"
-	Normal ExitCode = iota
-	//Abnormal is OS exit code "abnormal"
-	Abnormal
-)
-
-//Int convert integer value
-func (c ExitCode) Int() int {
-	return int(c)
-}
-
-//Stringer method
-func (c ExitCode) String() string {
-	switch c {
-	case Normal:
-		return "normal end"
-	case Abnormal:
-		return "abnormal end"
-	default:
-		return "unknown"
-	}
-}
-
 var (
 	versionFlag bool            //version flag
 	jsonFlag    bool            //output with JSON format
@@ -108,15 +81,15 @@ func Execute(ui *gocli.UI) (exit ExitCode) {
 				}
 				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ": line", line)
 			}
-			exit = Abnormal
+			exit = ExitAbnormal
 		}
 	}()
 
 	//execution
 	cui = ui
-	exit = Normal
+	exit = ExitNormal
 	if err := RootCmd.Execute(); err != nil {
-		exit = Abnormal
+		exit = ExitAbnormal
 		return
 	}
 	if versionFlag {
