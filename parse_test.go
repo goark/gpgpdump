@@ -22,7 +22,7 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 var (
 	openpgpData = []byte(openpgpStr)
 	reader      = strings.NewReader(openpgpStr)
-	optionss    = options.NewOptions()
+	optionss    = options.New()
 )
 
 func ExampleParse() {

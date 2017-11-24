@@ -15,7 +15,7 @@ type tag03 tagInfo
 
 //newTag03 return tag03 instance
 func newTag03(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag03{cxt: cxt, tag: tag, reader: reader.NewReader(body)}
+	return &tag03{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
 // Parse parsing tag03 instance

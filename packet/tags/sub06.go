@@ -12,7 +12,7 @@ type sub06 subInfo
 
 //newSub06 return sub06 instance
 func newSub06(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub06{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub06{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Regular Expression Sub-packet

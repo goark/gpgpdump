@@ -12,7 +12,7 @@ type sub32 subInfo
 
 //newSub32 return sub32 instance
 func newSub32(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub32{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub32{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Embedded Signature Sub-packet

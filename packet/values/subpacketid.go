@@ -41,6 +41,7 @@ var subpacketNames = Msgs{
 	30: "Features",                               //30
 	31: "Signature Target",                       //31
 	32: "Embedded Signature",                     //32
+	33: "Issuer Fingerprint",                     //33
 }
 
 //SuboacketID is sub-packet type ID
@@ -65,7 +66,7 @@ func (s SuboacketID) String() string {
 	return fmt.Sprintf("%s (sub %d)", name, s)
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016,2017 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

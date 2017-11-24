@@ -39,7 +39,6 @@ archive:
   files:
   - LICENSE*
   - README*
-  - CHANGES*
   - dependency.png
 
 changelog:

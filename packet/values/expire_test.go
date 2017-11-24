@@ -14,13 +14,13 @@ var (
 )
 
 func TestExpireErr(t *testing.T) {
-	dt, _ := NewDateTime(reader.NewReader(start), true) //UTC
+	dt, _ := NewDateTime(reader.New(start), true) //UTC
 	//name := "Signature Expiration Time"
 	//days := "7 days after"
 	//rfc3339 := "1998-12-04T09:35:42Z"
 	//dump := "00 09 3a 80"
 	dayErr := []byte{0x00}
-	_, err := NewExpire(reader.NewReader(dayErr), dt)
+	_, err := NewExpire(reader.New(dayErr), dt)
 	if err != nil {
 		if errors.Cause(err) != io.ErrUnexpectedEOF {
 			t.Errorf("NewExpire() = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
@@ -39,12 +39,12 @@ func TestExpireNil(t *testing.T) {
 }
 
 func TestSigExpireItem(t *testing.T) {
-	dt, _ := NewDateTime(reader.NewReader(start), true) //UTC
+	dt, _ := NewDateTime(reader.New(start), true) //UTC
 	name := "Signature Expiration Time"
 	days := "7 days after"
 	rfc3339 := "1998-12-04T09:35:42Z"
 	dump := "00 09 3a 80"
-	exp, err := NewExpire(reader.NewReader(day), dt)
+	exp, err := NewExpire(reader.New(day), dt)
 	if err != nil {
 		t.Errorf("NewDateTime() = \"%v\", want nil error.", err)
 	}
@@ -64,12 +64,12 @@ func TestSigExpireItem(t *testing.T) {
 }
 
 func TestKeyExpireItem(t *testing.T) {
-	dt, _ := NewDateTime(reader.NewReader(start), true) //UTC
+	dt, _ := NewDateTime(reader.New(start), true) //UTC
 	name := "Key Expiration Time"
 	days := "7 days after"
 	rfc3339 := "1998-12-04T09:35:42Z"
 	dump := "00 09 3a 80"
-	exp, err := NewExpire(reader.NewReader(day), dt)
+	exp, err := NewExpire(reader.New(day), dt)
 	if err != nil {
 		t.Errorf("NewDateTime() = \"%v\", want nil error.", err)
 	}

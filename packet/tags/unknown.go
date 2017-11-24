@@ -12,7 +12,7 @@ type tagUnknown tagInfo
 
 //NewTagUnknown return Unknown instance
 func newTagUnknown(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tagUnknown{cxt: cxt, tag: tag, reader: reader.NewReader(body)}
+	return &tagUnknown{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
 // Parse parsing Unknown Packet

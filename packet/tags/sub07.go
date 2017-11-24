@@ -12,7 +12,7 @@ type sub07 subInfo
 
 //newSub07 return sub07 instance
 func newSub07(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub07{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub07{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Revocable Sub-packet

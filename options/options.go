@@ -38,8 +38,8 @@ type Options struct {
 //OptFunc is self-referential function for functional options pattern
 type OptFunc func(*Options)
 
-// NewOptions returns a new UI instance
-func NewOptions(opts ...OptFunc) *Options {
+// New returns a new Options instance
+func New(opts ...OptFunc) *Options {
 	o := &Options{}
 	o.options(opts...)
 	return o

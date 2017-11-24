@@ -12,7 +12,7 @@ type sub24 subInfo
 
 //newSub24 return sub24 instance
 func newSub24(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub24{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub24{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Preferred Key Server Sub-packet

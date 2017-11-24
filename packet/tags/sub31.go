@@ -12,7 +12,7 @@ type sub31 subInfo
 
 //newSub31 return sub31 instance
 func newSub31(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub31{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub31{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Signature Target Sub-packet
