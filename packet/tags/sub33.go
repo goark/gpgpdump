@@ -1,7 +1,7 @@
 package tags
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
@@ -9,47 +9,39 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
-//sub12 class for Revocation Key Sub-packet
-type sub12 subInfo
+//sub33 class for Issuer Fingerprint Sub-packet
+type sub33 subInfo
 
-//newSub12 return sub12 instance
-func newSub12(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub12{cxt: cxt, subID: subID, reader: reader.New(body)}
+//newSub33 return sub33 instance
+func newSub33(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
+	return &sub33{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
-// Parse parsing Revocation Key Sub-packet
-func (s *sub12) Parse() (*info.Item, error) {
+// Parse parsing Issuer Fingerprint Sub-packet
+func (s *sub33) Parse() (*info.Item, error) {
 	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
-	class, err := s.reader.ReadByte()
+	ver, err := s.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
 	}
 	itm := info.NewItem(
-		info.Name("Class"),
-		info.DumpStr(fmt.Sprintf("%02x", class)),
+		info.Name("Version"),
+		info.Value(strconv.Itoa(int(ver))),
 	)
-	if (class & 0x80) != 0x00 {
-		switch true {
-		case (class & 0x40) != 0x00:
-			itm.Value = "Sensitive"
-		default:
-			itm.Value = "Normal"
-		}
-	} else {
-		itm.Value = "Unknown"
+	switch ver {
+	case 4:
+		itm.Note = "need 20 octets length"
+	case 5:
+		itm.Note = "need 25 octets length"
+	default:
+		itm.Note = values.Unknown
 	}
 	rootInfo.Add(itm)
-	pubid, err := s.reader.ReadByte()
-	if err != nil {
-		return rootInfo, err
-	}
-	rootInfo.Add(values.PubID(pubid).ToItem(s.cxt.Debug()))
 	rootInfo.Add(values.RawData(s.reader, "Fingerprint", true))
-
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2017 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

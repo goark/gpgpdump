@@ -12,7 +12,7 @@ type tag19 tagInfo
 
 //newTag19 return tag19 instance
 func newTag19(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag19{cxt: cxt, tag: tag, reader: reader.NewReader(body)}
+	return &tag19{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
 // Parse parsing Modification Detection Code Packet

@@ -15,7 +15,7 @@ type sub20 subInfo
 
 //newSub20 return sub20 instance
 func newSub20(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub20{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub20{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Notation Data Sub-packet

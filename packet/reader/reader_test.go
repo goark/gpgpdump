@@ -11,7 +11,7 @@ var buffer = []byte{0x01, 0x02, 0x03, 0x04}
 
 func TestReadBytes(t *testing.T) {
 	var res = []byte{0x01, 0x02}
-	v, err := NewReader(buffer).ReadBytes(2)
+	v, err := New(buffer).ReadBytes(2)
 	if err != nil {
 		t.Errorf("ReadBytes() = \"%v\", want nil.", err)
 	}
@@ -21,7 +21,7 @@ func TestReadBytes(t *testing.T) {
 }
 
 func TestReadBytes0(t *testing.T) {
-	v, err := NewReader(buffer).ReadBytes(0)
+	v, err := New(buffer).ReadBytes(0)
 	if err != nil {
 		t.Errorf("ReadBytes() = \"%v\", want nil.", err)
 	}
@@ -31,7 +31,7 @@ func TestReadBytes0(t *testing.T) {
 }
 
 func TestReadBytesErr(t *testing.T) {
-	_, err := NewReader(buffer).ReadBytes(5)
+	_, err := New(buffer).ReadBytes(5)
 	if err != io.ErrUnexpectedEOF {
 		t.Errorf("ReadBytes() = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
 	}
@@ -40,7 +40,7 @@ func TestReadBytesErr(t *testing.T) {
 func TestRead(t *testing.T) {
 	var res = []byte{0x01, 0x02}
 	buf := make([]byte, 2)
-	s, err := NewReader(buffer).Read(buf)
+	s, err := New(buffer).Read(buf)
 	if err != nil {
 		t.Errorf("Read() = \"%v\", want nil.", err)
 	}
@@ -54,14 +54,14 @@ func TestRead(t *testing.T) {
 
 func TestReadErr(t *testing.T) {
 	buf := make([]byte, 5)
-	if _, err := NewReader(buffer).Read(buf); err != io.ErrUnexpectedEOF {
+	if _, err := New(buffer).Read(buf); err != io.ErrUnexpectedEOF {
 		t.Errorf("Read() = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
 	}
 }
 
 func TestReadAt(t *testing.T) {
 	var res = []byte{0x03, 0x04}
-	reader := NewReader(buffer)
+	reader := New(buffer)
 	buf := make([]byte, 2)
 	s, err := reader.ReadAt(buf, 2)
 	if err != nil {
@@ -100,7 +100,7 @@ func TestReadAt(t *testing.T) {
 
 func TestWriteTo(t *testing.T) {
 	var res = []byte{0x01, 0x02, 0x03, 0x04}
-	reader := NewReader(buffer)
+	reader := New(buffer)
 	buf := new(bytes.Buffer)
 	s, err := reader.WriteTo(buf)
 	if err != nil {
@@ -116,7 +116,7 @@ func TestWriteTo(t *testing.T) {
 }
 
 func TestSeekFromEnd(t *testing.T) {
-	reader := NewReader(buffer)
+	reader := New(buffer)
 	off, err := reader.Seek(0, io.SeekEnd)
 	if err != nil {
 		t.Errorf("Seek() = \"%v\", want nil.", err)
@@ -131,7 +131,7 @@ func TestSeekFromEnd(t *testing.T) {
 }
 
 func TestSeekErr(t *testing.T) {
-	reader := NewReader(buffer)
+	reader := New(buffer)
 	_, err := reader.Seek(0, 3)
 	if err != ErrWhence {
 		t.Errorf("ReadByte() = \"%v\", want \"%v\".", err, ErrWhence)
@@ -140,7 +140,7 @@ func TestSeekErr(t *testing.T) {
 
 func TestRead2EOF(t *testing.T) {
 	var res = []byte{0x01, 0x02, 0x03, 0x04}
-	reader := NewReader(buffer)
+	reader := New(buffer)
 	v, err := reader.Read2EOF()
 	if err != nil {
 		t.Errorf("Read2EOF() = \"%v\", want nil.", err)
@@ -155,7 +155,7 @@ func TestRead2EOF(t *testing.T) {
 
 func TestReadByte(t *testing.T) {
 	var res = []byte{0x01, 0x02, 0x03, 0x04}
-	reader := NewReader(buffer)
+	reader := New(buffer)
 	for i := 0; i < 4; i++ {
 		b, err := reader.ReadByte()
 		if err != nil {
@@ -171,7 +171,7 @@ func TestReadByte(t *testing.T) {
 }
 
 func TestDump(t *testing.T) {
-	reader := NewReader(buffer)
+	reader := New(buffer)
 	d := reader.DumpString(2)
 	if d != "03 04" {
 		t.Errorf("DumpString() = \"%v\", want \"03 04\".", d)

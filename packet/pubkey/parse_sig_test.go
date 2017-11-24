@@ -19,7 +19,7 @@ var (
 	pubkeySigName19b = "Multi-precision integer"
 )
 
-var cxtSig = context.NewContext(options.NewOptions(
+var cxtSig = context.NewContext(options.New(
 	options.Set(options.DebugOpt, true), //not use
 	options.Set(options.GDumpOpt, true), //not use
 	options.Set(options.IntegerOpt, true),
@@ -31,7 +31,7 @@ var cxtSig = context.NewContext(options.NewOptions(
 
 func TestPubkeySig19(t *testing.T) {
 	parent := info.NewItem()
-	if err := New(cxtSig, values.PubID(19), reader.NewReader(pubkeySig19)).ParseSig(parent); err != nil {
+	if err := New(cxtSig, values.PubID(19), reader.New(pubkeySig19)).ParseSig(parent); err != nil {
 		t.Errorf("ParseSig() = %v, want nil error.", err)
 	}
 	if len(parent.Items) != 2 {

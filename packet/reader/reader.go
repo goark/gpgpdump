@@ -13,8 +13,8 @@ type Reader struct {
 	offset int64
 }
 
-//NewReader returns Reader instance
-func NewReader(data []byte) *Reader {
+//New returns Reader instance
+func New(data []byte) *Reader {
 	return &Reader{buffer: data, offset: 0}
 }
 

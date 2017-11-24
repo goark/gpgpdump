@@ -41,13 +41,14 @@ var testSubpacketNames = []string{
 	"Features (sub 30)",                               //30
 	"Signature Target (sub 31)",                       //31
 	"Embedded Signature (sub 32)",                     //32
-	"Unknown (sub 33)",                                //33
+	"Issuer Fingerprint (sub 33)",                     //33
+	"Unknown (sub 34)",                                //34
 }
 
 func TestSubpacketID(t *testing.T) {
 	var body = []byte{0x01, 0x02, 0x03, 0x04}
-	for tp := 0; tp <= 33; tp++ {
-		i := SuboacketID(tp).ToItem(reader.NewReader(body), true)
+	for tp := 0; tp <= 34; tp++ {
+		i := SuboacketID(tp).ToItem(reader.New(body), true)
 		if i.Name != testSubpacketNames[tp] {
 			t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Name, testSubpacketNames[tp])
 		}
@@ -59,7 +60,7 @@ func TestSubpacketID(t *testing.T) {
 		}
 	}
 	for tp := 100; tp <= 110; tp++ {
-		i := SuboacketID(tp).ToItem(reader.NewReader(body), true)
+		i := SuboacketID(tp).ToItem(reader.New(body), true)
 		name := fmt.Sprintf("Private or experimental (sub %d)", tp)
 		if i.Name != name {
 			t.Errorf("PubAlg.Value = \"%s\", want \"%s\".", i.Name, name)

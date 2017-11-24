@@ -59,7 +59,7 @@ func TestRawData(t *testing.T) {
 	var data = []byte{0x01, 0x02, 0x03, 0x04}
 	name := "Literal data"
 	dump := "01 02 03 04"
-	i := RawData(reader.NewReader(data), name, true)
+	i := RawData(reader.New(data), name, true)
 	if i.Name != "Literal data" {
 		t.Errorf("LiteralData.Name = \"%v\", want \"Literal data\".", i.Name)
 	}

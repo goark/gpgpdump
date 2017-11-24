@@ -12,7 +12,7 @@ type sub09 subInfo
 
 //newSub09 return sub09 instance
 func newSub09(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub09{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub09{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Key Expiration Time Sub-packet

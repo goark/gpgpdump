@@ -16,7 +16,7 @@ type sub01 subInfo
 
 //newSubReserved return subInfo instance
 func newSub01(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &subInfo{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Image Attribute Sub-packet

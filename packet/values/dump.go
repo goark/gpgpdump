@@ -26,7 +26,7 @@ func Dump(r *reader.Reader, f bool) *Dumpdata {
 
 //DumpBytes returns Dumpdata instance
 func DumpBytes(data []byte, f bool) *Dumpdata {
-	return Dump(reader.NewReader(data), f)
+	return Dump(reader.New(data), f)
 }
 
 //DumpByteString returns string

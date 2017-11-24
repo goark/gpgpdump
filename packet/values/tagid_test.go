@@ -77,7 +77,7 @@ var testTagNames = []string{
 func TestTagID(t *testing.T) {
 	var body = []byte{0x01, 0x02, 0x03, 0x04}
 	for tag := 0; tag <= 64; tag++ {
-		i := TagID(tag).ToItem(reader.NewReader(body), true)
+		i := TagID(tag).ToItem(reader.New(body), true)
 		if i.Name != "Packet" {
 			t.Errorf("Tag.Name = \"%s\", want \"Packet\".", i.Name)
 		}

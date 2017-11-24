@@ -101,7 +101,7 @@ func TestParseNilOption(t *testing.T) {
 }
 
 func TestParseNilData(t *testing.T) {
-	opts := options.NewOptions(
+	opts := options.New(
 		options.Set(options.ArmorOpt, true),
 		options.Set(options.DebugOpt, true),
 	)
@@ -112,7 +112,7 @@ func TestParseNilData(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	opts := options.NewOptions(
+	opts := options.New(
 		options.Set(options.ArmorOpt, true),
 		options.Set(options.DebugOpt, true),
 		options.Set(options.UTCOpt, true),

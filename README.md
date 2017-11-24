@@ -1,15 +1,15 @@
-# gpgpdump - OpenPGP packet visualizer
+# [gpgpdump] - OpenPGP packet visualizer
 
 [![Build Status](https://travis-ci.org/spiegel-im-spiegel/gpgpdump.svg?branch=master)](https://travis-ci.org/spiegel-im-spiegel/gpgpdump)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/spiegel-im-spiegel/gpgpdump/master/LICENSE)
 [![GitHub release](http://img.shields.io/github/release/spiegel-im-spiegel/gpgpdump.svg)](https://github.com/spiegel-im-spiegel/gpgpdump/releases/latest)
 
-[gpgpdump](https://github.com/spiegel-im-spiegel/gpgpdump) is a OpenPGP ([RFC 4880](https://tools.ietf.org/html/rfc4880)) packet visualizer by [golang](https://golang.org/).
+[gpgpdump] is a OpenPGP ([RFC 4880]) packet visualizer by [golang](https://golang.org/).
 
 - Based on [pgpdump](https://github.com/kazu-yamamoto/pgpdump)
+- Provide [golang](https://golang.org/) package and command-line Interface
 - Output with [TOML](https://github.com/toml-lang/toml) (or [JSON](https://tools.ietf.org/html/rfc7159)) format
-- Support [RFC 5581](http://tools.ietf.org/html/rfc5581)
-- Support [RFC 6637](http://tools.ietf.org/html/rfc6637)
+- Support [RFC 5581] and [RFC 6637]
 
 ## Install
 
@@ -26,8 +26,7 @@ $ dep ensure -add github.com/spiegel-im-spiegel/godump
 ### Usage
 
 ```go
-const (
-	openpgpStr = `
+const openpgpStr = `
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
@@ -36,9 +35,8 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 =ZOTN
 -----END PGP SIGNATURE-----
 `
-)
 
-info, err := gpgpdump.Parse(strings.NewReader(openpgpStr), options.NewOptions())
+info, err := gpgpdump.Parse(strings.NewReader(openpgpStr), options.New())
 if err != nil {
 	return
 }
@@ -81,7 +79,7 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 =ZOTN
 -----END PGP SIGNATURE-----
 
-$ cat sig | gpgpdump
+$ cat sig | gpgpdump -u
 [[Packet]]
   name = "Packet"
   value = "Signature Packet (tag 2)"
@@ -110,7 +108,7 @@ $ cat sig | gpgpdump
 
     [[Packet.Item.Item]]
       name = "Signature Creation Time (sub 2)"
-      value = "2015-01-24T11:52:15+09:00"
+      value = "2015-01-24T02:52:15Z"
 
   [[Packet.Item]]
     name = "Unhashed Subpacket"
@@ -132,7 +130,7 @@ $ cat sig | gpgpdump
     name = "Multi-precision integer"
     note = "ECDSA s (252 bits)"
 
-$ cat sig | gpgpdump -j
+$ cat sig | gpgpdump -j -u
 {
   "Packet": [
     {
@@ -163,7 +161,7 @@ $ cat sig | gpgpdump -j
           "Item": [
             {
               "name": "Signature Creation Time (sub 2)",
-              "value": "2015-01-24T11:52:15+09:00"
+              "value": "2015-01-24T02:52:15Z"
             }
           ]
         },
@@ -202,3 +200,9 @@ dep status -dot | dot -Tpng -o dependency.png
 ```
 
 [![Dependencies](dependency.png)](dependency.png)
+
+[gpgpdump]: https://github.com/spiegel-im-spiegel/gpgpdump "spiegel-im-spiegel/gpgpdump: gpgpdump - OpenPGP packet visualizer"
+[RFC 4880]: https://tools.ietf.org/html/rfc4880
+[RFC 5581]: http://tools.ietf.org/html/rfc5581
+[RFC 6637]: http://tools.ietf.org/html/rfc6637
+[dep]: https://github.com/golang/dep "golang/dep: Go dependency management tool"

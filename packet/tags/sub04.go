@@ -12,7 +12,7 @@ type sub04 subInfo
 
 //newSub04 return sub04 instance
 func newSub04(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub04{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub04{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Exportable Certification Sub-packet

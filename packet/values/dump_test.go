@@ -20,7 +20,7 @@ func TestDumpMask(t *testing.T) {
 	var data = []byte{0x01, 0x02, 0x03, 0x04}
 	//will := "..."
 	will := ""
-	res := Dump(reader.NewReader(data), false).String()
+	res := Dump(reader.New(data), false).String()
 	if res != will {
 		t.Errorf("Dump = \"%s\", want \"%s\".", res, will)
 	}

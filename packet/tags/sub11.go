@@ -12,7 +12,7 @@ type sub11 subInfo
 
 //newSub11 return sub11 instance
 func newSub11(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub11{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub11{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Preferred Symmetric Algorithms Sub-packet

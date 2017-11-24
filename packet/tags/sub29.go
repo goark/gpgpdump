@@ -22,7 +22,7 @@ var reasonNames = values.Msgs{
 
 //newSub29 return sub29 instance
 func newSub29(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub29{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub29{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Reason for Revocation Sub-packet

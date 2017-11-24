@@ -27,7 +27,7 @@ var (
 	pubkeySesNameUn  = "Multi-precision integers of Unknown (pub 100)"
 )
 
-var cxtPub = context.NewContext(options.NewOptions(
+var cxtPub = context.NewContext(options.New(
 	options.Set(options.DebugOpt, true), //not use
 	options.Set(options.GDumpOpt, true), //not use
 	options.Set(options.IntegerOpt, true),
@@ -39,7 +39,7 @@ var cxtPub = context.NewContext(options.NewOptions(
 
 func TestPubkeySes17(t *testing.T) {
 	parent := info.NewItem()
-	New(cxtPub, values.PubID(pubkeySes17[0]), reader.NewReader(pubkeySes17[1:])).ParseSes(parent)
+	New(cxtPub, values.PubID(pubkeySes17[0]), reader.New(pubkeySes17[1:])).ParseSes(parent)
 	if len(parent.Items) != 1 {
 		t.Errorf("Count of Items = %v, want 1.", len(parent.Items))
 	} else if parent.Items[0].Name != pubkeySesName17 {
@@ -49,7 +49,7 @@ func TestPubkeySes17(t *testing.T) {
 
 func TestPubkeySes18(t *testing.T) {
 	parent := info.NewItem()
-	New(cxtPub, values.PubID(pubkeySes18a[0]), reader.NewReader(pubkeySes18a[1:])).ParseSes(parent)
+	New(cxtPub, values.PubID(pubkeySes18a[0]), reader.New(pubkeySes18a[1:])).ParseSes(parent)
 	if len(parent.Items) != 2 {
 		t.Errorf("Count of Items = %v, want 2.", len(parent.Items))
 	} else if parent.Items[0].Name != pubkeySesName18a {
@@ -61,7 +61,7 @@ func TestPubkeySes18(t *testing.T) {
 
 func TestPubkeySes18Err1(t *testing.T) {
 	parent := info.NewItem()
-	New(cxtPub, values.PubID(pubkeySes18b[0]), reader.NewReader(pubkeySes18b[1:])).ParseSes(parent)
+	New(cxtPub, values.PubID(pubkeySes18b[0]), reader.New(pubkeySes18b[1:])).ParseSes(parent)
 	if len(parent.Items) != 0 {
 		t.Errorf("Count of Items = %v, want 0.", len(parent.Items))
 	}
@@ -69,7 +69,7 @@ func TestPubkeySes18Err1(t *testing.T) {
 
 func TestPubkeySes18Err2(t *testing.T) {
 	parent := info.NewItem()
-	New(cxtPub, values.PubID(pubkeySes18c[0]), reader.NewReader(pubkeySes18c[1:])).ParseSes(parent)
+	New(cxtPub, values.PubID(pubkeySes18c[0]), reader.New(pubkeySes18c[1:])).ParseSes(parent)
 	if len(parent.Items) != 1 {
 		t.Errorf("Count of Items = %v, want 1.", len(parent.Items))
 	} else if parent.Items[0].Name != pubkeySesName18a {
@@ -79,7 +79,7 @@ func TestPubkeySes18Err2(t *testing.T) {
 
 func TestPubkeySes19(t *testing.T) {
 	parent := info.NewItem()
-	New(cxtPub, values.PubID(pubkeySes19[0]), reader.NewReader(pubkeySes19[1:])).ParseSes(parent)
+	New(cxtPub, values.PubID(pubkeySes19[0]), reader.New(pubkeySes19[1:])).ParseSes(parent)
 	if len(parent.Items) != 1 {
 		t.Errorf("Count of Items = %v, want 1.", len(parent.Items))
 	} else if parent.Items[0].Name != pubkeySesName19 {
@@ -89,7 +89,7 @@ func TestPubkeySes19(t *testing.T) {
 
 func TestPubkeySesUnknown(t *testing.T) {
 	parent := info.NewItem()
-	New(cxtPub, values.PubID(pubkeySesUn[0]), reader.NewReader(pubkeySesUn[1:])).ParseSes(parent)
+	New(cxtPub, values.PubID(pubkeySesUn[0]), reader.New(pubkeySesUn[1:])).ParseSes(parent)
 	if len(parent.Items) != 1 {
 		t.Errorf("Count of Items = %v, want 1.", len(parent.Items))
 	} else if parent.Items[0].Name != pubkeySesNameUn {

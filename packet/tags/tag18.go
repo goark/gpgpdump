@@ -12,7 +12,7 @@ type tag18 tagInfo
 
 //NewTag18 return tag18 instance
 func newTag18(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag18{cxt: cxt, tag: tag, reader: reader.NewReader(body)}
+	return &tag18{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
 // Parse parsing Sym. Encrypted Integrity Protected Data Packet

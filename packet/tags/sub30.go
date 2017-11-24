@@ -14,7 +14,7 @@ type sub30 subInfo
 
 //newSub30 return sub30 instance
 func newSub30(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub30{cxt: cxt, subID: subID, reader: reader.NewReader(body)}
+	return &sub30{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
 // Parse parsing Features Sub-packet
