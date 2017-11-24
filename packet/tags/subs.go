@@ -58,6 +58,7 @@ var newFunctionsSub02 = SubFuncMap{
 	29: newSub29, //Reason for Revocation
 	30: newSub30, //Features
 	31: newSub31, //Signature Target
+	33: newSub33, //Issuer Fingerprint
 }
 
 var newFunctionsSub17 = SubFuncMap{
@@ -72,7 +73,7 @@ func NewSubs(cxt *context.Context, osp *openpgp.OpaqueSubpacket, tagID values.Ta
 			return newSub32(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 		}
 		return newFunctionsSub02.Get(int(osp.SubType), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
-	} else if tagID == 2 {
+	} else if tagID == 17 {
 		return newFunctionsSub17.Get(int(osp.SubType), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 	}
 	return nil
