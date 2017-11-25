@@ -103,11 +103,11 @@ func Execute(ui *gocli.UI, args []string) (exit ExitCode) {
 		if r := recover(); r != nil {
 			cui.OutputErrln("Panic:", r)
 			for depth := 0; ; depth++ {
-				pc, _, line, ok := runtime.Caller(depth)
+				pc, src, line, ok := runtime.Caller(depth)
 				if !ok {
 					break
 				}
-				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ": line", line)
+				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ":", src, ":", line)
 			}
 			exit = ExitAbnormal
 		}

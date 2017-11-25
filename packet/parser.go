@@ -42,7 +42,11 @@ func NewParser(reader io.Reader, o *options.Options) (*Parser, error) {
 			r, err = buf, nil
 		}
 	}
-	return &Parser{opaqueReader: openpgp.NewOpaqueReader(r), cxt: context.NewContext(o), info: info.NewInfo()}, err
+	return newParser(context.NewContext(o), openpgp.NewOpaqueReader(r), info.NewInfo()), err
+}
+
+func newParser(cxt *context.Context, op *openpgp.OpaqueReader, info *info.Info) *Parser {
+	return &Parser{opaqueReader: op, cxt: cxt, info: info}
 }
 
 //ASCII Armor format only
@@ -67,11 +71,29 @@ func (r *Parser) Parse() (*info.Info, error) {
 		if op == nil {
 			break
 		}
-		item, err := tags.NewTag(op, r.cxt).Parse()
+		tag := tags.NewTag(op, r.cxt)
+		item, err := tag.Parse()
 		if err != nil {
 			return r.info, err
 		}
 		r.info.Add(item)
+		switch t := tag.(type) {
+		case *tags.Tag08: //Compressed Data Packet
+			if t.Reader() != nil {
+				parser := newParser(r.cxt, openpgp.NewOpaqueReader(t.Reader()), info.NewInfo())
+				info, err := parser.Parse()
+				if err != nil {
+					return r.info, err
+				}
+				if len(item.Items) > 0 {
+					item = item.Items[len(item.Items)-1]
+				}
+				for _, itm := range info.Packets {
+					item.Add(itm)
+				}
+			}
+		default:
+		}
 	}
 	return r.info, nil //stub
 }

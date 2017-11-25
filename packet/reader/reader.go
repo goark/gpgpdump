@@ -30,12 +30,12 @@ func (r *Reader) Read(p []byte) (int, error) {
 }
 
 //ReadAt returns []byte data from off pinter (io.ReaderAt compatible)
-func (r *Reader) ReadAt(p []byte, off int64) (int64, error) {
+func (r *Reader) ReadAt(p []byte, off int64) (int, error) {
 	if _, err := r.Seek(off, io.SeekStart); err != nil {
 		return 0, err
 	}
 	pl, err := r.Read(p)
-	return int64(pl), err
+	return pl, err
 }
 
 //ReadByte returns byte data (io.ByteReader compatible)
