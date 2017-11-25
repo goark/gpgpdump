@@ -31,18 +31,16 @@ func NewMPI(r *reader.Reader) (*MPI, error) {
 }
 
 //ToItem returns Item instance
-func (mpi *MPI) ToItem(note string, dumpFlag bool) *info.Item {
+func (mpi *MPI) ToItem(name string, dumpFlag bool) *info.Item {
 	if mpi == nil {
 		return nil
 	}
-	if len(note) == 0 {
-		note = fmt.Sprintf("%d bits", mpi.bitLength)
-	} else {
-		note = fmt.Sprintf("%s (%d bits)", note, mpi.bitLength)
+	if len(name) == 0 {
+		name = "Multi-precision integer"
 	}
 	return info.NewItem(
-		info.Name("Multi-precision integer"),
-		info.Note(note),
+		info.Name(name),
+		info.Note(fmt.Sprintf("%d bits", mpi.bitLength)),
 		info.DumpStr(DumpBytes(mpi.data, dumpFlag).String()),
 	)
 }

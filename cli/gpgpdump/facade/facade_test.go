@@ -109,12 +109,12 @@ var (
     dump = "36 1f"
 
   [[Packet.Item]]
-    name = "Multi-precision integer"
-    note = "ECDSA r (256 bits)"
+    name = "ECDSA r"
+    note = "256 bits"
 
   [[Packet.Item]]
-    name = "Multi-precision integer"
-    note = "ECDSA s (252 bits)"
+    name = "ECDSA s"
+    note = "252 bits"
 `
 )
 

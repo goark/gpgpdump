@@ -79,12 +79,12 @@ const (
           "dump": "36 1f"
         },
         {
-          "name": "Multi-precision integer",
-          "note": "ECDSA r (256 bits)"
+          "name": "ECDSA r",
+          "note": "256 bits"
         },
         {
-          "name": "Multi-precision integer",
-          "note": "ECDSA s (252 bits)"
+          "name": "ECDSA s",
+          "note": "252 bits"
         }
       ]
     }
