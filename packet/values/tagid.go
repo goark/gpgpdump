@@ -38,8 +38,7 @@ type TagID int
 // ToItem returns Item instance
 func (t TagID) ToItem(r *reader.Reader, dumpFlag bool) *info.Item {
 	return info.NewItem(
-		info.Name("Packet"),
-		info.Value(t.String()),
+		info.Name(t.String()),
 		info.Note(fmt.Sprintf("%d bytes", r.Len())),
 		info.DumpStr(Dump(r, dumpFlag).String()),
 	)

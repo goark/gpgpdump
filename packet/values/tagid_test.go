@@ -78,11 +78,11 @@ func TestTagID(t *testing.T) {
 	var body = []byte{0x01, 0x02, 0x03, 0x04}
 	for tag := 0; tag <= 64; tag++ {
 		i := TagID(tag).ToItem(reader.New(body), true)
-		if i.Name != "Packet" {
-			t.Errorf("Tag.Name = \"%s\", want \"Packet\".", i.Name)
+		if i.Name != testTagNames[tag] {
+			t.Errorf("Tag.Name = \"%s\", want \"%s\".", i.Name, testTagNames[tag])
 		}
-		if i.Value != testTagNames[tag] {
-			t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Value, testTagNames[tag])
+		if i.Value != "" {
+			t.Errorf("Tag.Value = \"%s\", want \"\".", i.Name)
 		}
 		if i.Note != "4 bytes" {
 			t.Errorf("Tag.Note = \"%s\", want \"4 bytes\"", i.Note)

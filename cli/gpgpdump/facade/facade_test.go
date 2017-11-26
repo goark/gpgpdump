@@ -23,8 +23,7 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 
 var (
 	resdataFromBindata1 = `[[Packet]]
-  name = "Packet"
-  value = "Marker Packet (Obsolete Literal Packet) (tag 10)"
+  name = "Marker Packet (Obsolete Literal Packet) (tag 10)"
   note = "3 bytes"
 
   [[Packet.Item]]
@@ -32,8 +31,7 @@ var (
     note = "3 bytes"
 
 [[Packet]]
-  name = "Packet"
-  value = "Symmetric-Key Encrypted Session Key Packet (tag 3)"
+  name = "Symmetric-Key Encrypted Session Key Packet (tag 3)"
   note = "4 bytes"
 
   [[Packet.Item]]
@@ -54,8 +52,7 @@ var (
       value = "MD5 (hash 1)"
 
 [[Packet]]
-  name = "Packet"
-  value = "Symmetrically Encrypted Data Packet (tag 9)"
+  name = "Symmetrically Encrypted Data Packet (tag 9)"
   note = "56 bytes"
 
   [[Packet.Item]]
@@ -67,8 +64,7 @@ var (
     note = "55 bytes"
 `
 	resdataFromAscdata1 = `[[Packet]]
-  name = "Packet"
-  value = "Signature Packet (tag 2)"
+  name = "Signature Packet (tag 2)"
   note = "94 bytes"
 
   [[Packet.Item]]

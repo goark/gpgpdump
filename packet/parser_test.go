@@ -25,8 +25,7 @@ const (
 	result2 = `{
   "Packet": [
     {
-      "name": "Packet",
-      "value": "Signature Packet (tag 2)",
+      "name": "Signature Packet (tag 2)",
       "dump": "04 01 13 08 00 06 05 02 54 c3 08 df 00 0a 09 10 31 fb fd a9 5f bb fa 18 36 1f 01 00 ea 1d a2 14 5b 82 06 fd d5 ae c4 9f d8 14 44 41 a4 f5 4f 56 69 ad 9a b0 44 f3 a3 88 b2 60 f4 0c 00 fc 0a d3 c0 23 f3 ed cd af 9b 19 6f ee c4 65 44 b5 08 e8 27 6c 3a a8 6e 3b 52 9f 61 7a ea ee 27 48",
       "note": "94 bytes",
       "Item": [
