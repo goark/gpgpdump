@@ -60,19 +60,24 @@ func (i *Info) JSON() (io.Reader, error) {
 	return buf, nil
 }
 
-//Stringer as TOML format
-func (i *Info) String() string {
+//ToString returns string buffer
+func (i *Info) ToString(indent string) *bytes.Buffer {
+	buf := new(bytes.Buffer)
 	if i == nil {
-		return ""
+		return buf
 	}
 	if len(i.Packets) == 0 {
-		return ""
+		return buf
 	}
-	buf := new(bytes.Buffer)
 	for _, itm := range i.Packets {
-		itm.toString("\t", 0, buf)
+		itm.toString(indent, 0, buf)
 	}
-	return buf.String()
+	return buf
+}
+
+//Stringer as TOML format
+func (i *Info) String() string {
+	return i.ToString("\t").String()
 }
 
 //Item is information item class
