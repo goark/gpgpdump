@@ -14,23 +14,17 @@ func TestTagUnknown(t *testing.T) {
 	cxt := context.NewContext(options.New(
 		options.Set(options.DebugOpt, true),
 	))
-	name := "Unknown (tag 99)"
+	itemStr := `Unknown (tag 99) (4 bytes)
+	01 02 03 04
+`
 	i, err := NewTag(op, cxt).Parse()
 	if err != nil {
 		t.Errorf("NewTag() = %v, want nil error.", err)
 		return
 	}
-	if i.Name != name {
-		t.Errorf("Tag.Name = \"%s\", want \"%s\".", i.Name, name)
-	}
-	if i.Value != "" {
-		t.Errorf("Tag.Value = \"%s\", want \"\".", i.Value)
-	}
-	if i.Note != "4 bytes" {
-		t.Errorf("Tag.Note = \"%s\", want \"4 bytes\"", i.Note)
-	}
-	if i.Dump != "01 02 03 04" {
-		t.Errorf("Tag.Dump = \"%s\", want \"01 02 03 04\".", i.Dump)
+	str := i.String()
+	if str != itemStr {
+		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, itemStr)
 	}
 }
 

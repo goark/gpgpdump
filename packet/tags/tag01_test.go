@@ -20,22 +20,21 @@ var (
 func TestTag01(t *testing.T) {
 	op := &openpgp.OpaquePacket{Tag: 1, Contents: tag01Body}
 	cxt := context.NewContext(options.New())
+	itemStr := `Public-Key Encrypted Session Key Packet (tag 1) (126 bytes)
+	Version: 3 (current)
+	Key ID: 0xee066bfe252c4d79
+	Public-key Algorithm: ECDH public key algorithm (pub 18)
+	ECDH 04 || EC point (X,Y) (515 bits)
+	symmetric key (encoded) (48 bytes)
+`
 	i, err := NewTag(op, cxt).Parse()
 	if err != nil {
 		t.Errorf("NewTag() = %v, want nil error.", err)
 		return
 	}
-	if i.Name != tag01Name {
-		t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Name, tag01Name)
-	}
-	if i.Value != "" {
-		t.Errorf("Tag.Name = \"%s\", want \"\".", i.Value)
-	}
-	if i.Note != "126 bytes" {
-		t.Errorf("Tag.Note = \"%s\", want \"126 bytes\"", i.Note)
-	}
-	if i.Dump != "" {
-		t.Errorf("Tag.Dump = \"%s\", want \"\".", i.Dump)
+	str := i.String()
+	if str != itemStr {
+		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, itemStr)
 	}
 }
 

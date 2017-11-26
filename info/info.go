@@ -165,6 +165,12 @@ func (i *Item) toString(indent string, lvl int, buf *bytes.Buffer) {
 	return
 }
 
+func (i *Item) String() string {
+	buf := new(bytes.Buffer)
+	i.toString("\t", 0, buf)
+	return buf.String()
+}
+
 /* Copyright 2016,2017 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
