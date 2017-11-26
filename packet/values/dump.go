@@ -16,7 +16,7 @@ func (d *Dumpdata) String() string {
 	if !d.dump {
 		return ""
 	}
-	return d.reader.DumpString(0)
+	return d.reader.DumpString(d.reader.Size() - d.reader.Rest())
 }
 
 //Dump returns Dumpdata instance

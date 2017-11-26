@@ -55,6 +55,22 @@ func TestLiteralFname(t *testing.T) {
 	}
 }
 
+func TestLiteralFnameNil(t *testing.T) {
+	i := LiteralFname("").ToItem()
+	if i.Name != "File name" {
+		t.Errorf("LiteralFname.Name = \"%s\", want \"File name\".", i.Name)
+	}
+	if i.Value != "<null>" {
+		t.Errorf("LiteralFname.Value = \"%s\", want \"<null>\".", i.Value)
+	}
+	if i.Note != "" {
+		t.Errorf("LiteralFname.Note = \"%s\", want \"\"", i.Note)
+	}
+	if i.Dump != "" {
+		t.Errorf("LiteralFname.Dump = \"%s\", want \"\".", i.Dump)
+	}
+}
+
 func TestRawData(t *testing.T) {
 	var data = []byte{0x01, 0x02, 0x03, 0x04}
 	name := "Literal data"

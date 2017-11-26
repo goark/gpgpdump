@@ -18,7 +18,7 @@ var (
 	dump1 = "6f 0b 0c 39 68 64 f2 ff ea 63 80 c6 6c 69 aa 3d 4e 3c 46 54"
 )
 
-func TestNewMPI(t *testing.T) {
+func TestNewMPINoName(t *testing.T) {
 	reader := reader.New(data1)
 	m, err := NewMPI(reader)
 	if err != nil {
@@ -39,15 +39,24 @@ func TestNewMPI(t *testing.T) {
 	}
 }
 
-func TestNewMPIandNote(t *testing.T) {
+func TestNewMPIandName(t *testing.T) {
 	reader := reader.New(data1)
 	m, err := NewMPI(reader)
 	if err != nil {
 		t.Errorf("NewMPI() = \"%v\", want nil error.", err)
 	}
-	i := m.ToItem("note1", true)
-	if i.Note != "note1 (159 bits)" {
-		t.Errorf("MPI.Note = \"%v\", want \"note1 (159 bits)\"", i.Note)
+	i := m.ToItem("name", true)
+	if i.Name != "name" {
+		t.Errorf("MPI.Name = \"%v\", want \"name\".", i.Name)
+	}
+	if i.Value != "" {
+		t.Errorf("MPI.Value = \"%v\", want \"\".", i.Value)
+	}
+	if i.Note != "159 bits" {
+		t.Errorf("MPI.Note = \"%v\", want \"159 bits\"", i.Note)
+	}
+	if i.Dump != dump1 {
+		t.Errorf("MPI.Dump = \"%v\", want \"%s\".", i.Dump, dump1)
 	}
 }
 

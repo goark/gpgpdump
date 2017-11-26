@@ -30,7 +30,7 @@ func ExampleParse() {
 	if err != nil {
 		return
 	}
-	fmt.Println(info.Packets[0].Value)
+	fmt.Println(info.Packets[0].Name)
 	// Output:
 	// Signature Packet (tag 2)
 }
@@ -40,7 +40,7 @@ func ExampleParseByte() {
 	if err != nil {
 		return
 	}
-	fmt.Println(info.Packets[0].Value)
+	fmt.Println(info.Packets[0].Name)
 	// Output:
 	// Signature Packet (tag 2)
 }

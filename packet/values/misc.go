@@ -13,11 +13,11 @@ const (
 )
 
 //Flag2Item returns Item instance for flag info.
-func Flag2Item(flag byte, note string) *info.Item {
+func Flag2Item(flag byte, value string) *info.Item {
 	if flag != 0x00 {
 		return info.NewItem(
 			info.Name("Flag"),
-			info.Note(note),
+			info.Value(value),
 		)
 	}
 	return nil

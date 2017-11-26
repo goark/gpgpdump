@@ -20,8 +20,10 @@ var (
 )
 
 var (
-	pubkeySesName18a = "Multi-precision integer"
+	pubkeySesName18a = "ECDH 04 || EC point (X,Y)"
+	pubkeySesNote18a = "515 bits"
 	pubkeySesName18b = "symmetric key (encoded)"
+	pubkeySesNote18b = "48 bytes"
 	pubkeySesName17  = "Multi-precision integers of DSA"
 	pubkeySesName19  = "Multi-precision integers of ECDSA"
 	pubkeySesNameUn  = "Multi-precision integers of Unknown (pub 100)"
@@ -52,10 +54,10 @@ func TestPubkeySes18(t *testing.T) {
 	New(cxtPub, values.PubID(pubkeySes18a[0]), reader.New(pubkeySes18a[1:])).ParseSes(parent)
 	if len(parent.Items) != 2 {
 		t.Errorf("Count of Items = %v, want 2.", len(parent.Items))
-	} else if parent.Items[0].Name != pubkeySesName18a {
-		t.Errorf("Pubkey Name = \"%s\" (%s), want \"%s\".", parent.Items[0].Name, parent.Items[0].Note, pubkeySesName18a)
-	} else if parent.Items[1].Name != pubkeySesName18b {
-		t.Errorf("Pubkey Name = \"%s\" (%s), want \"%s\".", parent.Items[1].Name, parent.Items[1].Note, pubkeySesName18b)
+	} else if parent.Items[0].Name != pubkeySesName18a || parent.Items[0].Note != pubkeySesNote18a {
+		t.Errorf("Pubkey Name = \"%s\" (%s), want \"%s\" (%s).", parent.Items[0].Name, parent.Items[0].Note, pubkeySesName18a, pubkeySesNote18a)
+	} else if parent.Items[1].Name != pubkeySesName18b || parent.Items[1].Note != pubkeySesNote18b {
+		t.Errorf("Pubkey Name = \"%s\" (%s), want \"%s\" (%s).", parent.Items[1].Name, parent.Items[1].Note, pubkeySesName18b, pubkeySesNote18b)
 	}
 }
 

@@ -10,8 +10,7 @@ import (
 var resJSON = `{
   "Packet": [
     {
-      "name": "Packet",
-      "value": "Marker Packet (Obsolete Literal Packet) (tag 10)",
+      "name": "Marker Packet (Obsolete Literal Packet) (tag 10)",
       "note": "3 bytes",
       "Item": [
         {
@@ -21,8 +20,7 @@ var resJSON = `{
       ]
     },
     {
-      "name": "Packet",
-      "value": "Symmetric-Key Encrypted Session Key Packet (tag 3)",
+      "name": "Symmetric-Key Encrypted Session Key Packet (tag 3)",
       "note": "4 bytes",
       "Item": [
         {
@@ -47,17 +45,12 @@ var resJSON = `{
       ]
     },
     {
-      "name": "Packet",
-      "value": "Symmetrically Encrypted Data Packet (tag 9)",
+      "name": "Symmetrically Encrypted Data Packet (tag 9)",
       "note": "56 bytes",
       "Item": [
         {
-          "name": "Compression Algorithm",
-          "value": "Unknown (comp 231)"
-        },
-        {
-          "name": "Compressed data",
-          "note": "55 bytes"
+          "name": "Encrypted data",
+          "note": "sym alg is specified in sym-key encrypted session key"
         }
       ]
     }

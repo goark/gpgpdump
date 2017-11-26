@@ -12,7 +12,7 @@ func TestOptionsNormal(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := gocli.NewUI(gocli.Reader(inData), gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
-	args := []string{"-i", "-l", "-m", "-p", "-u"}
+	args := []string{"-i", "-l", "-m", "-p", "-u", "--debug"}
 
 	clearFlags()
 	exit := Execute(ui, args)

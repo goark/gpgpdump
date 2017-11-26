@@ -22,99 +22,29 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 )
 
 var (
-	resdataFromBindata1 = `[[Packet]]
-  name = "Packet"
-  value = "Marker Packet (Obsolete Literal Packet) (tag 10)"
-  note = "3 bytes"
-
-  [[Packet.Item]]
-    name = "Literal data"
-    note = "3 bytes"
-
-[[Packet]]
-  name = "Packet"
-  value = "Symmetric-Key Encrypted Session Key Packet (tag 3)"
-  note = "4 bytes"
-
-  [[Packet.Item]]
-    name = "Version"
-    value = "4"
-    note = "new"
-
-  [[Packet.Item]]
-    name = "Symmetric Algorithm"
-    value = "CAST5 (sym 3)"
-
-  [[Packet.Item]]
-    name = "String-to-Key (S2K) Algorithm"
-    value = "Simple S2K (s2k 0)"
-
-    [[Packet.Item.Item]]
-      name = "Hash Algorithm"
-      value = "MD5 (hash 1)"
-
-[[Packet]]
-  name = "Packet"
-  value = "Symmetrically Encrypted Data Packet (tag 9)"
-  note = "56 bytes"
-
-  [[Packet.Item]]
-    name = "Compression Algorithm"
-    value = "Unknown (comp 231)"
-
-  [[Packet.Item]]
-    name = "Compressed data"
-    note = "55 bytes"
+	resdataFromBindata1 = `Marker Packet (Obsolete Literal Packet) (tag 10) (3 bytes)
+	Literal data (3 bytes)
+Symmetric-Key Encrypted Session Key Packet (tag 3) (4 bytes)
+	Version: 4 (new)
+	Symmetric Algorithm: CAST5 (sym 3)
+	String-to-Key (S2K) Algorithm: Simple S2K (s2k 0)
+		Hash Algorithm: MD5 (hash 1)
+Symmetrically Encrypted Data Packet (tag 9) (56 bytes)
+	Encrypted data (sym alg is specified in sym-key encrypted session key)
 `
-	resdataFromAscdata1 = `[[Packet]]
-  name = "Packet"
-  value = "Signature Packet (tag 2)"
-  note = "94 bytes"
-
-  [[Packet.Item]]
-    name = "Version"
-    value = "4"
-    note = "new"
-
-  [[Packet.Item]]
-    name = "Signiture Type"
-    value = "Signature of a canonical text document (0x01)"
-
-  [[Packet.Item]]
-    name = "Public-key Algorithm"
-    value = "ECDSA public key algorithm (pub 19)"
-
-  [[Packet.Item]]
-    name = "Hash Algorithm"
-    value = "SHA256 (hash 8)"
-
-  [[Packet.Item]]
-    name = "Hashed Subpacket"
-    note = "6 bytes"
-
-    [[Packet.Item.Item]]
-      name = "Signature Creation Time (sub 2)"
-      value = "2015-01-24T02:52:15Z"
-
-  [[Packet.Item]]
-    name = "Unhashed Subpacket"
-    note = "10 bytes"
-
-    [[Packet.Item.Item]]
-      name = "Issuer (sub 16)"
-      value = "0x31fbfda95fbbfa18"
-
-  [[Packet.Item]]
-    name = "Hash left 2 bytes"
-    dump = "36 1f"
-
-  [[Packet.Item]]
-    name = "Multi-precision integer"
-    note = "ECDSA r (256 bits)"
-
-  [[Packet.Item]]
-    name = "Multi-precision integer"
-    note = "ECDSA s (252 bits)"
+	resdataFromAscdata1 = `Signature Packet (tag 2) (94 bytes)
+	Version: 4 (new)
+	Signiture Type: Signature of a canonical text document (0x01)
+	Public-key Algorithm: ECDSA public key algorithm (pub 19)
+	Hash Algorithm: SHA256 (hash 8)
+	Hashed Subpacket (6 bytes)
+		Signature Creation Time (sub 2): 2015-01-24T02:52:15Z
+	Unhashed Subpacket (10 bytes)
+		Issuer (sub 16): 0x31fbfda95fbbfa18
+	Hash left 2 bytes
+		36 1f
+	ECDSA r (256 bits)
+	ECDSA s (252 bits)
 `
 )
 
@@ -199,8 +129,9 @@ func TestLoadByNofile(t *testing.T) {
 func clearFlags() {
 	rootCmd.Flag("version").Value.Set("false")
 	rootCmd.Flag("json").Value.Set("false")
+	rootCmd.Flag("toml").Value.Set("false")
 	rootCmd.Flag(options.ArmorOpt).Value.Set("false")
-	//rootCmd.Flag(options.DebugOpt).Value.Set("false")
+	rootCmd.Flag(options.DebugOpt).Value.Set("false")
 	//rootCmd.Flag(options.GDumpOpt).Value.Set("false")
 	rootCmd.Flag(options.IntegerOpt).Value.Set("false")
 	rootCmd.Flag(options.LiteralOpt).Value.Set("false")

@@ -15,8 +15,12 @@ var (
 )
 
 var (
-	pubkeySigName19a = "Multi-precision integer"
-	pubkeySigName19b = "Multi-precision integer"
+	pubkeySigName19a = "ECDSA r"
+	pubkeySigNote19a = "256 bits"
+	pubkeySigName19b = "ECDSA s"
+	pubkeySigNote19b = "252 bits"
+	//pubkeySigName19b = "ECDH 04 || EC point (X,Y)"
+	//pubkeySigNote19b = "515 bits"
 )
 
 var cxtSig = context.NewContext(options.New(
@@ -36,10 +40,13 @@ func TestPubkeySig19(t *testing.T) {
 	}
 	if len(parent.Items) != 2 {
 		t.Errorf("Count of Items = %v, want 2.", len(parent.Items))
-	} else if parent.Items[0].Name != pubkeySigName19a {
-		t.Errorf("Pubkey Name = \"%s\" (%s), want \"%s\".", parent.Items[0].Name, parent.Items[0].Note, pubkeySigName19a)
-	} else if parent.Items[1].Name != pubkeySigName19b {
-		t.Errorf("Pubkey Name = \"%s\" (%s), want \"%s\".", parent.Items[0].Name, parent.Items[1].Note, pubkeySigName19b)
+	} else {
+		if parent.Items[0].Name != pubkeySigName19a || parent.Items[0].Note != pubkeySigNote19a {
+			t.Errorf("Pubkey Name = \"%s\" (%s), want \"%s\" (%s).", parent.Items[0].Name, parent.Items[0].Note, pubkeySigName19a, pubkeySigNote19a)
+		}
+		if parent.Items[1].Name != pubkeySigName19b || parent.Items[1].Note != pubkeySigNote19b {
+			t.Errorf("Pubkey Name = \"%s\" (%s), want \"%s\" (%s).", parent.Items[1].Name, parent.Items[1].Note, pubkeySigName19b, pubkeySigNote19b)
+		}
 	}
 }
 

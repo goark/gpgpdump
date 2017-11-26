@@ -1,6 +1,7 @@
 package facade
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -22,12 +23,13 @@ var (
 var (
 	versionFlag bool            //version flag
 	jsonFlag    bool            //output with JSON format
+	tomlFlag    bool            //output with TOML format
 	cui         = gocli.NewUI() //CUI instance
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use: Name + " [flags] [PGPfile]",
+	Use: Name + " [flags] [OpenPGP file]",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		//parse options
 		if versionFlag {
@@ -63,8 +65,11 @@ var rootCmd = &cobra.Command{
 		var result io.Reader
 		if jsonFlag {
 			result, err = info.JSON()
-		} else {
+		} else if tomlFlag {
 			result, err = info.TOML()
+		} else {
+			result = bytes.NewBufferString(info.String())
+			err = nil
 		}
 		if err != nil {
 			return err
@@ -85,7 +90,7 @@ func getBool(cmd *cobra.Command, name string) bool {
 func parseOpt(cmd *cobra.Command) *options.Options {
 	return options.New(
 		options.Set(options.ArmorOpt, getBool(cmd, options.ArmorOpt)),
-		//options.Set(options.DebugOpt, getBool(cmd, options.DebugOpt)), //not use
+		options.Set(options.DebugOpt, getBool(cmd, options.DebugOpt)), //for debug
 		//options.Set(options.GDumpOpt, getBool(cmd, options.GDumpOpt)), //not use
 		options.Set(options.IntegerOpt, getBool(cmd, options.IntegerOpt)),
 		options.Set(options.LiteralOpt, getBool(cmd, options.LiteralOpt)),
@@ -103,11 +108,11 @@ func Execute(ui *gocli.UI, args []string) (exit ExitCode) {
 		if r := recover(); r != nil {
 			cui.OutputErrln("Panic:", r)
 			for depth := 0; ; depth++ {
-				pc, _, line, ok := runtime.Caller(depth)
+				pc, src, line, ok := runtime.Caller(depth)
 				if !ok {
 					break
 				}
-				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ": line", line)
+				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ":", src, ":", line)
 			}
 			exit = ExitAbnormal
 		}
@@ -127,8 +132,9 @@ func Execute(ui *gocli.UI, args []string) (exit ExitCode) {
 func init() {
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
 	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
+	rootCmd.Flags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
 	rootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
-	//rootCmd.Flags().BoolP(options.DebugOpt, "d", false, "for debug") //not use
+	rootCmd.Flags().BoolP(options.DebugOpt, "", false, "for debug") //not use
 	//rootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
 	rootCmd.Flags().BoolP(options.IntegerOpt, "i", false, "dumps multi-precision integers")
 	rootCmd.Flags().BoolP(options.LiteralOpt, "l", false, "dumps literal packets (tag 11)")

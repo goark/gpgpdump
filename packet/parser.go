@@ -1,9 +1,12 @@
 package packet
 
 import (
+	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	openpgp "golang.org/x/crypto/openpgp/packet"
 
@@ -42,16 +45,50 @@ func NewParser(reader io.Reader, o *options.Options) (*Parser, error) {
 			r, err = buf, nil
 		}
 	}
-	return &Parser{opaqueReader: openpgp.NewOpaqueReader(r), cxt: context.NewContext(o), info: info.NewInfo()}, err
+	return newParser(context.NewContext(o), openpgp.NewOpaqueReader(r), info.NewInfo()), err
+}
+
+func newParser(cxt *context.Context, op *openpgp.OpaqueReader, info *info.Info) *Parser {
+	return &Parser{opaqueReader: op, cxt: cxt, info: info}
 }
 
 //ASCII Armor format only
 func newParserArmor(r io.Reader) (io.Reader, error) {
-	block, err := armor.Decode(r)
-	if err != nil {
-		return nil, errors.Wrap(err, "error in packet.newParserArmor() function (not ASCII Armor format)")
+	buf := getASCIIArmorText(r)
+	if buf == nil {
+		return nil, errors.New("can't find OpenPGP armor boundary")
 	}
+	block, _ := armor.Decode(buf)
 	return block.Body, nil
+}
+
+const (
+	armorBoundery       = "-----BEGIN PGP"
+	armorBounderyExcept = "-----BEGIN PGP SIGNED"
+)
+
+func getASCIIArmorText(r io.Reader) *bytes.Buffer {
+	buf := new(bytes.Buffer)
+	armorFlag := false
+	scn := bufio.NewScanner(r)
+	for scn.Scan() {
+		str := scn.Text()
+		if !armorFlag {
+			if strings.HasPrefix(str, armorBoundery) && !strings.HasPrefix(str, armorBounderyExcept) {
+				armorFlag = true
+			}
+		}
+		if armorFlag {
+			fmt.Fprintln(buf, str)
+		}
+	}
+	if err := scn.Err(); err != nil {
+		return nil
+	}
+	if !armorFlag {
+		return nil
+	}
+	return buf
 }
 
 //Parse returns packet info.
@@ -67,11 +104,29 @@ func (r *Parser) Parse() (*info.Info, error) {
 		if op == nil {
 			break
 		}
-		item, err := tags.NewTag(op, r.cxt).Parse()
+		tag := tags.NewTag(op, r.cxt)
+		item, err := tag.Parse()
 		if err != nil {
 			return r.info, err
 		}
 		r.info.Add(item)
+		switch t := tag.(type) {
+		case *tags.Tag08: //Compressed Data Packet
+			if t.Reader() != nil {
+				parser := newParser(r.cxt, openpgp.NewOpaqueReader(t.Reader()), info.NewInfo())
+				info, err := parser.Parse()
+				if err != nil {
+					return r.info, err
+				}
+				if len(item.Items) > 0 {
+					item = item.Items[len(item.Items)-1]
+				}
+				for _, itm := range info.Packets {
+					item.Add(itm)
+				}
+			}
+		default:
+		}
 	}
 	return r.info, nil //stub
 }

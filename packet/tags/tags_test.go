@@ -27,11 +27,11 @@ func TestTag01(t *testing.T) {
 		t.Errorf("NewTag() = %v, want nil error.", err)
 		return
 	}
-	if i.Name != "Packet" {
-		t.Errorf("Tag.Name = \"%s\", want \"Packet\".", i.Name)
+	if i.Name != tag01Name {
+		t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Name, tag01Name)
 	}
-	if i.Value != tag01Name {
-		t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Value, tag01Name)
+	if i.Value != "" {
+		t.Errorf("Tag.Name = \"%s\", want \"\".", i.Value)
 	}
 	if i.Note != "126 bytes" {
 		t.Errorf("Tag.Note = \"%s\", want \"126 bytes\"", i.Note)
@@ -49,11 +49,11 @@ func TestTag02(t *testing.T) {
 		t.Errorf("NewTag() = %v, want nil error.", err)
 		return
 	}
-	if i.Name != "Packet" {
-		t.Errorf("Tag.Name = \"%s\", want \"Packet\".", i.Name)
+	if i.Name != tag02Name {
+		t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Name, tag02Name)
 	}
-	if i.Value != tag02Name {
-		t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Value, tag02Name)
+	if i.Value != "" {
+		t.Errorf("Tag.Name = \"%s\", want \"\".", i.Value)
 	}
 	if i.Note != "94 bytes" {
 		t.Errorf("Tag.Note = \"%s\", want \"94 bytes\"", i.Note)
@@ -74,11 +74,11 @@ func TestTagUnknown(t *testing.T) {
 		t.Errorf("NewTag() = %v, want nil error.", err)
 		return
 	}
-	if i.Name != "Packet" {
-		t.Errorf("Tag.Name = \"%s\", want \"Packet\".", i.Name)
+	if i.Name != name {
+		t.Errorf("Tag.Name = \"%s\", want \"%s\".", i.Name, name)
 	}
-	if i.Value != name {
-		t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Value, name)
+	if i.Value != "" {
+		t.Errorf("Tag.Value = \"%s\", want \"\".", i.Value)
 	}
 	if i.Note != "4 bytes" {
 		t.Errorf("Tag.Note = \"%s\", want \"4 bytes\"", i.Note)

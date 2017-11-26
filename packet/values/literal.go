@@ -36,9 +36,13 @@ type LiteralFname string
 
 //ToItem returns Item instance
 func (l LiteralFname) ToItem() *info.Item {
+	name := string(l)
+	if len(l) == 0 {
+		name = "<null>"
+	}
 	return info.NewItem(
 		info.Name("File name"),
-		info.Value(string(l)),
+		info.Value(name),
 	)
 }
 
