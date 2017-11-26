@@ -3,9 +3,6 @@ language: go
 go:
   - 1.9.2
 
-branches:
-  only: master
-
 env:
   - DEP_VERSION="0.3.2"
 
