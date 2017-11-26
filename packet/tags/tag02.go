@@ -30,15 +30,19 @@ func (t *tag02) Parse() (*info.Item, error) {
 	version := values.SigVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
-	if version.IsOld() {
-		_, err2 := t.parseV3(rootInfo)
-		if err2 != nil {
-			return rootInfo, err
-		}
-	} else if version.IsNew() {
+	if version.IsCurrent() {
 		_, err2 := t.parseV4(rootInfo)
 		if err2 != nil {
 			return rootInfo, err
+		}
+	} else if version.IsOld() {
+		switch version.Number() {
+		case 3:
+			_, err2 := t.parseV3(rootInfo)
+			if err2 != nil {
+				return rootInfo, err
+			}
+		default:
 		}
 	}
 

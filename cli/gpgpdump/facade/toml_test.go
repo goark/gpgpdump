@@ -36,7 +36,7 @@ var (
   [[Packet.Item]]
     name = "Version"
     value = "4"
-    note = "new"
+    note = "current"
 
   [[Packet.Item]]
     name = "Symmetric Algorithm"
@@ -65,7 +65,7 @@ var (
   [[Packet.Item]]
     name = "Version"
     value = "4"
-    note = "new"
+    note = "current"
 
   [[Packet.Item]]
     name = "Signiture Type"

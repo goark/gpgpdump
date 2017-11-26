@@ -50,7 +50,7 @@ const (
           "name": "Version",
           "value": "4",
           "dump": "04",
-          "note": "new"
+          "note": "current"
         },
         {
           "name": "Signiture Type",
@@ -118,7 +118,7 @@ const (
           "name": "Version",
           "value": "4",
           "dump": "04",
-          "note": "new"
+          "note": "current"
         },
         {
           "name": "Signiture Type",
@@ -211,7 +211,7 @@ const (
         {
           "name": "Version",
           "value": "4",
-          "note": "new"
+          "note": "current"
         },
         {
           "name": "Symmetric Algorithm",

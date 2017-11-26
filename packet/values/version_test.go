@@ -7,6 +7,9 @@ func TestVersionNew(t *testing.T) {
 	if v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
 	}
+	if v.Number() != 4 {
+		t.Errorf("Version.Number = %v, want 4.", v.Number())
+	}
 
 	i := v.ToItem(true)
 	if i.Name != "Version" {
@@ -15,8 +18,8 @@ func TestVersionNew(t *testing.T) {
 	if i.Value != "4" {
 		t.Errorf("Version.Value = \"%v\", want \"4\".", i.Value)
 	}
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 	if i.Dump != "04" {
 		t.Errorf("Version.Dump = \"%v\", want \"04\".", i.Dump)
@@ -25,8 +28,14 @@ func TestVersionNew(t *testing.T) {
 
 func TestVersionOldNew(t *testing.T) {
 	v := (*Version)(nil)
-	if v.IsNew() {
-		t.Errorf("New Version = %v, want false.", v.IsOld())
+	if v.IsCurrent() {
+		t.Errorf("Current Version = %v, want false.", v.IsCurrent())
+	}
+	if v.IsOld() {
+		t.Errorf("Old Version = %v, want false.", v.IsOld())
+	}
+	if v.Number() != 0 {
+		t.Errorf("Version.Number = %v, want 0.", v.Number())
 	}
 }
 
@@ -89,40 +98,40 @@ func TestVersionUnknown(t *testing.T) {
 func TestPubVer4(t *testing.T) {
 	i := PubVer(4).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 
 func TestSigVer4(t *testing.T) {
 	i := SigVer(4).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 
 func TestOneSigVer3(t *testing.T) {
 	i := OneSigVer(3).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 
 func TestPubSessKeyVer3(t *testing.T) {
 	i := PubSessKeyVer(3).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 
 func TestSymSessKeyVer4(t *testing.T) {
 	i := SymSessKeyVer(4).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 

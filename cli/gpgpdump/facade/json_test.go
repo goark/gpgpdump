@@ -26,7 +26,7 @@ var resJSON = `{
         {
           "name": "Version",
           "value": "4",
-          "note": "new"
+          "note": "current"
         },
         {
           "name": "Symmetric Algorithm",

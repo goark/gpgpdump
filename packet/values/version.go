@@ -17,6 +17,14 @@ func NewVersion(ver, cur byte) *Version {
 	return &Version{ver: ver, cur: cur}
 }
 
+//Number returns number of version
+func (v *Version) Number() int {
+	if v == nil {
+		return 0
+	}
+	return int(v.ver)
+}
+
 //IsOld return true if old version
 func (v *Version) IsOld() bool {
 	if v == nil {
@@ -25,8 +33,8 @@ func (v *Version) IsOld() bool {
 	return v.ver < v.cur
 }
 
-//IsNew return true if new version
-func (v *Version) IsNew() bool {
+//IsCurrent return true if current version
+func (v *Version) IsCurrent() bool {
 	if v == nil {
 		return false
 	}
@@ -35,7 +43,7 @@ func (v *Version) IsNew() bool {
 
 //IsUnknown return true if unknown version
 func (v *Version) IsUnknown() bool {
-	return !v.IsOld() && !v.IsNew()
+	return !v.IsOld() && !v.IsCurrent()
 }
 
 //ToItem returns Item instance
@@ -47,8 +55,8 @@ func (v *Version) ToItem(dumpFlag bool) *info.Item {
 	switch true {
 	case v.IsOld():
 		note = "old"
-	case v.IsNew():
-		note = "new"
+	case v.IsCurrent():
+		note = "current"
 	default:
 		note = "unknown"
 	}
@@ -89,7 +97,7 @@ func SymSessKeyVer(ver byte) *Version {
 	return NewVersion(ver, 4)
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016,2017 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

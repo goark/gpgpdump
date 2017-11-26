@@ -27,10 +27,14 @@ func newPubkey(cxt *context.Context, reader *reader.Reader, pubVer *values.Versi
 
 //Parse Public-key packet
 func (p *pubkeyInfo) Parse(parent *info.Item) error {
-	if p.pubVer.IsOld() {
-		return p.parseV3(parent)
-	} else if p.pubVer.IsNew() {
+	if p.pubVer.IsCurrent() {
 		return p.parseV4(parent)
+	} else if p.pubVer.IsOld() {
+		switch p.pubVer.Number() {
+		case 3:
+			return p.parseV3(parent)
+		default:
+		}
 	}
 	return nil
 }
