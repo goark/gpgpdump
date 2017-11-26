@@ -1,9 +1,12 @@
 package packet
 
 import (
+	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	openpgp "golang.org/x/crypto/openpgp/packet"
 
@@ -51,11 +54,41 @@ func newParser(cxt *context.Context, op *openpgp.OpaqueReader, info *info.Info) 
 
 //ASCII Armor format only
 func newParserArmor(r io.Reader) (io.Reader, error) {
-	block, err := armor.Decode(r)
-	if err != nil {
-		return nil, errors.Wrap(err, "error in packet.newParserArmor() function (not ASCII Armor format)")
+	buf := getASCIIArmorText(r)
+	if buf == nil {
+		return nil, errors.New("can't find OpenPGP armor boundary")
 	}
+	block, _ := armor.Decode(buf)
 	return block.Body, nil
+}
+
+const (
+	armorBoundery       = "-----BEGIN PGP"
+	armorBounderyExcept = "-----BEGIN PGP SIGNED"
+)
+
+func getASCIIArmorText(r io.Reader) *bytes.Buffer {
+	buf := new(bytes.Buffer)
+	armorFlag := false
+	scn := bufio.NewScanner(r)
+	for scn.Scan() {
+		str := scn.Text()
+		if !armorFlag {
+			if strings.HasPrefix(str, armorBoundery) && !strings.HasPrefix(str, armorBounderyExcept) {
+				armorFlag = true
+			}
+		}
+		if armorFlag {
+			fmt.Fprintln(buf, str)
+		}
+	}
+	if err := scn.Err(); err != nil {
+		return nil
+	}
+	if !armorFlag {
+		return nil
+	}
+	return buf
 }
 
 //Parse returns packet info.

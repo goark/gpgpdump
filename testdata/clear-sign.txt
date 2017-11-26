@@ -1,4 +1,4 @@
-:-----BEGIN PGP SIGNED MESSAGE-----
+-----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
 Hello world
