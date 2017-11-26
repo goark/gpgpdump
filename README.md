@@ -40,10 +40,9 @@ info, err := gpgpdump.Parse(strings.NewReader(openpgpStr), options.New())
 if err != nil {
 	return
 }
-fmt.Println(info.Packets[0].Value)
+fmt.Println(info.Packets[0].Name)
 // Output:
 // Signature Packet (tag 2)
-
 ```
 
 ## Command-Line Interface
@@ -67,6 +66,7 @@ Flags:
   -l, --literal   dumps literal packets (tag 11)
   -m, --marker    dumps marker packets (tag 10)
   -p, --private   dumps private packets (tag 60-63)
+  -t, --toml      output with TOML format
   -u, --utc       output with UTC time
   -v, --version   output version of gpgpdump
 
@@ -80,9 +80,23 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 -----END PGP SIGNATURE-----
 
 $ cat sig | gpgpdump -u
+Signature Packet (tag 2) (94 bytes)
+    Version: 4 (new)
+    Signiture Type: Signature of a canonical text document (0x01)
+    Public-key Algorithm: ECDSA public key algorithm (pub 19)
+    Hash Algorithm: SHA256 (hash 8)
+    Hashed Subpacket (6 bytes)
+        Signature Creation Time (sub 2): 2015-01-24T02:52:15Z
+    Unhashed Subpacket (10 bytes)
+        Issuer (sub 16): 0x31fbfda95fbbfa18
+    Hash left 2 bytes
+        36 1f
+    ECDSA r (256 bits)
+    ECDSA s (252 bits)
+
+$ cat sig | gpgpdump -t -u
 [[Packet]]
-  name = "Packet"
-  value = "Signature Packet (tag 2)"
+  name = "Signature Packet (tag 2)"
   note = "94 bytes"
 
   [[Packet.Item]]
@@ -123,19 +137,18 @@ $ cat sig | gpgpdump -u
     dump = "36 1f"
 
   [[Packet.Item]]
-    name = "Multi-precision integer"
-    note = "ECDSA r (256 bits)"
+    name = "ECDSA r"
+    note = "256 bits"
 
   [[Packet.Item]]
-    name = "Multi-precision integer"
-    note = "ECDSA s (252 bits)"
+    name = "ECDSA s"
+    note = "252 bits"
 
 $ cat sig | gpgpdump -j -u
 {
   "Packet": [
     {
-      "name": "Packet",
-      "value": "Signature Packet (tag 2)",
+      "name": "Signature Packet (tag 2)",
       "note": "94 bytes",
       "Item": [
         {
@@ -180,12 +193,12 @@ $ cat sig | gpgpdump -j -u
           "dump": "36 1f"
         },
         {
-          "name": "Multi-precision integer",
-          "note": "ECDSA r (256 bits)"
+          "name": "ECDSA r",
+          "note": "256 bits"
         },
         {
-          "name": "Multi-precision integer",
-          "note": "ECDSA s (252 bits)"
+          "name": "ECDSA s",
+          "note": "252 bits"
         }
       ]
     }

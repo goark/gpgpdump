@@ -1,6 +1,7 @@
 package facade
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -22,6 +23,7 @@ var (
 var (
 	versionFlag bool            //version flag
 	jsonFlag    bool            //output with JSON format
+	tomlFlag    bool            //output with TOML format
 	cui         = gocli.NewUI() //CUI instance
 )
 
@@ -63,8 +65,11 @@ var rootCmd = &cobra.Command{
 		var result io.Reader
 		if jsonFlag {
 			result, err = info.JSON()
-		} else {
+		} else if tomlFlag {
 			result, err = info.TOML()
+		} else {
+			result = bytes.NewBufferString(info.String())
+			err = nil
 		}
 		if err != nil {
 			return err
@@ -127,6 +132,7 @@ func Execute(ui *gocli.UI, args []string) (exit ExitCode) {
 func init() {
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
 	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
+	rootCmd.Flags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
 	rootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
 	//rootCmd.Flags().BoolP(options.DebugOpt, "d", false, "for debug") //not use
 	//rootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use

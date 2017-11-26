@@ -79,9 +79,6 @@ func TestTOML(t *testing.T) {
 	if str != output {
 		t.Errorf("TOML output = \n%s\n want \n%s\n", str, output)
 	}
-	if info.String() != output {
-		t.Errorf("TOML output = \n%s\n want \n%s\n", info.String(), output)
-	}
 }
 
 func ExampleNewInfo() {
@@ -101,13 +98,13 @@ func TestJSONNull(t *testing.T) {
 	info.Add(nil)
 	res, err := info.JSON()
 	if err != nil {
-		t.Errorf("TOML() err = %v, want nil.", err)
+		t.Errorf("JSON() err = %v, want nil.", err)
 		return
 	}
 	buf := new(bytes.Buffer)
 	io.Copy(buf, res)
 	if buf.String() != "" {
-		t.Errorf("TOML() = %v, want \"\".", buf.String())
+		t.Errorf("JSON() = %v, want \"\".", buf.String())
 	}
 }
 
@@ -115,7 +112,7 @@ func TestJSONEmpty(t *testing.T) {
 	info := NewInfo()
 	res, err := info.JSON()
 	if err != nil {
-		t.Errorf("TOML() err = %v, want nil.", err)
+		t.Errorf("JSON() err = %v, want nil.", err)
 		return
 	}
 	buf := new(bytes.Buffer)
@@ -165,14 +162,42 @@ func TestJSON(t *testing.T) {
 	info.Add(item1)
 	json, err := info.JSON()
 	if err != nil {
-		t.Errorf("MarshalTOML() = \"%v\"want nil.", err)
+		t.Errorf("JSON() = \"%v\"want nil.", err)
 		return
 	}
 	buf := new(bytes.Buffer)
 	io.Copy(buf, json)
 	str := buf.String()
 	if str != output+"\n" {
-		t.Errorf("TOML output = \"%s\" want \"%s\"", str, output)
+		t.Errorf("JSON output = \"%s\" want \"%s\"", str, output)
+	}
+}
+
+func TestStringer(t *testing.T) {
+	norm := `name1: value1 (note1)
+	00 01 02
+	name2 (note2)
+		03 04 05
+`
+	output := strings.Trim(norm, " \t\n\r")
+
+	info := NewInfo()
+	item1 := NewItem(
+		Name("name1"),
+		Value("value1"),
+		Note("note1"),
+		DumpStr("00 01 02"),
+	)
+	item2 := NewItem(
+		Name("name2"),
+		Note("note2"),
+		DumpStr("03 04 05"),
+	)
+	item1.Add(item2)
+	info.Add(item1)
+	str := info.String()
+	if str != output+"\n" {
+		t.Errorf("String() = \"%s\" want \"%s\"", str, output)
 	}
 }
 

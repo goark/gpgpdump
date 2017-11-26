@@ -5,12 +5,11 @@ import (
 	"testing"
 
 	"github.com/spiegel-im-spiegel/gocli"
-	"github.com/spiegel-im-spiegel/gpgpdump/options"
 )
 
 var (
-	bindata1 = []byte{0xa8, 0x03, 0x50, 0x47, 0x50, 0xc3, 0x04, 0x04, 0x03, 0x00, 0x01, 0xc9, 0x38, 0xe7, 0x2d, 0x2f, 0xb1, 0xf1, 0x0f, 0xc3, 0xce, 0x55, 0x5d, 0xb2, 0x8a, 0x4b, 0xe8, 0x4f, 0x43, 0x15, 0x6e, 0x7d, 0x90, 0x90, 0x53, 0x6a, 0x9a, 0xe3, 0xaa, 0x1c, 0x68, 0xd6, 0xd3, 0xfc, 0x6a, 0x4e, 0x79, 0xa8, 0xe7, 0xb1, 0xa5, 0x87, 0xea, 0xcc, 0xcc, 0x99, 0x66, 0x31, 0xad, 0xff, 0xe1, 0xa3, 0x03, 0xb6, 0x47, 0x85, 0x76, 0xbd, 0x0b}
-	ascdata1 = `
+	binTOMLdata1 = []byte{0xa8, 0x03, 0x50, 0x47, 0x50, 0xc3, 0x04, 0x04, 0x03, 0x00, 0x01, 0xc9, 0x38, 0xe7, 0x2d, 0x2f, 0xb1, 0xf1, 0x0f, 0xc3, 0xce, 0x55, 0x5d, 0xb2, 0x8a, 0x4b, 0xe8, 0x4f, 0x43, 0x15, 0x6e, 0x7d, 0x90, 0x90, 0x53, 0x6a, 0x9a, 0xe3, 0xaa, 0x1c, 0x68, 0xd6, 0xd3, 0xfc, 0x6a, 0x4e, 0x79, 0xa8, 0xe7, 0xb1, 0xa5, 0x87, 0xea, 0xcc, 0xcc, 0x99, 0x66, 0x31, 0xad, 0xff, 0xe1, 0xa3, 0x03, 0xb6, 0x47, 0x85, 0x76, 0xbd, 0x0b}
+	ascTOMLdata1 = `
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
@@ -22,39 +21,104 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 )
 
 var (
-	resdataFromBindata1 = `Marker Packet (Obsolete Literal Packet) (tag 10) (3 bytes)
-	Literal data (3 bytes)
-Symmetric-Key Encrypted Session Key Packet (tag 3) (4 bytes)
-	Version: 4 (new)
-	Symmetric Algorithm: CAST5 (sym 3)
-	String-to-Key (S2K) Algorithm: Simple S2K (s2k 0)
-		Hash Algorithm: MD5 (hash 1)
-Symmetrically Encrypted Data Packet (tag 9) (56 bytes)
-	Compression Algorithm: Unknown (comp 231)
-	Compressed data (55 bytes)
+	resTOMLdataFromBindata1 = `[[Packet]]
+  name = "Marker Packet (Obsolete Literal Packet) (tag 10)"
+  note = "3 bytes"
+
+  [[Packet.Item]]
+    name = "Literal data"
+    note = "3 bytes"
+
+[[Packet]]
+  name = "Symmetric-Key Encrypted Session Key Packet (tag 3)"
+  note = "4 bytes"
+
+  [[Packet.Item]]
+    name = "Version"
+    value = "4"
+    note = "new"
+
+  [[Packet.Item]]
+    name = "Symmetric Algorithm"
+    value = "CAST5 (sym 3)"
+
+  [[Packet.Item]]
+    name = "String-to-Key (S2K) Algorithm"
+    value = "Simple S2K (s2k 0)"
+
+    [[Packet.Item.Item]]
+      name = "Hash Algorithm"
+      value = "MD5 (hash 1)"
+
+[[Packet]]
+  name = "Symmetrically Encrypted Data Packet (tag 9)"
+  note = "56 bytes"
+
+  [[Packet.Item]]
+    name = "Compression Algorithm"
+    value = "Unknown (comp 231)"
+
+  [[Packet.Item]]
+    name = "Compressed data"
+    note = "55 bytes"
 `
-	resdataFromAscdata1 = `Signature Packet (tag 2) (94 bytes)
-	Version: 4 (new)
-	Signiture Type: Signature of a canonical text document (0x01)
-	Public-key Algorithm: ECDSA public key algorithm (pub 19)
-	Hash Algorithm: SHA256 (hash 8)
-	Hashed Subpacket (6 bytes)
-		Signature Creation Time (sub 2): 2015-01-24T02:52:15Z
-	Unhashed Subpacket (10 bytes)
-		Issuer (sub 16): 0x31fbfda95fbbfa18
-	Hash left 2 bytes
-		36 1f
-	ECDSA r (256 bits)
-	ECDSA s (252 bits)
+	resTOMLdataFromAscdata1 = `[[Packet]]
+  name = "Signature Packet (tag 2)"
+  note = "94 bytes"
+
+  [[Packet.Item]]
+    name = "Version"
+    value = "4"
+    note = "new"
+
+  [[Packet.Item]]
+    name = "Signiture Type"
+    value = "Signature of a canonical text document (0x01)"
+
+  [[Packet.Item]]
+    name = "Public-key Algorithm"
+    value = "ECDSA public key algorithm (pub 19)"
+
+  [[Packet.Item]]
+    name = "Hash Algorithm"
+    value = "SHA256 (hash 8)"
+
+  [[Packet.Item]]
+    name = "Hashed Subpacket"
+    note = "6 bytes"
+
+    [[Packet.Item.Item]]
+      name = "Signature Creation Time (sub 2)"
+      value = "2015-01-24T02:52:15Z"
+
+  [[Packet.Item]]
+    name = "Unhashed Subpacket"
+    note = "10 bytes"
+
+    [[Packet.Item.Item]]
+      name = "Issuer (sub 16)"
+      value = "0x31fbfda95fbbfa18"
+
+  [[Packet.Item]]
+    name = "Hash left 2 bytes"
+    dump = "36 1f"
+
+  [[Packet.Item]]
+    name = "ECDSA r"
+    note = "256 bits"
+
+  [[Packet.Item]]
+    name = "ECDSA s"
+    note = "252 bits"
 `
 )
 
-func TestLoadByStdin(t *testing.T) {
-	inData := bytes.NewReader(bindata1)
+func TestTOMLLoadByStdin(t *testing.T) {
+	inData := bytes.NewReader(binTOMLdata1)
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := gocli.NewUI(gocli.Reader(inData), gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
-	args := []string{}
+	args := []string{"-t"}
 
 	clearFlags()
 	exit := Execute(ui, args)
@@ -66,17 +130,17 @@ func TestLoadByStdin(t *testing.T) {
 		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, "")
 	}
 	str = outBuf.String()
-	if str != resdataFromBindata1 {
+	if str != resTOMLdataFromBindata1 {
 		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, resdataFromBindata1)
 	}
 }
 
-func TestLoadByNosata(t *testing.T) {
+func TestTOMLLoadByNosata(t *testing.T) {
 	inData := bytes.NewReader([]byte{})
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := gocli.NewUI(gocli.Reader(inData), gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
-	args := []string{}
+	args := []string{"-t"}
 
 	clearFlags()
 	exit := Execute(ui, args)
@@ -93,11 +157,11 @@ func TestLoadByNosata(t *testing.T) {
 	}
 }
 
-func TestLoadByFile(t *testing.T) {
+func TestTOMLLoadByFile(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := gocli.NewUI(gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
-	args := []string{"testdata/bindata1"}
+	args := []string{"-t", "testdata/bindata1"}
 
 	clearFlags()
 	exit := Execute(ui, args)
@@ -109,36 +173,22 @@ func TestLoadByFile(t *testing.T) {
 		t.Errorf("Execute(file) = \"%v\", want \"%v\".", str, "")
 	}
 	str = outBuf.String()
-	if str != resdataFromBindata1 {
+	if str != resTOMLdataFromBindata1 {
 		t.Errorf("Execute(file) = \"%v\", want \"%v\".", str, resdataFromBindata1)
 	}
 }
 
-func TestLoadByNofile(t *testing.T) {
+func TestTOMLLoadByNofile(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := gocli.NewUI(gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
-	args := []string{"noexist"}
+	args := []string{"-t", "noexist"}
 
 	clearFlags()
 	exit := Execute(ui, args)
 	if exit != ExitAbnormal {
 		t.Errorf("Execute(nofile) = \"%v\", want \"%v\".", exit, ExitAbnormal)
 	}
-}
-
-func clearFlags() {
-	rootCmd.Flag("version").Value.Set("false")
-	rootCmd.Flag("json").Value.Set("false")
-	rootCmd.Flag("toml").Value.Set("false")
-	rootCmd.Flag(options.ArmorOpt).Value.Set("false")
-	//rootCmd.Flag(options.DebugOpt).Value.Set("false")
-	//rootCmd.Flag(options.GDumpOpt).Value.Set("false")
-	rootCmd.Flag(options.IntegerOpt).Value.Set("false")
-	rootCmd.Flag(options.LiteralOpt).Value.Set("false")
-	rootCmd.Flag(options.MarkerOpt).Value.Set("false")
-	rootCmd.Flag(options.PrivateOpt).Value.Set("false")
-	rootCmd.Flag(options.UTCOpt).Value.Set("false")
 }
 
 /* Copyright 2017 Spiegel

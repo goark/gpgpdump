@@ -3,8 +3,10 @@ package info
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
@@ -22,6 +24,9 @@ func NewInfo() *Info {
 
 //Add add item in Packets.
 func (i *Info) Add(a *Item) {
+	if i == nil {
+		return
+	}
 	if a != nil && i != nil {
 		i.Packets = append(i.Packets, a)
 	}
@@ -57,9 +62,16 @@ func (i *Info) JSON() (io.Reader, error) {
 
 //Stringer as TOML format
 func (i *Info) String() string {
+	if i == nil {
+		return ""
+	}
+	if len(i.Packets) == 0 {
+		return ""
+	}
 	buf := new(bytes.Buffer)
-	r, _ := i.TOML()
-	io.Copy(buf, r)
+	for _, itm := range i.Packets {
+		itm.toString("\t", 0, buf)
+	}
 	return buf.String()
 }
 
@@ -82,6 +94,9 @@ func NewItem(opts ...ItemOpt) *Item {
 	return i
 }
 func (i *Item) optins(opts ...ItemOpt) {
+	if i == nil {
+		return
+	}
 	for _, opt := range opts {
 		opt(i)
 	}
@@ -120,6 +135,29 @@ func Note(note string) ItemOpt {
 	return func(i *Item) {
 		i.Note = note
 	}
+}
+
+func (i *Item) toString(indent string, lvl int, buf *bytes.Buffer) {
+	if i == nil || buf == nil {
+		return
+	}
+	buf.WriteString(fmt.Sprintf("%s%s", strings.Repeat(indent, lvl), i.Name))
+	if len(i.Value) > 0 {
+		buf.WriteString(fmt.Sprintf(": %s", i.Value))
+	}
+	if len(i.Note) > 0 {
+		buf.WriteString(fmt.Sprintf(" (%s)", i.Note))
+	}
+	buf.WriteString("\n")
+	if len(i.Dump) > 0 {
+		buf.WriteString(fmt.Sprintf("%s%s\n", strings.Repeat(indent, lvl+1), i.Dump))
+	}
+	if len(i.Items) > 0 {
+		for _, itm := range i.Items {
+			itm.toString(indent, lvl+1, buf)
+		}
+	}
+	return
 }
 
 /* Copyright 2016,2017 Spiegel
