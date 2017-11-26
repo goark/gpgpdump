@@ -127,7 +127,7 @@ func TestTOMLLoadByStdin(t *testing.T) {
 	}
 	str = outBuf.String()
 	if str != resTOMLdataFromBindata1 {
-		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, resdataFromBindata1)
+		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, resTOMLdataFromBindata1)
 	}
 }
 

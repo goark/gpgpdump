@@ -56,10 +56,11 @@ See [latest release](https://github.com/spiegel-im-spiegel/gpgpdump/releases/lat
 ```
 $ gpgpdump -h
 Usage:
-  gpgpdump [flags] [PGPfile]
+  gpgpdump [flags] [OpenPGP file]
 
 Flags:
   -a, --armor     accepts ASCII input only
+      --debug     for debug
   -h, --help      help for gpgpdump
   -i, --int       dumps multi-precision integers
   -j, --json      output with JSON format

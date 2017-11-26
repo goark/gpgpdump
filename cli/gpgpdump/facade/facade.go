@@ -29,7 +29,7 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use: Name + " [flags] [PGPfile]",
+	Use: Name + " [flags] [OpenPGP file]",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		//parse options
 		if versionFlag {
@@ -90,14 +90,13 @@ func getBool(cmd *cobra.Command, name string) bool {
 func parseOpt(cmd *cobra.Command) *options.Options {
 	return options.New(
 		options.Set(options.ArmorOpt, getBool(cmd, options.ArmorOpt)),
+		options.Set(options.DebugOpt, getBool(cmd, options.DebugOpt)), //for debug
 		//options.Set(options.GDumpOpt, getBool(cmd, options.GDumpOpt)), //not use
 		options.Set(options.IntegerOpt, getBool(cmd, options.IntegerOpt)),
 		options.Set(options.LiteralOpt, getBool(cmd, options.LiteralOpt)),
 		options.Set(options.MarkerOpt, getBool(cmd, options.MarkerOpt)),
 		options.Set(options.PrivateOpt, getBool(cmd, options.PrivateOpt)),
 		options.Set(options.UTCOpt, getBool(cmd, options.UTCOpt)),
-
-		//options.Set(options.DebugOpt, true), //for debug
 	)
 }
 
@@ -135,7 +134,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
 	rootCmd.Flags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
 	rootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
-	//rootCmd.Flags().BoolP(options.DebugOpt, "d", false, "for debug") //not use
+	rootCmd.Flags().BoolP(options.DebugOpt, "", false, "for debug") //not use
 	//rootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
 	rootCmd.Flags().BoolP(options.IntegerOpt, "i", false, "dumps multi-precision integers")
 	rootCmd.Flags().BoolP(options.LiteralOpt, "l", false, "dumps literal packets (tag 11)")

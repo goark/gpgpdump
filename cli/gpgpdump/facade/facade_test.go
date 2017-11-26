@@ -131,7 +131,7 @@ func clearFlags() {
 	rootCmd.Flag("json").Value.Set("false")
 	rootCmd.Flag("toml").Value.Set("false")
 	rootCmd.Flag(options.ArmorOpt).Value.Set("false")
-	//rootCmd.Flag(options.DebugOpt).Value.Set("false")
+	rootCmd.Flag(options.DebugOpt).Value.Set("false")
 	//rootCmd.Flag(options.GDumpOpt).Value.Set("false")
 	rootCmd.Flag(options.IntegerOpt).Value.Set("false")
 	rootCmd.Flag(options.LiteralOpt).Value.Set("false")
