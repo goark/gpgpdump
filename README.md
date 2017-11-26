@@ -82,7 +82,7 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 
 $ cat sig | gpgpdump -u
 Signature Packet (tag 2) (94 bytes)
-    Version: 4 (new)
+    Version: 4 (current)
     Signiture Type: Signature of a canonical text document (0x01)
     Public-key Algorithm: ECDSA public key algorithm (pub 19)
     Hash Algorithm: SHA256 (hash 8)
@@ -103,7 +103,7 @@ $ cat sig | gpgpdump -t -u
   [[Packet.Item]]
     name = "Version"
     value = "4"
-    note = "new"
+    note = "current"
 
   [[Packet.Item]]
     name = "Signiture Type"
@@ -155,7 +155,7 @@ $ cat sig | gpgpdump -j -u
         {
           "name": "Version",
           "value": "4",
-          "note": "new"
+          "note": "current"
         },
         {
           "name": "Signiture Type",
