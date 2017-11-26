@@ -14,7 +14,7 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
-// tag08 class for Compressed Data Packet
+//Tag08 class for Compressed Data Packet
 type Tag08 struct {
 	*tagInfo
 	data io.Reader
@@ -37,6 +37,7 @@ func (t *Tag08) Parse() (*info.Item, error) {
 	rootInfo.Add(cid.ToItem(t.cxt.Debug()))
 
 	if t.reader.Rest() > 0 {
+		rootInfo.Add(values.RawData(t.reader, "Compressed data", t.cxt.Debug()))
 		var err error
 		switch compID {
 		case 1: //zip <RFC1951>
@@ -46,13 +47,13 @@ func (t *Tag08) Parse() (*info.Item, error) {
 		case 3: //bzip2
 			t.data, err = t.extractBzip2()
 		default:
-			rootInfo.Add(values.RawData(t.reader, "Compressed data", t.cxt.Debug()))
 		}
 		return rootInfo, err
 	}
 	return rootInfo, nil
 }
 
+//Reader returns io.Reader of compressed data
 func (t *Tag08) Reader() io.Reader {
 	return t.data
 }
@@ -93,7 +94,7 @@ func (t *Tag08) extractBzip2() (io.Reader, error) {
 	return buf, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016,2017 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
