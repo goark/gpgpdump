@@ -90,13 +90,14 @@ func getBool(cmd *cobra.Command, name string) bool {
 func parseOpt(cmd *cobra.Command) *options.Options {
 	return options.New(
 		options.Set(options.ArmorOpt, getBool(cmd, options.ArmorOpt)),
-		//options.Set(options.DebugOpt, getBool(cmd, options.DebugOpt)), //not use
 		//options.Set(options.GDumpOpt, getBool(cmd, options.GDumpOpt)), //not use
 		options.Set(options.IntegerOpt, getBool(cmd, options.IntegerOpt)),
 		options.Set(options.LiteralOpt, getBool(cmd, options.LiteralOpt)),
 		options.Set(options.MarkerOpt, getBool(cmd, options.MarkerOpt)),
 		options.Set(options.PrivateOpt, getBool(cmd, options.PrivateOpt)),
 		options.Set(options.UTCOpt, getBool(cmd, options.UTCOpt)),
+
+		//options.Set(options.DebugOpt, true), //for debug
 	)
 }
 

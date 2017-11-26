@@ -49,12 +49,8 @@ var resJSON = `{
       "note": "56 bytes",
       "Item": [
         {
-          "name": "Compression Algorithm",
-          "value": "Unknown (comp 231)"
-        },
-        {
-          "name": "Compressed data",
-          "note": "55 bytes"
+          "name": "Encrypted data",
+          "note": "sym alg is specified in sym-key encrypted session key"
         }
       ]
     }

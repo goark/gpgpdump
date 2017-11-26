@@ -55,12 +55,8 @@ var (
   note = "56 bytes"
 
   [[Packet.Item]]
-    name = "Compression Algorithm"
-    value = "Unknown (comp 231)"
-
-  [[Packet.Item]]
-    name = "Compressed data"
-    note = "55 bytes"
+    name = "Encrypted data"
+    note = "sym alg is specified in sym-key encrypted session key"
 `
 	resTOMLdataFromAscdata1 = `[[Packet]]
   name = "Signature Packet (tag 2)"
@@ -174,7 +170,7 @@ func TestTOMLLoadByFile(t *testing.T) {
 	}
 	str = outBuf.String()
 	if str != resTOMLdataFromBindata1 {
-		t.Errorf("Execute(file) = \"%v\", want \"%v\".", str, resdataFromBindata1)
+		t.Errorf("Execute(file) = \"%v\", want \"%v\".", str, resTOMLdataFromBindata1)
 	}
 }
 

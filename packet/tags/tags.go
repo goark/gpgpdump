@@ -43,7 +43,7 @@ var newFunctions = FuncMap{
 	6:  newTag06, //Public-Key Packet
 	7:  newTag07, //Secret-Subkey Packet
 	8:  newTag08, //Compressed Data Packet
-	9:  newTag08, //Symmetrically Encrypted Data Packet
+	9:  newTag09, //Symmetrically Encrypted Data Packet
 	10: newTag10, //Marker Packet (Obsolete Literal Packet)
 	11: newTag11, //Literal Data Packet
 	12: newTag12, //Trust Packet
