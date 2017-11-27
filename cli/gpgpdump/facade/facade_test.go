@@ -26,7 +26,7 @@ var (
 	Literal data (3 bytes)
 Symmetric-Key Encrypted Session Key Packet (tag 3) (4 bytes)
 	Version: 4 (current)
-	Symmetric Algorithm: CAST5 (sym 3)
+	Symmetric Algorithm: CAST5 (128 bit key, as per) (sym 3)
 	String-to-Key (S2K) Algorithm: Simple S2K (s2k 0)
 		Hash Algorithm: MD5 (hash 1)
 Symmetrically Encrypted Data Packet (tag 9) (56 bytes)
@@ -36,15 +36,15 @@ Symmetrically Encrypted Data Packet (tag 9) (56 bytes)
 	Version: 4 (current)
 	Signiture Type: Signature of a canonical text document (0x01)
 	Public-key Algorithm: ECDSA public key algorithm (pub 19)
-	Hash Algorithm: SHA256 (hash 8)
+	Hash Algorithm: SHA2-256 (hash 8)
 	Hashed Subpacket (6 bytes)
 		Signature Creation Time (sub 2): 2015-01-24T02:52:15Z
 	Unhashed Subpacket (10 bytes)
 		Issuer (sub 16): 0x31fbfda95fbbfa18
 	Hash left 2 bytes
 		36 1f
-	ECDSA r (256 bits)
-	ECDSA s (252 bits)
+	ECDSA value r (256 bits)
+	ECDSA value s (252 bits)
 `
 )
 

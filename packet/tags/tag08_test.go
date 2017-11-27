@@ -23,20 +23,16 @@ const (
 `
 )
 
-var (
-	tag08Name1           = "Compressed Data Packet (tag 8)"
-	tag08Name1Item0Name  = "Compression Algorithm"
-	tag08Name1Item0Value = "ZIP <RFC1951> (comp 1)"
-	tag08Name1Item1Name  = "Compressed data"
-)
-
 func TestTag08(t *testing.T) {
 	op := &openpgp.OpaquePacket{Tag: 8, Contents: tag08Body1}
-	opts := options.New(
+	cxt := context.NewContext(options.New(
 		options.Set(options.DebugOpt, true),
+		options.Set(options.IntegerOpt, true),
+		options.Set(options.MarkerOpt, true),
+		options.Set(options.LiteralOpt, true),
+		options.Set(options.PrivateOpt, true),
 		options.Set(options.UTCOpt, true),
-	)
-	cxt := context.NewContext(opts)
+	))
 	i, err := NewTag(op, cxt).Parse()
 	if err != nil {
 		t.Errorf("NewTag() = %v, want nil error.", err)

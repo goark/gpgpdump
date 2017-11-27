@@ -15,24 +15,41 @@ var (
 
 const (
 	tag02itemStr1 = `Signature Packet (tag 2) (94 bytes)
+	04 01 13 08 00 06 05 02 54 c3 08 df 00 0a 09 10 31 fb fd a9 5f bb fa 18 36 1f 01 00 ea 1d a2 14 5b 82 06 fd d5 ae c4 9f d8 14 44 41 a4 f5 4f 56 69 ad 9a b0 44 f3 a3 88 b2 60 f4 0c 00 fc 0a d3 c0 23 f3 ed cd af 9b 19 6f ee c4 65 44 b5 08 e8 27 6c 3a a8 6e 3b 52 9f 61 7a ea ee 27 48
 	Version: 4 (current)
+		04
 	Signiture Type: Signature of a canonical text document (0x01)
+		01
 	Public-key Algorithm: ECDSA public key algorithm (pub 19)
-	Hash Algorithm: SHA256 (hash 8)
+		13
+	Hash Algorithm: SHA2-256 (hash 8)
+		08
 	Hashed Subpacket (6 bytes)
-		Signature Creation Time (sub 2): 2015-01-24T11:52:15+09:00
+		05 02 54 c3 08 df
+		Signature Creation Time (sub 2): 2015-01-24T02:52:15Z
+			54 c3 08 df
 	Unhashed Subpacket (10 bytes)
+		09 10 31 fb fd a9 5f bb fa 18
 		Issuer (sub 16): 0x31fbfda95fbbfa18
 	Hash left 2 bytes
 		36 1f
-	ECDSA r (256 bits)
-	ECDSA s (252 bits)
+	ECDSA value r (256 bits)
+		ea 1d a2 14 5b 82 06 fd d5 ae c4 9f d8 14 44 41 a4 f5 4f 56 69 ad 9a b0 44 f3 a3 88 b2 60 f4 0c
+	ECDSA value s (252 bits)
+		0a d3 c0 23 f3 ed cd af 9b 19 6f ee c4 65 44 b5 08 e8 27 6c 3a a8 6e 3b 52 9f 61 7a ea ee 27 48
 `
 )
 
 func TestTag02(t *testing.T) {
 	op := &openpgp.OpaquePacket{Tag: 2, Contents: tag02Body1}
-	cxt := context.NewContext(options.New())
+	cxt := context.NewContext(options.New(
+		options.Set(options.DebugOpt, true),
+		options.Set(options.IntegerOpt, true),
+		options.Set(options.MarkerOpt, true),
+		options.Set(options.LiteralOpt, true),
+		options.Set(options.PrivateOpt, true),
+		options.Set(options.UTCOpt, true),
+	))
 	i, err := NewTag(op, cxt).Parse()
 	if err != nil {
 		t.Errorf("NewTag() = %v, want nil error.", err)

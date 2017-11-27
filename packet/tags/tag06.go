@@ -15,7 +15,7 @@ func newTag06(cxt *context.Context, tag values.TagID, body []byte) Tags {
 	return &tag06{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
-// Parse parsing tag06 instance
+// Parse parsing Public-Key Packet
 func (t *tag06) Parse() (*info.Item, error) {
 	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
 	// [00] One-octet version number.

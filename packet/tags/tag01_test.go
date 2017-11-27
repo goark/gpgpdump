@@ -19,13 +19,25 @@ var (
 
 func TestTag01(t *testing.T) {
 	op := &openpgp.OpaquePacket{Tag: 1, Contents: tag01Body}
-	cxt := context.NewContext(options.New())
+	cxt := context.NewContext(options.New(
+		options.Set(options.DebugOpt, true),
+		options.Set(options.IntegerOpt, true),
+		options.Set(options.MarkerOpt, true),
+		options.Set(options.LiteralOpt, true),
+		options.Set(options.PrivateOpt, true),
+		options.Set(options.UTCOpt, true),
+	))
 	itemStr := `Public-Key Encrypted Session Key Packet (tag 1) (126 bytes)
+	03 ee 06 6b fe 25 2c 4d 79 12 02 03 04 c3 e7 d7 2b af 25 2a 19 f6 27 80 ea 7c 4f 6d ca 61 22 5a e3 ad 0c fb d9 a2 d5 a4 30 9a f3 ee 34 54 ae a8 f6 46 ac 8a ae 38 a6 4f f3 f2 ee 30 40 62 5b 07 e7 2b ee 9a 90 d4 6f 1e d7 c3 26 21 ab 30 4a fe 88 a2 9f 0e ab f3 be 7a 89 27 32 38 b8 06 75 fc ac 3c d4 ba 0f 49 64 15 aa 48 9a db c1 8a 7b 11 76 fb 2f ef ef b0 29 a9 24 75 6d 69 12 4d
 	Version: 3 (current)
+		03
 	Key ID: 0xee066bfe252c4d79
 	Public-key Algorithm: ECDH public key algorithm (pub 18)
+		12
 	ECDH 04 || EC point (X,Y) (515 bits)
+		04 c3 e7 d7 2b af 25 2a 19 f6 27 80 ea 7c 4f 6d ca 61 22 5a e3 ad 0c fb d9 a2 d5 a4 30 9a f3 ee 34 54 ae a8 f6 46 ac 8a ae 38 a6 4f f3 f2 ee 30 40 62 5b 07 e7 2b ee 9a 90 d4 6f 1e d7 c3 26 21 ab
 	symmetric key (encoded) (48 bytes)
+		4a fe 88 a2 9f 0e ab f3 be 7a 89 27 32 38 b8 06 75 fc ac 3c d4 ba 0f 49 64 15 aa 48 9a db c1 8a 7b 11 76 fb 2f ef ef b0 29 a9 24 75 6d 69 12 4d
 `
 	i, err := NewTag(op, cxt).Parse()
 	if err != nil {

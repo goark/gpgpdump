@@ -73,7 +73,7 @@ const (
         },
         {
           "name": "Hash Algorithm",
-          "value": "SHA256 (hash 8)",
+          "value": "SHA2-256 (hash 8)",
           "dump": "08"
         },
         {
@@ -104,11 +104,11 @@ const (
           "dump": "36 1f"
         },
         {
-          "name": "ECDSA r",
+          "name": "ECDSA value r",
           "note": "256 bits"
         },
         {
-          "name": "ECDSA s",
+          "name": "ECDSA value s",
           "note": "252 bits"
         }
       ]
@@ -141,7 +141,7 @@ const (
         },
         {
           "name": "Hash Algorithm",
-          "value": "SHA256 (hash 8)",
+          "value": "SHA2-256 (hash 8)",
           "dump": "08"
         },
         {
@@ -189,11 +189,11 @@ const (
           "dump": "35 ce"
         },
         {
-          "name": "DSA r",
+          "name": "DSA value r",
           "note": "255 bits"
         },
         {
-          "name": "DSA s",
+          "name": "DSA value s",
           "note": "255 bits"
         }
       ]
@@ -224,7 +224,7 @@ const (
         },
         {
           "name": "Symmetric Algorithm",
-          "value": "CAST5 (sym 3)"
+          "value": "CAST5 (128 bit key, as per) (sym 3)"
         },
         {
           "name": "String-to-Key (S2K) Algorithm",
@@ -263,7 +263,7 @@ const (
 				03
 			Signiture Type: Signature of a binary document (0x00)
 				00
-			Hash Algorithm: SHA256 (hash 8)
+			Hash Algorithm: SHA2-256 (hash 8)
 				08
 			Public-key Algorithm: DSA (Digital Signature Algorithm) (pub 17)
 				11
@@ -284,7 +284,7 @@ const (
 				00
 			Public-key Algorithm: DSA (Digital Signature Algorithm) (pub 17)
 				11
-			Hash Algorithm: SHA256 (hash 8)
+			Hash Algorithm: SHA2-256 (hash 8)
 				08
 			Hashed Subpacket (29 bytes)
 				16 21 04 1b 52 02 db 4a 3e c7 76 f1 e0 ad 18 b4 da 3b ae 7e 20 b8 1c 05 02 5a 19 0d e4
@@ -300,8 +300,8 @@ const (
 				Issuer (sub 16): 0xb4da3bae7e20b81c
 			Hash left 2 bytes
 				73 3c
-			DSA r (256 bits)
-			DSA s (255 bits)
+			DSA value r (256 bits)
+			DSA value s (255 bits)
 `
 )
 
