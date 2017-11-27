@@ -11,7 +11,7 @@ import (
 func TestEccNITSP256(t *testing.T) {
 	data := []byte{0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07}
 	dump := "2a 86 48 ce 3d 03 01 07"
-	note := "NIST curve P-256"
+	note := "NIST P-256"
 	reader := reader.New(data)
 	oid, err := NewOID(reader)
 	if err != nil {
@@ -35,7 +35,7 @@ func TestEccNITSP256(t *testing.T) {
 func TestEccNITSP384(t *testing.T) {
 	data := []byte{0x05, 0x2b, 0x81, 0x04, 0x00, 0x22}
 	dump := "2b 81 04 00 22"
-	note := "NIST curve P-384"
+	note := "NIST P-384"
 	reader := reader.New(data)
 	oid, err := NewOID(reader)
 	if err != nil {
@@ -59,7 +59,7 @@ func TestEccNITSP384(t *testing.T) {
 func TestEccNITSP521(t *testing.T) {
 	data := []byte{0x05, 0x2b, 0x81, 0x04, 0x00, 0x23}
 	dump := "2b 81 04 00 23"
-	note := "NIST curve P-521"
+	note := "NIST P-521"
 	reader := reader.New(data)
 	oid, err := NewOID(reader)
 	if err != nil {
