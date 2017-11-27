@@ -137,6 +137,22 @@ func TestPubIDECDSA(t *testing.T) {
 	}
 }
 
+func TestPubIDEdDSA(t *testing.T) {
+	for tag := 0; tag <= 23; tag++ {
+		pub := PubID(tag)
+		switch tag {
+		case 22:
+			if !pub.IsEdDSA() {
+				t.Errorf("PubID.IsEdDSA(%d) = %v, want true.", tag, pub.IsEdDSA())
+			}
+		default:
+			if pub.IsEdDSA() {
+				t.Errorf("PubID.IsEdDSA(%d) = %v, want false.", tag, pub.IsEdDSA())
+			}
+		}
+	}
+}
+
 /* Copyright 2016 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

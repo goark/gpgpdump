@@ -3,9 +3,12 @@ package values
 import "testing"
 
 func TestVersionNew(t *testing.T) {
-	v := NewVersion(4, 4)
+	v := NewVersion(4, 4, 5)
 	if v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
+	}
+	if v.Number() != 4 {
+		t.Errorf("Version.Number = %v, want 4.", v.Number())
 	}
 
 	i := v.ToItem(true)
@@ -15,8 +18,8 @@ func TestVersionNew(t *testing.T) {
 	if i.Value != "4" {
 		t.Errorf("Version.Value = \"%v\", want \"4\".", i.Value)
 	}
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 	if i.Dump != "04" {
 		t.Errorf("Version.Dump = \"%v\", want \"04\".", i.Dump)
@@ -25,13 +28,19 @@ func TestVersionNew(t *testing.T) {
 
 func TestVersionOldNew(t *testing.T) {
 	v := (*Version)(nil)
-	if v.IsNew() {
-		t.Errorf("New Version = %v, want false.", v.IsOld())
+	if v.IsCurrent() {
+		t.Errorf("Current Version = %v, want false.", v.IsCurrent())
+	}
+	if v.IsOld() {
+		t.Errorf("Old Version = %v, want false.", v.IsOld())
+	}
+	if v.Number() != 0 {
+		t.Errorf("Version.Number = %v, want 0.", v.Number())
 	}
 }
 
 func TestVersionOld(t *testing.T) {
-	v := NewVersion(3, 4)
+	v := NewVersion(3, 4, 5)
 	if v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
 	}
@@ -51,6 +60,27 @@ func TestVersionOld(t *testing.T) {
 	}
 }
 
+func TestVersionDraft(t *testing.T) {
+	v := NewVersion(5, 4, 5)
+	if v.IsUnknown() {
+		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
+	}
+
+	i := v.ToItem(true)
+	if i.Name != "Version" {
+		t.Errorf("Version.Name = \"%v\", want \"Version\".", i.Name)
+	}
+	if i.Value != "5" {
+		t.Errorf("Version.Value = \"%v\", want \"5\".", i.Value)
+	}
+	if i.Note != "draft" {
+		t.Errorf("Version.Note = \"%v\", want \"draft\"", i.Note)
+	}
+	if i.Dump != "05" {
+		t.Errorf("Version.Dump = \"%v\", want \"05\".", i.Dump)
+	}
+}
+
 func TestVersionOldNil(t *testing.T) {
 	v := (*Version)(nil)
 	if v.IsOld() {
@@ -66,7 +96,7 @@ func TestVersionToItemNil(t *testing.T) {
 }
 
 func TestVersionUnknown(t *testing.T) {
-	v := NewVersion(5, 4)
+	v := NewVersion(6, 4, 5)
 	if !v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want true.", v.IsUnknown())
 	}
@@ -75,54 +105,54 @@ func TestVersionUnknown(t *testing.T) {
 	if i.Name != "Version" {
 		t.Errorf("Version.Name = \"%v\", want \"Version\".", i.Name)
 	}
-	if i.Value != "5" {
-		t.Errorf("Version.Value = \"%v\", want \"5\".", i.Value)
+	if i.Value != "6" {
+		t.Errorf("Version.Value = \"%v\", want \"6\".", i.Value)
 	}
 	if i.Note != "unknown" {
 		t.Errorf("Version.Note = \"%v\", want \"unknown\"", i.Note)
 	}
-	if i.Dump != "05" {
-		t.Errorf("Version.Dump = \"%v\", want \"05\".", i.Dump)
+	if i.Dump != "06" {
+		t.Errorf("Version.Dump = \"%v\", want \"06\".", i.Dump)
 	}
 }
 
 func TestPubVer4(t *testing.T) {
 	i := PubVer(4).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 
 func TestSigVer4(t *testing.T) {
 	i := SigVer(4).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 
 func TestOneSigVer3(t *testing.T) {
 	i := OneSigVer(3).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 
 func TestPubSessKeyVer3(t *testing.T) {
 	i := PubSessKeyVer(3).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 
 func TestSymSessKeyVer4(t *testing.T) {
 	i := SymSessKeyVer(4).ToItem(true)
 
-	if i.Note != "new" {
-		t.Errorf("Version.Note = \"%v\", want \"new\"", i.Note)
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 

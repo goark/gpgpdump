@@ -36,11 +36,11 @@ var (
   [[Packet.Item]]
     name = "Version"
     value = "4"
-    note = "new"
+    note = "current"
 
   [[Packet.Item]]
     name = "Symmetric Algorithm"
-    value = "CAST5 (sym 3)"
+    value = "CAST5 (128 bit key, as per) (sym 3)"
 
   [[Packet.Item]]
     name = "String-to-Key (S2K) Algorithm"
@@ -65,7 +65,7 @@ var (
   [[Packet.Item]]
     name = "Version"
     value = "4"
-    note = "new"
+    note = "current"
 
   [[Packet.Item]]
     name = "Signiture Type"
@@ -77,7 +77,7 @@ var (
 
   [[Packet.Item]]
     name = "Hash Algorithm"
-    value = "SHA256 (hash 8)"
+    value = "SHA2-256 (hash 8)"
 
   [[Packet.Item]]
     name = "Hashed Subpacket"

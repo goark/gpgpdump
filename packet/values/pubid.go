@@ -67,6 +67,11 @@ func (pi PubID) IsECDSA() bool {
 	return (pi == 19)
 }
 
+//IsEdDSA returns if EdDSA algorithm.
+func (pi PubID) IsEdDSA() bool {
+	return (pi == 22)
+}
+
 /* Copyright 2016 Spiegel
  *
  * Licensed under the Apiche License, Version 2.0 (the "License");

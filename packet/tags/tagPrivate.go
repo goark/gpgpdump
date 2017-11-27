@@ -7,36 +7,21 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
-// tag06 class for Public-Key Packet
-type tag06 tagInfo
+// tagPrivate class for Unknown Packet
+type tagPrivate tagInfo
 
-//newTag06 return tag06 instance
-func newTag06(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag06{cxt: cxt, tag: tag, reader: reader.New(body)}
+//NewTagUnknown return Unknown instance
+func newTagPrivate(cxt *context.Context, tag values.TagID, body []byte) Tags {
+	return &tagPrivate{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
-// Parse parsing Public-Key Packet
-func (t *tag06) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
-	// [00] One-octet version number.
-	v, err := t.reader.ReadByte()
-	if err != nil {
-		return rootInfo, err
-	}
-	version := values.PubVer(v)
-	rootInfo.Add(version.ToItem(t.cxt.Debug()))
-
-	if err := newPubkey(t.cxt, t.reader, version).Parse(rootInfo); err != nil {
-		return rootInfo, err
-	}
-
-	if t.reader.Rest() > 0 {
-		rootInfo.Add(values.RawData(t.reader, "Rest", t.cxt.Debug()))
-	}
+// Parse parsing Unknown Packet
+func (t *tagPrivate) Parse() (*info.Item, error) {
+	rootInfo := t.tag.ToItem(t.reader, t.cxt.Private())
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2017 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

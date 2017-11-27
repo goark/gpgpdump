@@ -9,7 +9,7 @@ import (
 var compIDNames = Msgs{
 	0: "Uncompressed",
 	1: "ZIP <RFC1951>",
-	2: "ZLIB",
+	2: "ZLIB <RFC1950>",
 	3: "BZip2",
 }
 

@@ -8,13 +8,22 @@ import (
 
 //Version - information version
 type Version struct {
-	ver byte //version number
-	cur byte //current version in RFC4880
+	ver   byte //version number
+	cur   byte //current version in RFC4880
+	draft byte //draft version in RFC4880bis
 }
 
 //NewVersion returns new Version instance
-func NewVersion(ver, cur byte) *Version {
-	return &Version{ver: ver, cur: cur}
+func NewVersion(ver, cur, draft byte) *Version {
+	return &Version{ver: ver, cur: cur, draft: draft}
+}
+
+//Number returns number of version
+func (v *Version) Number() int {
+	if v == nil {
+		return 0
+	}
+	return int(v.ver)
 }
 
 //IsOld return true if old version
@@ -25,17 +34,28 @@ func (v *Version) IsOld() bool {
 	return v.ver < v.cur
 }
 
-//IsNew return true if new version
-func (v *Version) IsNew() bool {
+//IsCurrent return true if current version
+func (v *Version) IsCurrent() bool {
 	if v == nil {
 		return false
 	}
 	return v.ver == v.cur
 }
 
+//IsDraft return true if draft version
+func (v *Version) IsDraft() bool {
+	if v == nil {
+		return false
+	}
+	if v.draft == 0 {
+		return false
+	}
+	return v.ver == v.draft
+}
+
 //IsUnknown return true if unknown version
 func (v *Version) IsUnknown() bool {
-	return !v.IsOld() && !v.IsNew()
+	return !v.IsOld() && !v.IsCurrent() && !v.IsDraft()
 }
 
 //ToItem returns Item instance
@@ -47,8 +67,10 @@ func (v *Version) ToItem(dumpFlag bool) *info.Item {
 	switch true {
 	case v.IsOld():
 		note = "old"
-	case v.IsNew():
-		note = "new"
+	case v.IsCurrent():
+		note = "current"
+	case v.IsDraft():
+		note = "draft"
 	default:
 		note = "unknown"
 	}
@@ -66,30 +88,30 @@ func (v *Version) String() string {
 
 // PubVer is Public-Key Packet Version
 func PubVer(ver byte) *Version {
-	return NewVersion(ver, 4)
+	return NewVersion(ver, 4., 5)
 }
 
 // SigVer is Signiture Packet Version
 func SigVer(ver byte) *Version {
-	return NewVersion(ver, 4)
+	return NewVersion(ver, 4, 0)
 }
 
 // OneSigVer is One-Pass Signature Packet Version
 func OneSigVer(ver byte) *Version {
-	return NewVersion(ver, 3)
+	return NewVersion(ver, 3, 0)
 }
 
 // PubSessKeyVer is Public-Key Encrypted Session Key Packet Version
 func PubSessKeyVer(ver byte) *Version {
-	return NewVersion(ver, 3)
+	return NewVersion(ver, 3, 0)
 }
 
 // SymSessKeyVer is Symmetric-Key Encrypted Session Key Packet Version
 func SymSessKeyVer(ver byte) *Version {
-	return NewVersion(ver, 4)
+	return NewVersion(ver, 4, 0)
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016,2017 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

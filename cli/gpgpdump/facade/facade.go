@@ -1,7 +1,6 @@
 package facade
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -68,7 +67,7 @@ var rootCmd = &cobra.Command{
 		} else if tomlFlag {
 			result, err = info.TOML()
 		} else {
-			result = bytes.NewBufferString(info.String())
+			result = info.ToString("\t")
 			err = nil
 		}
 		if err != nil {

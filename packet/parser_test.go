@@ -33,6 +33,15 @@ HDXOAP937RgFSwmBTQI3pf2EvSj+iPvZo6PLj0x/jz5YcYoodwD/YbCFjV7ydjgp
 =/RVh
 -----END PGP SIGNATURE-----
 `
+	sample5 = `-----BEGIN PGP MESSAGE-----
+
+owGbwMvMwCG45Zb1ujqFHTKMp4WTGKIkeZ94pObk5CuU5xflpPBydZSyMAhyMMiK
+KbJIBzHd9rI7XvbxwVoJmCZWJpAOBi5OAZhIsQ0jQ8v7d+uUMvXWG29uffhuVax+
+1ZV1iyddflF8ZQOD3Unthu8M/2vO7LzE5rHZMmL2iplHDwUn7e0X8yx+kPpv2XcJ
+qYr/qc8A
+=zLGW
+-----END PGP MESSAGE-----
+`
 )
 
 var sample4 = []byte{0xa8, 0x03, 0x50, 0x47, 0x50, 0xc3, 0x04, 0x04, 0x03, 0x00, 0x01, 0xc9, 0x38, 0xe7, 0x2d, 0x2f, 0xb1, 0xf1, 0x0f, 0xc3, 0xce, 0x55, 0x5d, 0xb2, 0x8a, 0x4b, 0xe8, 0x4f, 0x43, 0x15, 0x6e, 0x7d, 0x90, 0x90, 0x53, 0x6a, 0x9a, 0xe3, 0xaa, 0x1c, 0x68, 0xd6, 0xd3, 0xfc, 0x6a, 0x4e, 0x79, 0xa8, 0xe7, 0xb1, 0xa5, 0x87, 0xea, 0xcc, 0xcc, 0x99, 0x66, 0x31, 0xad, 0xff, 0xe1, 0xa3, 0x03, 0xb6, 0x47, 0x85, 0x76, 0xbd, 0x0b}
@@ -50,7 +59,7 @@ const (
           "name": "Version",
           "value": "4",
           "dump": "04",
-          "note": "new"
+          "note": "current"
         },
         {
           "name": "Signiture Type",
@@ -64,7 +73,7 @@ const (
         },
         {
           "name": "Hash Algorithm",
-          "value": "SHA256 (hash 8)",
+          "value": "SHA2-256 (hash 8)",
           "dump": "08"
         },
         {
@@ -95,11 +104,11 @@ const (
           "dump": "36 1f"
         },
         {
-          "name": "ECDSA r",
+          "name": "ECDSA value r",
           "note": "256 bits"
         },
         {
-          "name": "ECDSA s",
+          "name": "ECDSA value s",
           "note": "252 bits"
         }
       ]
@@ -118,7 +127,7 @@ const (
           "name": "Version",
           "value": "4",
           "dump": "04",
-          "note": "new"
+          "note": "current"
         },
         {
           "name": "Signiture Type",
@@ -132,7 +141,7 @@ const (
         },
         {
           "name": "Hash Algorithm",
-          "value": "SHA256 (hash 8)",
+          "value": "SHA2-256 (hash 8)",
           "dump": "08"
         },
         {
@@ -180,11 +189,11 @@ const (
           "dump": "35 ce"
         },
         {
-          "name": "DSA r",
+          "name": "DSA value r",
           "note": "255 bits"
         },
         {
-          "name": "DSA s",
+          "name": "DSA value s",
           "note": "255 bits"
         }
       ]
@@ -211,11 +220,11 @@ const (
         {
           "name": "Version",
           "value": "4",
-          "note": "new"
+          "note": "current"
         },
         {
           "name": "Symmetric Algorithm",
-          "value": "CAST5 (sym 3)"
+          "value": "CAST5 (128 bit key, as per) (sym 3)"
         },
         {
           "name": "String-to-Key (S2K) Algorithm",
@@ -241,6 +250,58 @@ const (
     }
   ]
 }
+`
+	result5 = `Compressed Data Packet (tag 8) (149 bytes)
+	01 9b c0 cb cc c0 21 b8 e5 96 f5 ba 3a 85 1d 32 8c a7 85 93 18 a2 24 79 9f 78 a4 e6 e4 e4 2b 94 e7 17 e5 a4 f0 72 75 94 b2 30 08 72 30 c8 8a 29 b2 48 07 31 dd f6 b2 3b 5e f6 f1 c1 5a 09 98 26 56 26 90 0e 06 2e 4e 01 98 48 b1 0d 23 43 cb fb 77 eb 94 32 f5 d6 1b 6f 6e 7d f8 6e 55 ac 7e d5 95 75 8b 27 5d 7e 51 7c 65 03 83 dd 49 ed 86 ef 0c ff 6b ce ec bc c4 e6 b1 d9 32 62 f6 8a 99 47 0f 05 27 ed ed 17 f3 2c 7e 90 fa 6f d9 77 09 a9 8a ff a9 cf 00
+	Compression Algorithm: ZIP <RFC1951> (comp 1)
+		01
+	Compressed data (148 bytes)
+		9b c0 cb cc c0 21 b8 e5 96 f5 ba 3a 85 1d 32 8c a7 85 93 18 a2 24 79 9f 78 a4 e6 e4 e4 2b 94 e7 17 e5 a4 f0 72 75 94 b2 30 08 72 30 c8 8a 29 b2 48 07 31 dd f6 b2 3b 5e f6 f1 c1 5a 09 98 26 56 26 90 0e 06 2e 4e 01 98 48 b1 0d 23 43 cb fb 77 eb 94 32 f5 d6 1b 6f 6e 7d f8 6e 55 ac 7e d5 95 75 8b 27 5d 7e 51 7c 65 03 83 dd 49 ed 86 ef 0c ff 6b ce ec bc c4 e6 b1 d9 32 62 f6 8a 99 47 0f 05 27 ed ed 17 f3 2c 7e 90 fa 6f d9 77 09 a9 8a ff a9 cf 00
+		One-Pass Signature Packet (tag 4) (13 bytes)
+			03 00 08 11 b4 da 3b ae 7e 20 b8 1c 01
+			Version: 3 (current)
+				03
+			Signiture Type: Signature of a binary document (0x00)
+				00
+			Hash Algorithm: SHA2-256 (hash 8)
+				08
+			Public-key Algorithm: DSA (Digital Signature Algorithm) (pub 17)
+				11
+			Key ID: 0xb4da3bae7e20b81c
+			Encrypted session key: other than one pass signature (01)
+		Literal Data Packet (tag 11) (19 bytes)
+			62 00 5a 19 0d e4 48 65 6c 6c 6f 20 77 6f 72 6c 64 0d 0a
+			Literal data format: b (binary)
+			File name: <null>
+			Modification time of a file: 2017-11-25T06:29:56Z
+				5a 19 0d e4
+			Literal data (13 bytes)
+		Signature Packet (tag 2) (117 bytes)
+			04 00 11 08 00 1d 16 21 04 1b 52 02 db 4a 3e c7 76 f1 e0 ad 18 b4 da 3b ae 7e 20 b8 1c 05 02 5a 19 0d e4 00 0a 09 10 b4 da 3b ae 7e 20 b8 1c 73 3c 01 00 84 ef ee ae 22 69 2e af 33 b3 85 e1 ee aa 5d 2f 7a d4 ae a3 92 d3 e8 73 d4 b0 00 3e c9 2b 80 f7 00 ff 7c cc b9 d2 06 48 b3 39 58 9b a8 99 c5 c2 53 62 bd 8f 16 49 73 e0 65 fe a6 f7 18 1a 78 ff 65 e6
+			Version: 4 (current)
+				04
+			Signiture Type: Signature of a binary document (0x00)
+				00
+			Public-key Algorithm: DSA (Digital Signature Algorithm) (pub 17)
+				11
+			Hash Algorithm: SHA2-256 (hash 8)
+				08
+			Hashed Subpacket (29 bytes)
+				16 21 04 1b 52 02 db 4a 3e c7 76 f1 e0 ad 18 b4 da 3b ae 7e 20 b8 1c 05 02 5a 19 0d e4
+				Issuer Fingerprint (sub 33) (21 bytes)
+					04 1b 52 02 db 4a 3e c7 76 f1 e0 ad 18 b4 da 3b ae 7e 20 b8 1c
+					Version: 4 (need 20 octets length)
+					Fingerprint (20 bytes)
+						1b 52 02 db 4a 3e c7 76 f1 e0 ad 18 b4 da 3b ae 7e 20 b8 1c
+				Signature Creation Time (sub 2): 2017-11-25T06:29:56Z
+					5a 19 0d e4
+			Unhashed Subpacket (10 bytes)
+				09 10 b4 da 3b ae 7e 20 b8 1c
+				Issuer (sub 16): 0xb4da3bae7e20b81c
+			Hash left 2 bytes
+				73 3c
+			DSA value r (256 bits)
+			DSA value s (255 bits)
 `
 )
 
@@ -303,6 +364,28 @@ func TestParse(t *testing.T) {
 	str := buf.String()
 	if str != result2 {
 		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result2)
+	}
+}
+
+func TestParseCompressData(t *testing.T) {
+	opts := options.New(
+		options.Set(options.ArmorOpt, true),
+		options.Set(options.DebugOpt, true),
+		options.Set(options.UTCOpt, true),
+	)
+	parser, err := NewParser(bytes.NewBufferString(sample5), opts)
+	if err != nil {
+		t.Errorf("NewParser()  = %v, want nil error.", err)
+		return
+	}
+	info, err := parser.Parse()
+	if err != nil {
+		t.Errorf("Parse()  = %v, want nil error.", err)
+		return
+	}
+	str := info.String()
+	if str != result5 {
+		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result5)
 	}
 }
 

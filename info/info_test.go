@@ -81,6 +81,30 @@ func TestTOML(t *testing.T) {
 	}
 }
 
+func TestItemString(t *testing.T) {
+	output := `name1: value1 (note1)
+	00 01 02
+	name2 (note2)
+		03 04 05
+`
+	item1 := NewItem(
+		Name("name1"),
+		Value("value1"),
+		Note("note1"),
+		DumpStr("00 01 02"),
+	)
+	item2 := NewItem(
+		Name("name2"),
+		Note("note2"),
+		DumpStr("03 04 05"),
+	)
+	item1.Add(item2)
+	str := item1.String()
+	if str != output {
+		t.Errorf("TOML output = \n%s\n want \n%s\n", str, output)
+	}
+}
+
 func ExampleNewInfo() {
 	item := NewItem(
 		Name("name"),

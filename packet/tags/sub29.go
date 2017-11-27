@@ -34,7 +34,7 @@ func (s *sub29) Parse() (*info.Item, error) {
 		return rootInfo, err
 	}
 	if 100 <= code && code <= 110 {
-		name = values.PrivateAlgName
+		name = "(Private Use)"
 	} else {
 		name = reasonNames.Get(int(code), "Unknown reason")
 	}

@@ -20,10 +20,13 @@ func (p *Pubkey) ParsePub(parent *info.Item) error {
 		return p.ecdhPub(parent)
 	case p.pubID.IsECDSA():
 		return p.ecdsaPub(parent)
+	case p.pubID.IsEdDSA():
+		return p.eddsaPub(parent)
 	default:
 		parent.Add(info.NewItem(
 			info.Name(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pubID)),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	}
 	return nil
@@ -34,12 +37,12 @@ func (p *Pubkey) rsaPub(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("RSA n", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA public modulus n", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("RSA e", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA public encryption exponent e", p.cxt.Integer()))
 	return nil
 }
 
@@ -53,7 +56,7 @@ func (p *Pubkey) dsaPub(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("DSA q", p.cxt.Integer()))
+	item.Add(mpi.ToItem("DSA q (q is a prime divisor of p-1)", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
@@ -63,7 +66,7 @@ func (p *Pubkey) dsaPub(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("DSA y", p.cxt.Integer()))
+	item.Add(mpi.ToItem("DSA y (= g^x mod p where x is secret)", p.cxt.Integer()))
 	return nil
 }
 
@@ -72,17 +75,17 @@ func (p *Pubkey) elgPub(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ElGamal p", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ElGamal prime p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ElGamal g", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ElGamal group generator g", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ElGamal y", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ElGamal public key value y (= g^x mod p where x is secret)", p.cxt.Integer()))
 	return nil
 }
 
@@ -92,22 +95,31 @@ func (p *Pubkey) ecdhPub(item *info.Item) error {
 		return err
 	}
 	item.Add(oid.ToItem(true)) //enable dump data
+
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ECDH 04 || EC point (X,Y)", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ECDH EC point (04 || X || Y)", p.cxt.Integer()))
+
 	ep, err := values.NewECParm(p.reader)
 	if err != nil || ep == nil {
 		return err
 	}
 	i := ep.ToItem("KDF parameters", p.cxt.Integer())
 	ln := len(ep)
-	if ln == 0 {
-		i.Value = values.Unknown
-	} else if ep[0] == 0x01 && ln > 2 {
-		i.Add(values.HashID(ep[1]).ToItem(p.cxt.Debug()))
-		i.Add(values.SymID(ep[2]).ToItem(p.cxt.Debug()))
+	if ln > 0 {
+		switch ep[0] {
+		case 0x01:
+			if ln > 2 {
+				i.Add(values.HashID(ep[1]).ToItem(p.cxt.Debug()))
+				i.Add(values.SymID(ep[2]).ToItem(p.cxt.Debug()))
+			} else {
+				i.Value = values.Unknown
+			}
+		default:
+			i.Value = values.Unknown
+		}
 	} else {
 		i.Value = values.Unknown
 	}
@@ -117,6 +129,20 @@ func (p *Pubkey) ecdhPub(item *info.Item) error {
 }
 
 func (p *Pubkey) ecdsaPub(item *info.Item) error {
+	oid, err := values.NewOID(p.reader)
+	if err != nil {
+		return err
+	}
+	item.Add(oid.ToItem(true)) //enable dump data
+	mpi, err := values.NewMPI(p.reader)
+	if err != nil || mpi == nil {
+		return err
+	}
+	item.Add(mpi.ToItem("ECDSA EC point (04 || X || Y)", p.cxt.Integer()))
+	return nil
+}
+
+func (p *Pubkey) eddsaPub(item *info.Item) error {
 	oid, err := values.NewOID(p.reader)
 	if err != nil {
 		return err

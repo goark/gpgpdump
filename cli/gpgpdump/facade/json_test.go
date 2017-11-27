@@ -26,11 +26,11 @@ var resJSON = `{
         {
           "name": "Version",
           "value": "4",
-          "note": "new"
+          "note": "current"
         },
         {
           "name": "Symmetric Algorithm",
-          "value": "CAST5 (sym 3)"
+          "value": "CAST5 (128 bit key, as per) (sym 3)"
         },
         {
           "name": "String-to-Key (S2K) Algorithm",

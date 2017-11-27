@@ -16,6 +16,7 @@ func (p *Pubkey) ParseSes(parent *info.Item) error {
 		parent.Add(info.NewItem(
 			info.Name("Multi-precision integers of DSA"),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	case p.pubID.IsElgamal():
 		return p.elgSes(parent)
@@ -25,11 +26,19 @@ func (p *Pubkey) ParseSes(parent *info.Item) error {
 		parent.Add(info.NewItem(
 			info.Name("Multi-precision integers of ECDSA"),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
+		))
+	case p.pubID.IsEdDSA():
+		parent.Add(info.NewItem(
+			info.Name("Multi-precision integers of EdDSA"),
+			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	default:
 		parent.Add(info.NewItem(
 			info.Name(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pubID)),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	}
 	return nil
@@ -40,7 +49,7 @@ func (p *Pubkey) rsaSes(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("RSA m^e mod n -> m = Ses alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA m^e mod n", p.cxt.Integer()))
 	return nil
 }
 
@@ -54,7 +63,7 @@ func (p *Pubkey) elgSes(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ElGamal m * y^k mod p -> m = sym alg(1 byte) + checksum(2 bytes) + PKCS-1 block type 02", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ElGamal m * y^k mod p", p.cxt.Integer()))
 	return nil
 }
 

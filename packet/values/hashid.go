@@ -15,10 +15,13 @@ var hashIDNames = Msgs{
 	5:  "Reserved",
 	6:  "Reserved",
 	7:  "Reserved",
-	8:  "SHA256",
-	9:  "SHA384",
-	10: "SHA512",
-	11: "SHA224",
+	8:  "SHA2-256",
+	9:  "SHA2-384",
+	10: "SHA2-512",
+	11: "SHA2-224",
+	12: "SHA3-256",
+	13: "Reserved",
+	14: "SHA3-512",
 }
 
 // HashID is Hash Algorithm ID
