@@ -27,14 +27,18 @@ func newPubkey(cxt *context.Context, reader *reader.Reader, pubVer *values.Versi
 
 //Parse Public-key packet
 func (p *pubkeyInfo) Parse(parent *info.Item) error {
-	if p.pubVer.IsCurrent() {
+	switch true {
+	case p.pubVer.IsDraft():
+		return p.parseV5(parent)
+	case p.pubVer.IsCurrent():
 		return p.parseV4(parent)
-	} else if p.pubVer.IsOld() {
+	case p.pubVer.IsOld():
 		switch p.pubVer.Number() {
 		case 3:
 			return p.parseV3(parent)
 		default:
 		}
+	default:
 	}
 	return nil
 }
@@ -81,12 +85,41 @@ func (p *pubkeyInfo) parseV4(parent *info.Item) error {
 	// [05] one-octet number denoting the public-key algorithm of this key.
 	pubid, err := p.reader.ReadByte()
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV3() function (pub id)")
+		return errors.Wrap(err, "error in tags.pubkey,parseV4() function (pub id)")
 	}
 	p.pubID = values.PubID(pubid)
 	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
 	// [06] series of multiprecision integers comprising the key material.
 	return pubkey.New(p.cxt, p.pubID, p.reader).ParsePub(parent)
+}
+
+func (p *pubkeyInfo) parseV5(parent *info.Item) error {
+	//Structure of Signiture Packet (Ver5)
+	// [01] four-octet number denoting the time that the key was created.
+	tm, err := values.NewDateTime(p.reader, p.cxt.UTC())
+	if err != nil {
+		return errors.Wrap(err, "error in tags.pubkey,parseV5() function (Key Creation Time)")
+	}
+	p.cxt.KeyCreationTime = tm
+	parent.Add(values.PubKeyTimeItem(tm, true))
+	// [05] one-octet number denoting the public-key algorithm of this key.
+	pubid, err := p.reader.ReadByte()
+	if err != nil {
+		return errors.Wrap(err, "error in tags.pubkey,parseV5() function (pub id)")
+	}
+	p.pubID = values.PubID(pubid)
+	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
+	// [06] four-octet scalar octet count for the following key material.
+	sz, err := p.reader.ReadBytes(4)
+	if err != nil {
+		return errors.Wrap(err, "error in tags.pubkey,parseV5() function (key material data size)")
+	}
+	b, err := p.reader.ReadBytes(int64(binary.BigEndian.Uint32(sz)))
+	if err != nil {
+		return errors.Wrap(err, "error in tags.pubkey,parseV5() function (key material data)")
+	}
+	// [10] series of multiprecision integers comprising the key material.
+	return pubkey.New(p.cxt, p.pubID, reader.New(b)).ParsePub(parent)
 }
 
 //PubID returns pubID

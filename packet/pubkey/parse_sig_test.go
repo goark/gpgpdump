@@ -15,9 +15,9 @@ var (
 )
 
 var (
-	pubkeySigName19a = "ECDSA r"
+	pubkeySigName19a = "ECDSA value r"
 	pubkeySigNote19a = "256 bits"
-	pubkeySigName19b = "ECDSA s"
+	pubkeySigName19b = "ECDSA value s"
 	pubkeySigNote19b = "252 bits"
 	//pubkeySigName19b = "ECDH 04 || EC point (X,Y)"
 	//pubkeySigNote19b = "515 bits"

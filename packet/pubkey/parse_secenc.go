@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
 //ParseSecEnc multi-precision integers of public key algorithm for Secret-Key Packet (encrypted)
@@ -15,31 +16,43 @@ func (p *Pubkey) ParseSecEnc(parent *info.Item) error {
 		parent.Add(info.NewItem(
 			info.Name("RSA encrypted key (d, p, q, u)"),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	case p.pubID.IsDSA():
 		parent.Add(info.NewItem(
 			info.Name("DSA encrypted key"),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	case p.pubID.IsElgamal():
 		parent.Add(info.NewItem(
 			info.Name("Elgamal encrypted key"),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	case p.pubID.IsECDH():
 		parent.Add(info.NewItem(
 			info.Name("ECDH encrypted key"),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	case p.pubID.IsECDSA():
 		parent.Add(info.NewItem(
 			info.Name("ECDSA encrypted key"),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
+		))
+	case p.pubID.IsEdDSA():
+		parent.Add(info.NewItem(
+			info.Name("EdDSA encrypted key"),
+			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	default:
 		parent.Add(info.NewItem(
 			info.Name(fmt.Sprintf("Multi-precision integers of unknown encrypted key (pub %d)", p.pubID)),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	}
 	if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip

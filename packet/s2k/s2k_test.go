@@ -63,8 +63,8 @@ func TestSimpleS2K(t *testing.T) {
 			if hash.Name != "Hash Algorithm" {
 				t.Errorf("S2K.HashAlg.Name = \"%s\", want \"Hash Algorithm\".", hash.Name)
 			}
-			if hash.Value != "SHA256 (hash 8)" {
-				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA256 (hash 8)\".", hash.Value)
+			if hash.Value != "SHA2-256 (hash 8)" {
+				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA2-256 (hash 8)\".", hash.Value)
 			}
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)
@@ -144,8 +144,8 @@ func TestSaltedS2K(t *testing.T) {
 			if hash.Name != "Hash Algorithm" {
 				t.Errorf("S2K.HashAlg.Name = \"%s\", want \"Hash Algorithm\".", hash.Name)
 			}
-			if hash.Value != "SHA256 (hash 8)" {
-				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA256 (hash 8)\".", hash.Value)
+			if hash.Value != "SHA2-256 (hash 8)" {
+				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA2-256 (hash 8)\".", hash.Value)
 			}
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)
@@ -206,8 +206,8 @@ func TestSaltedS2Kerr(t *testing.T) {
 			if hash.Name != "Hash Algorithm" {
 				t.Errorf("S2K.HashAlg.Name = \"%s\", want \"Hash Algorithm\".", hash.Name)
 			}
-			if hash.Value != "SHA256 (hash 8)" {
-				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA256 (hash 8)\".", hash.Value)
+			if hash.Value != "SHA2-256 (hash 8)" {
+				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA2-256 (hash 8)\".", hash.Value)
 			}
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)
@@ -250,8 +250,8 @@ func TestIteratedSaltedS2K(t *testing.T) {
 			if hash.Name != "Hash Algorithm" {
 				t.Errorf("S2K.HashAlg.Name = \"%s\", want \"Hash Algorithm\".", hash.Name)
 			}
-			if hash.Value != "SHA256 (hash 8)" {
-				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA256 (hash 8)\".", hash.Value)
+			if hash.Value != "SHA2-256 (hash 8)" {
+				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA2-256 (hash 8)\".", hash.Value)
 			}
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)
@@ -329,8 +329,8 @@ func TestIteratedSaltedS2Kerr(t *testing.T) {
 			if hash.Name != "Hash Algorithm" {
 				t.Errorf("S2K.HashAlg.Name = \"%s\", want \"Hash Algorithm\".", hash.Name)
 			}
-			if hash.Value != "SHA256 (hash 8)" {
-				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA256 (hash 8)\".", hash.Value)
+			if hash.Value != "SHA2-256 (hash 8)" {
+				t.Errorf("S2K.HashAlg.Value = \"%s\", want \"SHA2-256 (hash 8)\".", hash.Value)
 			}
 			if hash.Note != "" {
 				t.Errorf("S2K.HashAlg.Note = \"%s\", want \"\"", hash.Note)

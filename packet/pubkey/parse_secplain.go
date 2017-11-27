@@ -2,7 +2,6 @@ package pubkey
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/pkg/errors"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
@@ -32,14 +31,20 @@ func (p *Pubkey) ParseSecPlain(parent *info.Item) error {
 		if err := p.ecdsaSec(parent); err != nil {
 			return err
 		}
+	case p.pubID.IsEdDSA():
+		if err := p.eddsaSec(parent); err != nil {
+			return err
+		}
 	default:
+		b, err := p.reader.ReadBytes(p.size - 2)
+		if err != nil {
+			return errors.Wrap(err, "error in pubkey.Pubkey.ParseSecPlain() function (data)")
+		}
 		parent.Add(info.NewItem(
 			info.Name(fmt.Sprintf("Multi-precision integers of unknown secret key (pub %d)", p.pubID)),
 			info.Note(fmt.Sprintf("%d bytes", p.size-2)),
+			info.DumpStr(values.DumpBytes(b, p.cxt.Debug()).String()),
 		))
-		if _, err := p.reader.Seek(-1, io.SeekEnd); err != nil { //skip
-			return errors.Wrap(err, "error in pubkey.Pubkey.ParseSecPlain() function (skip)")
-		}
 	}
 	chk, err := p.reader.ReadBytes(2)
 	if err != nil {
@@ -57,22 +62,22 @@ func (p *Pubkey) rsaSec(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("RSA d", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA secret exponent d", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("RSA p", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA secret prime value p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("RSA q", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA secret prime value q (p < q)", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("RSA u", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA u, the multiplicative inverse of p, mod q", p.cxt.Integer()))
 	return nil
 }
 
@@ -81,7 +86,7 @@ func (p *Pubkey) dsaSec(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("DSA x", p.cxt.Integer()))
+	item.Add(mpi.ToItem("DSA secret exponent x", p.cxt.Integer()))
 	return nil
 }
 
@@ -90,7 +95,7 @@ func (p *Pubkey) elgSec(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ElGamal x", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ElGamal secret exponent x", p.cxt.Integer()))
 	return nil
 }
 
@@ -99,7 +104,7 @@ func (p *Pubkey) ecdhSec(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ECDH x", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ECDH EC point (04 || X || Y)", p.cxt.Integer()))
 	return nil
 }
 
@@ -108,7 +113,16 @@ func (p *Pubkey) ecdsaSec(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ECDSA x", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ECDSA EC point (04 || X || Y)", p.cxt.Integer()))
+	return nil
+}
+
+func (p *Pubkey) eddsaSec(item *info.Item) error {
+	mpi, err := values.NewMPI(p.reader)
+	if err != nil || mpi == nil {
+		return err
+	}
+	item.Add(mpi.ToItem("ECDSA EC point (04 || X || Y)", p.cxt.Integer()))
 	return nil
 }
 

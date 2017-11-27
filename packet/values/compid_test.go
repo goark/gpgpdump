@@ -5,7 +5,7 @@ import "testing"
 var testCompIDNames = []string{
 	"Uncompressed (comp 0)",
 	"ZIP <RFC1951> (comp 1)",
-	"ZLIB (comp 2)",
+	"ZLIB <RFC1950> (comp 2)",
 	"BZip2 (comp 3)",
 	"Unknown (comp 4)",
 }

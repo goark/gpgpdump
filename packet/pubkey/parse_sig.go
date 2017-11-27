@@ -20,13 +20,17 @@ func (p *Pubkey) ParseSig(parent *info.Item) error {
 		parent.Add(info.NewItem(
 			info.Name("Multi-precision integers of ECDH"),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	case p.pubID.IsECDSA():
 		return p.ecdsaSig(parent)
+	case p.pubID.IsEdDSA():
+		return p.eddsaSig(parent)
 	default:
 		parent.Add(info.NewItem(
 			info.Name(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pubID)),
 			info.Note(fmt.Sprintf("%d bytes", p.size)),
+			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	}
 	return nil
@@ -37,7 +41,7 @@ func (p *Pubkey) rsaSig(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("RSA m^d mod n -> PKCS-1", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA signature value m^d mod n", p.cxt.Integer()))
 	return nil
 }
 
@@ -46,12 +50,12 @@ func (p *Pubkey) dsaSig(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("DSA r", p.cxt.Integer()))
+	item.Add(mpi.ToItem("DSA value r", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("DSA s", p.cxt.Integer()))
+	item.Add(mpi.ToItem("DSA value s", p.cxt.Integer()))
 	return nil
 }
 
@@ -74,12 +78,26 @@ func (p *Pubkey) ecdsaSig(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ECDSA r", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ECDSA value r", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ECDSA s", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ECDSA value s", p.cxt.Integer()))
+	return nil
+}
+
+func (p *Pubkey) eddsaSig(item *info.Item) error {
+	mpi, err := values.NewMPI(p.reader)
+	if err != nil || mpi == nil {
+		return err
+	}
+	item.Add(mpi.ToItem("EdDSA compressed value r", p.cxt.Integer()))
+	mpi, err = values.NewMPI(p.reader)
+	if err != nil || mpi == nil {
+		return err
+	}
+	item.Add(mpi.ToItem("EdDSA compressed value s", p.cxt.Integer()))
 	return nil
 }
 

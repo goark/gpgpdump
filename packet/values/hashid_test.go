@@ -14,21 +14,24 @@ var testHashIDNames = []string{
 	"Reserved (hash 5)",
 	"Reserved (hash 6)",
 	"Reserved (hash 7)",
-	"SHA256 (hash 8)",
-	"SHA384 (hash 9)",
-	"SHA512 (hash 10)",
-	"SHA224 (hash 11)",
-	"Unknown (hash 12)",
+	"SHA2-256 (hash 8)",
+	"SHA2-384 (hash 9)",
+	"SHA2-512 (hash 10)",
+	"SHA2-224 (hash 11)",
+	"SHA3-256 (hash 12)",
+	"Reserved (hash 13)",
+	"SHA3-512 (hash 14)",
+	"Unknown (hash 15)",
 }
 
 func TestHashID(t *testing.T) {
-	for tag := 0; tag <= 12; tag++ {
+	for tag, name := range testHashIDNames {
 		i := HashID(tag).ToItem(false)
 		if i.Name != "Hash Algorithm" {
 			t.Errorf("HashAlg.Name = \"%s\", want \"Hash Algorithm\".", i.Name)
 		}
-		if i.Value != testHashIDNames[tag] {
-			t.Errorf("HashAlg.Value = \"%s\", want \"%s\".", i.Value, testHashIDNames[tag])
+		if i.Value != name {
+			t.Errorf("HashAlg.Value = \"%s\", want \"%s\".", i.Value, name)
 		}
 		if i.Note != "" {
 			t.Errorf("HashAlg.Note = \"%s\", want \"\"", i.Note)
