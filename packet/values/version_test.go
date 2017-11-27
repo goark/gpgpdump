@@ -3,7 +3,7 @@ package values
 import "testing"
 
 func TestVersionNew(t *testing.T) {
-	v := NewVersion(4, 4)
+	v := NewVersion(4, 4, 5)
 	if v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
 	}
@@ -40,7 +40,7 @@ func TestVersionOldNew(t *testing.T) {
 }
 
 func TestVersionOld(t *testing.T) {
-	v := NewVersion(3, 4)
+	v := NewVersion(3, 4, 5)
 	if v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
 	}
@@ -60,6 +60,27 @@ func TestVersionOld(t *testing.T) {
 	}
 }
 
+func TestVersionDraft(t *testing.T) {
+	v := NewVersion(5, 4, 5)
+	if v.IsUnknown() {
+		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
+	}
+
+	i := v.ToItem(true)
+	if i.Name != "Version" {
+		t.Errorf("Version.Name = \"%v\", want \"Version\".", i.Name)
+	}
+	if i.Value != "5" {
+		t.Errorf("Version.Value = \"%v\", want \"5\".", i.Value)
+	}
+	if i.Note != "draft" {
+		t.Errorf("Version.Note = \"%v\", want \"draft\"", i.Note)
+	}
+	if i.Dump != "05" {
+		t.Errorf("Version.Dump = \"%v\", want \"05\".", i.Dump)
+	}
+}
+
 func TestVersionOldNil(t *testing.T) {
 	v := (*Version)(nil)
 	if v.IsOld() {
@@ -75,7 +96,7 @@ func TestVersionToItemNil(t *testing.T) {
 }
 
 func TestVersionUnknown(t *testing.T) {
-	v := NewVersion(5, 4)
+	v := NewVersion(6, 4, 5)
 	if !v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want true.", v.IsUnknown())
 	}
@@ -84,14 +105,14 @@ func TestVersionUnknown(t *testing.T) {
 	if i.Name != "Version" {
 		t.Errorf("Version.Name = \"%v\", want \"Version\".", i.Name)
 	}
-	if i.Value != "5" {
-		t.Errorf("Version.Value = \"%v\", want \"5\".", i.Value)
+	if i.Value != "6" {
+		t.Errorf("Version.Value = \"%v\", want \"6\".", i.Value)
 	}
 	if i.Note != "unknown" {
 		t.Errorf("Version.Note = \"%v\", want \"unknown\"", i.Note)
 	}
-	if i.Dump != "05" {
-		t.Errorf("Version.Dump = \"%v\", want \"05\".", i.Dump)
+	if i.Dump != "06" {
+		t.Errorf("Version.Dump = \"%v\", want \"06\".", i.Dump)
 	}
 }
 
