@@ -56,7 +56,8 @@ var (
 
   [[Packet.Item]]
     name = "Encrypted data"
-    note = "sym alg is specified in sym-key encrypted session key"
+    value = "sym alg is specified in sym-key encrypted session key"
+    note = "56 bytes"
 `
 	resTOMLdataFromAscdata1 = `[[Packet]]
   name = "Signature Packet (tag 2)"

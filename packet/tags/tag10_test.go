@@ -9,14 +9,28 @@ import (
 	openpgp "golang.org/x/crypto/openpgp/packet"
 )
 
-func TestTagUnknown(t *testing.T) {
-	op := &openpgp.OpaquePacket{Tag: 99, Contents: []byte{0x01, 0x02, 0x03, 0x04}}
+var (
+	tag10Body = []byte{0x50, 0x47, 0x50}
+)
+
+const (
+	tag10Result = `Marker Packet (Obsolete Literal Packet) (tag 10) (3 bytes)
+	50 47 50
+	Literal data (3 bytes)
+		50 47 50
+`
+)
+
+func TestTag10(t *testing.T) {
+	op := &openpgp.OpaquePacket{Tag: 10, Contents: tag10Body}
 	cxt := context.NewContext(options.New(
 		options.Set(options.DebugOpt, true),
+		options.Set(options.IntegerOpt, true),
+		options.Set(options.MarkerOpt, true),
+		options.Set(options.LiteralOpt, true),
+		options.Set(options.PrivateOpt, true),
+		options.Set(options.UTCOpt, true),
 	))
-	itemStr := `Unknown (tag 99) (4 bytes)
-	01 02 03 04
-`
 	i, err := NewTag(op, cxt).Parse()
 	if err != nil {
 		t.Errorf("NewTag() = %v, want nil error.", err)
@@ -26,8 +40,8 @@ func TestTagUnknown(t *testing.T) {
 		t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModeNotSpecified)
 	}
 	str := i.String()
-	if str != itemStr {
-		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, itemStr)
+	if str != tag10Result {
+		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, tag10Result)
 	}
 }
 

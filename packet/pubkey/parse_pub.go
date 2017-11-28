@@ -152,7 +152,7 @@ func (p *Pubkey) eddsaPub(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ECDSA 04 || EC point (X,Y)", p.cxt.Integer()))
+	item.Add(mpi.ToItem("EdDSA EC point (04 || X || Y)", p.cxt.Integer()))
 	return nil
 }
 

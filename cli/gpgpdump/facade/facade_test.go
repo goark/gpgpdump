@@ -30,7 +30,7 @@ Symmetric-Key Encrypted Session Key Packet (tag 3) (4 bytes)
 	String-to-Key (S2K) Algorithm: Simple S2K (s2k 0)
 		Hash Algorithm: MD5 (hash 1)
 Symmetrically Encrypted Data Packet (tag 9) (56 bytes)
-	Encrypted data (sym alg is specified in sym-key encrypted session key)
+	Encrypted data: sym alg is specified in sym-key encrypted session key (56 bytes)
 `
 	resdataFromAscdata1 = `Signature Packet (tag 2) (94 bytes)
 	Version: 4 (current)

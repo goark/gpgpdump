@@ -12,6 +12,19 @@ const (
 	ModePubEnc
 )
 
+func (mode SymAlgMode) String() string {
+	switch mode {
+	case ModeNotSpecified:
+		return "Mode not Specified"
+	case ModeSymEnc:
+		return "Sym. Encryption Mode"
+	case ModePubEnc:
+		return "Pubkey Encryption Mode"
+	default:
+		return "Unknown Mode"
+	}
+}
+
 //AlgMode returns SymAlgMode
 func (mode SymAlgMode) AlgMode() SymAlgMode {
 	return mode

@@ -1,8 +1,6 @@
 package tags
 
 import (
-	"fmt"
-
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -38,13 +36,6 @@ func (t *tag03) Parse() (*info.Item, error) {
 	s2k := s2k.New(t.reader)
 	if err := s2k.Parse(rootInfo, t.cxt.Debug()); err != nil {
 		return rootInfo, err
-	}
-
-	if t.reader.Rest() > 0 {
-		rst := t.reader.Rest()
-		itm := values.RawData(t.reader, "Encrypted session key", t.cxt.Debug())
-		itm.Note = fmt.Sprintf("sym alg(1 bytes) + session key (%d bytes)", rst)
-		rootInfo.Add(itm)
 	}
 	return rootInfo, nil
 }

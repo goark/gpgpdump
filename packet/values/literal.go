@@ -35,7 +35,7 @@ func (l LiteralFormat) String() string {
 type LiteralFname string
 
 //ToItem returns Item instance
-func (l LiteralFname) ToItem() *info.Item {
+func (l LiteralFname) ToItem(dumpFlag bool) *info.Item {
 	name := string(l)
 	if len(l) == 0 {
 		name = "<null>"
@@ -43,6 +43,7 @@ func (l LiteralFname) ToItem() *info.Item {
 	return info.NewItem(
 		info.Name("File name"),
 		info.Value(name),
+		info.DumpStr(DumpBytes([]byte(l), dumpFlag).String()),
 	)
 }
 

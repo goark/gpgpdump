@@ -28,6 +28,9 @@ func TestTagPrivate(t *testing.T) {
 			t.Errorf("NewTag() = %v, want nil error.", err)
 			return
 		}
+		if cxt.AlgMode() != context.ModeNotSpecified {
+			t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModeNotSpecified)
+		}
 		if i.Name != nameList[idx] {
 			t.Errorf("Tag.Name = \"%s\", want \"%s\".", i.Name, nameList[idx])
 		}

@@ -9,14 +9,36 @@ import (
 	openpgp "golang.org/x/crypto/openpgp/packet"
 )
 
-func TestTagUnknown(t *testing.T) {
-	op := &openpgp.OpaquePacket{Tag: 99, Contents: []byte{0x01, 0x02, 0x03, 0x04}}
+var (
+	tag04Body1 = []byte{0x03, 0x00, 0x08, 0x11, 0xb4, 0xda, 0x3b, 0xae, 0x7e, 0x20, 0xb8, 0x1c, 0x01}
+)
+
+const (
+	tag04Result1 = `One-Pass Signature Packet (tag 4) (13 bytes)
+	03 00 08 11 b4 da 3b ae 7e 20 b8 1c 01
+	Version: 3 (current)
+		03
+	Signiture Type: Signature of a binary document (0x00)
+		00
+	Hash Algorithm: SHA2-256 (hash 8)
+		08
+	Public-key Algorithm: DSA (Digital Signature Algorithm) (pub 17)
+		11
+	Key ID: 0xb4da3bae7e20b81c
+	Encrypted session key: other than one pass signature (flag 0x01)
+`
+)
+
+func TestTag04(t *testing.T) {
+	op := &openpgp.OpaquePacket{Tag: 4, Contents: tag04Body1}
 	cxt := context.NewContext(options.New(
 		options.Set(options.DebugOpt, true),
+		options.Set(options.IntegerOpt, true),
+		options.Set(options.MarkerOpt, true),
+		options.Set(options.LiteralOpt, true),
+		options.Set(options.PrivateOpt, true),
+		options.Set(options.UTCOpt, true),
 	))
-	itemStr := `Unknown (tag 99) (4 bytes)
-	01 02 03 04
-`
 	i, err := NewTag(op, cxt).Parse()
 	if err != nil {
 		t.Errorf("NewTag() = %v, want nil error.", err)
@@ -26,8 +48,8 @@ func TestTagUnknown(t *testing.T) {
 		t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModeNotSpecified)
 	}
 	str := i.String()
-	if str != itemStr {
-		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, itemStr)
+	if str != tag04Result1 {
+		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, tag04Result1)
 	}
 }
 

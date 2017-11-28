@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - 1.9.2
+  - 1.9.x
 
 env:
   - DEP_VERSION="0.3.2"
@@ -16,7 +16,7 @@ install:
   - $GOPATH/bin/dep ensure -v
 
 script:
-  - go test -v ./...
+  - go test ./...
 
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash

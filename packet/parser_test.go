@@ -205,6 +205,7 @@ const (
   "Packet": [
     {
       "name": "Marker Packet (Obsolete Literal Packet) (tag 10)",
+      "dump": "50 47 50",
       "note": "3 bytes",
       "Item": [
         {
@@ -215,24 +216,29 @@ const (
     },
     {
       "name": "Symmetric-Key Encrypted Session Key Packet (tag 3)",
+      "dump": "04 03 00 01",
       "note": "4 bytes",
       "Item": [
         {
           "name": "Version",
           "value": "4",
+          "dump": "04",
           "note": "current"
         },
         {
           "name": "Symmetric Algorithm",
-          "value": "CAST5 (128 bit key, as per) (sym 3)"
+          "value": "CAST5 (128 bit key, as per) (sym 3)",
+          "dump": "03"
         },
         {
           "name": "String-to-Key (S2K) Algorithm",
           "value": "Simple S2K (s2k 0)",
+          "dump": "00",
           "Item": [
             {
               "name": "Hash Algorithm",
-              "value": "MD5 (hash 1)"
+              "value": "MD5 (hash 1)",
+              "dump": "01"
             }
           ]
         }
@@ -240,11 +246,14 @@ const (
     },
     {
       "name": "Symmetrically Encrypted Data Packet (tag 9)",
+      "dump": "e7 2d 2f b1 f1 0f c3 ce 55 5d b2 8a 4b e8 4f 43 15 6e 7d 90 90 53 6a 9a e3 aa 1c 68 d6 d3 fc 6a 4e 79 a8 e7 b1 a5 87 ea cc cc 99 66 31 ad ff e1 a3 03 b6 47 85 76 bd 0b",
       "note": "56 bytes",
       "Item": [
         {
           "name": "Encrypted data",
-          "note": "sym alg is specified in sym-key encrypted session key"
+          "value": "sym alg is specified in sym-key encrypted session key",
+          "dump": "e7 2d 2f b1 f1 0f c3 ce 55 5d b2 8a 4b e8 4f 43 15 6e 7d 90 90 53 6a 9a e3 aa 1c 68 d6 d3 fc 6a 4e 79 a8 e7 b1 a5 87 ea cc cc 99 66 31 ad ff e1 a3 03 b6 47 85 76 bd 0b",
+          "note": "56 bytes"
         }
       ]
     }
@@ -268,7 +277,7 @@ const (
 			Public-key Algorithm: DSA (Digital Signature Algorithm) (pub 17)
 				11
 			Key ID: 0xb4da3bae7e20b81c
-			Encrypted session key: other than one pass signature (01)
+			Encrypted session key: other than one pass signature (flag 0x01)
 		Literal Data Packet (tag 11) (19 bytes)
 			62 00 5a 19 0d e4 48 65 6c 6c 6f 20 77 6f 72 6c 64 0d 0a
 			Literal data format: b (binary)
@@ -420,6 +429,7 @@ func TestParseClearSignText(t *testing.T) {
 
 func TestParseBindata(t *testing.T) {
 	opts := options.New(
+		options.Set(options.DebugOpt, true),
 		options.Set(options.UTCOpt, true),
 	)
 	parser, err := NewParser(bytes.NewBuffer(sample4), opts)
