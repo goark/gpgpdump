@@ -85,15 +85,15 @@ Signature Packet (tag 2) (94 bytes)
     Version: 4 (current)
     Signiture Type: Signature of a canonical text document (0x01)
     Public-key Algorithm: ECDSA public key algorithm (pub 19)
-    Hash Algorithm: SHA256 (hash 8)
+    Hash Algorithm: SHA2-256 (hash 8)
     Hashed Subpacket (6 bytes)
         Signature Creation Time (sub 2): 2015-01-24T02:52:15Z
     Unhashed Subpacket (10 bytes)
         Issuer (sub 16): 0x31fbfda95fbbfa18
     Hash left 2 bytes
         36 1f
-    ECDSA r (256 bits)
-    ECDSA s (252 bits)
+    ECDSA value r (256 bits)
+    ECDSA value s (252 bits)
 
 $ cat sig | gpgpdump -t -u
 [[Packet]]
@@ -115,7 +115,7 @@ $ cat sig | gpgpdump -t -u
 
   [[Packet.Item]]
     name = "Hash Algorithm"
-    value = "SHA256 (hash 8)"
+    value = "SHA2-256 (hash 8)"
 
   [[Packet.Item]]
     name = "Hashed Subpacket"
@@ -138,11 +138,11 @@ $ cat sig | gpgpdump -t -u
     dump = "36 1f"
 
   [[Packet.Item]]
-    name = "ECDSA r"
+    name = "ECDSA value r"
     note = "256 bits"
 
   [[Packet.Item]]
-    name = "ECDSA s"
+    name = "ECDSA value s"
     note = "252 bits"
 
 $ cat sig | gpgpdump -j -u
@@ -167,7 +167,7 @@ $ cat sig | gpgpdump -j -u
         },
         {
           "name": "Hash Algorithm",
-          "value": "SHA256 (hash 8)"
+          "value": "SHA2-256 (hash 8)"
         },
         {
           "name": "Hashed Subpacket",
@@ -194,11 +194,11 @@ $ cat sig | gpgpdump -j -u
           "dump": "36 1f"
         },
         {
-          "name": "ECDSA r",
+          "name": "ECDSA value r",
           "note": "256 bits"
         },
         {
-          "name": "ECDSA s",
+          "name": "ECDSA value s",
           "note": "252 bits"
         }
       ]
