@@ -31,7 +31,7 @@ func (t *tag11) Parse() (*info.Item, error) {
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.LiteralFname(string(fname)).ToItem())
+	rootInfo.Add(values.LiteralFname(string(fname)).ToItem(t.cxt.Debug()))
 	ftime, err2 := values.NewDateTime(t.reader, t.cxt.UTC())
 	if err2 != nil {
 		return rootInfo, err

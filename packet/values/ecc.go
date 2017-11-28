@@ -42,7 +42,7 @@ func NewOID(r *reader.Reader) (OID, error) {
 func (oid OID) ToItem(dumpFlag bool) *info.Item {
 	return info.NewItem(
 		info.Name("ECC OID"),
-		info.Note(oid.String()),
+		info.Value(oid.String()),
 		info.DumpStr(DumpBytes([]byte(oid), dumpFlag).String()),
 	)
 }

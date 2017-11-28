@@ -11,14 +11,17 @@ func TestResetSymAlgMode(t *testing.T) {
 
 	cxt.ResetAlg()
 	if cxt.AlgMode() != ModeNotSpecified {
-		t.Errorf("Options.Mode = %v, want \"Not Specified\".", cxt.AlgMode())
+		t.Errorf("Options.Mode = %v, want \"Mode not Specified\".", cxt.AlgMode())
+	}
+	if cxt.AlgMode().String() != "Mode not Specified" {
+		t.Errorf("Options.Mode = %v, want \"Mode not Specified\".", cxt.AlgMode())
 	}
 	if cxt.IsPubEnc() {
-		t.Errorf("Options.Mode = %v, want \"Not Specified\".", cxt.AlgMode())
+		t.Errorf("Options.Mode = %v, want \"Mode not Specified\".", cxt.AlgMode())
 
 	}
 	if cxt.IsSymEnc() {
-		t.Errorf("Options.Mode = %v, want \"Not Specified\".", cxt.AlgMode())
+		t.Errorf("Options.Mode = %v, want \"Mode not Specified\".", cxt.AlgMode())
 
 	}
 }
@@ -27,6 +30,9 @@ func TestSetSymAlgModeSymEnc(t *testing.T) {
 	cxt := NewContext(&options.Options{})
 
 	cxt.SetAlgSymEnc()
+	if cxt.AlgMode().String() != "Sym. Encryption Mode" {
+		t.Errorf("Options.Mode = %v, want \"Sym. Encryption Mode\".", cxt.AlgMode())
+	}
 	if cxt.IsPubEnc() {
 		t.Errorf("Options.Mode = %v, want \"Sym. Encryption Mode\".", cxt.AlgMode())
 
@@ -40,6 +46,9 @@ func TestSSetSymAlgModePubEnc(t *testing.T) {
 	cxt := NewContext(&options.Options{})
 
 	cxt.SetAlgPubEnc()
+	if cxt.AlgMode().String() != "Pubkey Encryption Mode" {
+		t.Errorf("Options.Mode = %v, want \"Pubkey Encryption Mode\".", cxt.AlgMode())
+	}
 	if cxt.IsSymEnc() {
 		t.Errorf("Options.Mode = %v, want \"Pubkey Encryption Mode\".", cxt.AlgMode())
 

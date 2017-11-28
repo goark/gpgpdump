@@ -40,7 +40,7 @@ func TestLiteralFormat(t *testing.T) {
 }
 
 func TestLiteralFname(t *testing.T) {
-	i := LiteralFname("hoge").ToItem()
+	i := LiteralFname("hoge").ToItem(true)
 	if i.Name != "File name" {
 		t.Errorf("LiteralFname.Name = \"%s\", want \"File name\".", i.Name)
 	}
@@ -50,13 +50,13 @@ func TestLiteralFname(t *testing.T) {
 	if i.Note != "" {
 		t.Errorf("LiteralFname.Note = \"%s\", want \"\"", i.Note)
 	}
-	if i.Dump != "" {
-		t.Errorf("LiteralFname.Dump = \"%s\", want \"\".", i.Dump)
+	if i.Dump != "68 6f 67 65" {
+		t.Errorf("LiteralFname.Dump = \"%s\", want \"68 6f 67 65\".", i.Dump)
 	}
 }
 
 func TestLiteralFnameNil(t *testing.T) {
-	i := LiteralFname("").ToItem()
+	i := LiteralFname("").ToItem(true)
 	if i.Name != "File name" {
 		t.Errorf("LiteralFname.Name = \"%s\", want \"File name\".", i.Name)
 	}

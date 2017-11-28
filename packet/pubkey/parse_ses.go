@@ -72,7 +72,7 @@ func (p *Pubkey) ecdhSes(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ECDH 04 || EC point (X,Y)", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ECDH EC point (04 || X || Y)", p.cxt.Integer()))
 	ep, err := values.NewECParm(p.reader)
 	if err != nil || ep == nil {
 		return err

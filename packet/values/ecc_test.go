@@ -21,11 +21,11 @@ func TestEccNITSP256(t *testing.T) {
 	if i.Name != "ECC OID" {
 		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
 	}
-	if i.Value != "" {
-		t.Errorf("OID.Value = \"%v\", want \"\".", i.Value)
+	if i.Value != note {
+		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
 	}
-	if i.Note != note {
-		t.Errorf("OID.Note = \"%v\", want \"%s\"", i.Note, note)
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
 	}
 	if i.Dump != dump {
 		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)
@@ -45,11 +45,11 @@ func TestEccNITSP384(t *testing.T) {
 	if i.Name != "ECC OID" {
 		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
 	}
-	if i.Value != "" {
-		t.Errorf("OID.Value = \"%v\", want \"\".", i.Value)
+	if i.Value != note {
+		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
 	}
-	if i.Note != note {
-		t.Errorf("OID.Note = \"%v\", want \"%s\"", i.Note, note)
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
 	}
 	if i.Dump != dump {
 		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)
@@ -69,11 +69,11 @@ func TestEccNITSP521(t *testing.T) {
 	if i.Name != "ECC OID" {
 		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
 	}
-	if i.Value != "" {
-		t.Errorf("OID.Value = \"%v\", want \"\".", i.Value)
+	if i.Value != note {
+		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
 	}
-	if i.Note != note {
-		t.Errorf("OID.Note = \"%v\", want \"%s\"", i.Note, note)
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
 	}
 	if i.Dump != dump {
 		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)
@@ -93,11 +93,11 @@ func TestEccUnknown(t *testing.T) {
 	if i.Name != "ECC OID" {
 		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
 	}
-	if i.Value != "" {
-		t.Errorf("OID.Value = \"%v\", want \"\".", i.Value)
+	if i.Value != note {
+		t.Errorf("OID.Note = \"%v\", want \"%s\"", i.Value, note)
 	}
-	if i.Note != note {
-		t.Errorf("OID.Note = \"%v\", want \"%s\"", i.Note, note)
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
 	}
 	if i.Dump != dump {
 		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)

@@ -50,7 +50,8 @@ var resJSON = `{
       "Item": [
         {
           "name": "Encrypted data",
-          "note": "sym alg is specified in sym-key encrypted session key"
+          "value": "sym alg is specified in sym-key encrypted session key",
+          "note": "56 bytes"
         }
       ]
     }

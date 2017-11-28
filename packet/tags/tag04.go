@@ -63,7 +63,7 @@ func (t *tag04) Parse() (*info.Item, error) {
 	rootInfo.Add(info.NewItem(
 		info.Name("Encrypted session key"),
 		info.Value(f),
-		info.Note(fmt.Sprintf("%02x", flag)),
+		info.Note(fmt.Sprintf("flag %#02x", flag)),
 	))
 
 	if t.reader.Rest() > 0 {
