@@ -11,7 +11,7 @@ import (
 func TestEccNITSP256(t *testing.T) {
 	data := []byte{0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07}
 	dump := "2a 86 48 ce 3d 03 01 07"
-	note := "NIST P-256"
+	note := "nistp256"
 	reader := reader.New(data)
 	oid, err := NewOID(reader)
 	if err != nil {
@@ -35,7 +35,7 @@ func TestEccNITSP256(t *testing.T) {
 func TestEccNITSP384(t *testing.T) {
 	data := []byte{0x05, 0x2b, 0x81, 0x04, 0x00, 0x22}
 	dump := "2b 81 04 00 22"
-	note := "NIST P-384"
+	note := "nistp384"
 	reader := reader.New(data)
 	oid, err := NewOID(reader)
 	if err != nil {
@@ -59,7 +59,151 @@ func TestEccNITSP384(t *testing.T) {
 func TestEccNITSP521(t *testing.T) {
 	data := []byte{0x05, 0x2b, 0x81, 0x04, 0x00, 0x23}
 	dump := "2b 81 04 00 23"
-	note := "NIST P-521"
+	note := "nistp521"
+	reader := reader.New(data)
+	oid, err := NewOID(reader)
+	if err != nil {
+		t.Errorf("OID = \"%v\", want nil.", err.Error())
+	}
+	i := oid.ToItem(true)
+	if i.Name != "ECC OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	}
+	if i.Value != note {
+		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
+	}
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
+	}
+	if i.Dump != dump {
+		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)
+	}
+}
+
+func TestEccSecp256k1(t *testing.T) {
+	data := []byte{0x05, 0x2b, 0x81, 0x04, 0x00, 0x0a}
+	dump := "2b 81 04 00 0a"
+	note := "secp256k1"
+	reader := reader.New(data)
+	oid, err := NewOID(reader)
+	if err != nil {
+		t.Errorf("OID = \"%v\", want nil.", err.Error())
+	}
+	i := oid.ToItem(true)
+	if i.Name != "ECC OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	}
+	if i.Value != note {
+		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
+	}
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
+	}
+	if i.Dump != dump {
+		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)
+	}
+}
+
+func TestEccBrainpoolP256r1(t *testing.T) {
+	data := []byte{0x09, 0x2B, 0x24, 0x03, 0x03, 0x02, 0x08, 0x01, 0x01, 0x07}
+	dump := "2b 24 03 03 02 08 01 01 07"
+	note := "brainpoolP256r1"
+	reader := reader.New(data)
+	oid, err := NewOID(reader)
+	if err != nil {
+		t.Errorf("OID = \"%v\", want nil.", err.Error())
+	}
+	i := oid.ToItem(true)
+	if i.Name != "ECC OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	}
+	if i.Value != note {
+		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
+	}
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
+	}
+	if i.Dump != dump {
+		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)
+	}
+}
+
+func TestEccBrainpoolP384r1(t *testing.T) {
+	data := []byte{0x09, 0x2B, 0x24, 0x03, 0x03, 0x02, 0x08, 0x01, 0x01, 0x0B}
+	dump := "2b 24 03 03 02 08 01 01 0b"
+	note := "brainpoolP384r1"
+	reader := reader.New(data)
+	oid, err := NewOID(reader)
+	if err != nil {
+		t.Errorf("OID = \"%v\", want nil.", err.Error())
+	}
+	i := oid.ToItem(true)
+	if i.Name != "ECC OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	}
+	if i.Value != note {
+		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
+	}
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
+	}
+	if i.Dump != dump {
+		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)
+	}
+}
+
+func TestEccBrainpoolP512r1(t *testing.T) {
+	data := []byte{0x09, 0x2B, 0x24, 0x03, 0x03, 0x02, 0x08, 0x01, 0x01, 0x0D}
+	dump := "2b 24 03 03 02 08 01 01 0d"
+	note := "brainpoolP512r1"
+	reader := reader.New(data)
+	oid, err := NewOID(reader)
+	if err != nil {
+		t.Errorf("OID = \"%v\", want nil.", err.Error())
+	}
+	i := oid.ToItem(true)
+	if i.Name != "ECC OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	}
+	if i.Value != note {
+		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
+	}
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
+	}
+	if i.Dump != dump {
+		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)
+	}
+}
+
+func TestEccEd25519(t *testing.T) {
+	data := []byte{0x09, 0x2B, 0x06, 0x01, 0x04, 0x01, 0xDA, 0x47, 0x0F, 0x01}
+	dump := "2b 06 01 04 01 da 47 0f 01"
+	note := "ed25519"
+	reader := reader.New(data)
+	oid, err := NewOID(reader)
+	if err != nil {
+		t.Errorf("OID = \"%v\", want nil.", err.Error())
+	}
+	i := oid.ToItem(true)
+	if i.Name != "ECC OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	}
+	if i.Value != note {
+		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
+	}
+	if i.Note != "" {
+		t.Errorf("OID.Note = \"%v\", want \"\".", i.Note)
+	}
+	if i.Dump != dump {
+		t.Errorf("OIS.Dump = \"%v\", want \"%s\".", i.Dump, dump)
+	}
+}
+
+func TestEccCurve25519(t *testing.T) {
+	data := []byte{0x0a, 0x2B, 0x06, 0x01, 0x04, 0x01, 0x97, 0x55, 0x01, 0x05, 0x01}
+	dump := "2b 06 01 04 01 97 55 01 05 01"
+	note := "cv25519"
 	reader := reader.New(data)
 	oid, err := NewOID(reader)
 	if err != nil {
