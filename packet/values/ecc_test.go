@@ -18,8 +18,8 @@ func TestEccNITSP256(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
@@ -42,8 +42,8 @@ func TestEccNITSP384(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
@@ -66,8 +66,8 @@ func TestEccNITSP521(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
@@ -90,8 +90,8 @@ func TestEccSecp256k1(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
@@ -114,8 +114,8 @@ func TestEccBrainpoolP256r1(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC0 Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
@@ -138,8 +138,8 @@ func TestEccBrainpoolP384r1(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
@@ -162,8 +162,8 @@ func TestEccBrainpoolP512r1(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
@@ -186,8 +186,8 @@ func TestEccEd25519(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
@@ -210,8 +210,8 @@ func TestEccCurve25519(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Value = \"%v\", want \"%s\"", i.Value, note)
@@ -234,8 +234,8 @@ func TestEccUnknown(t *testing.T) {
 		t.Errorf("OID = \"%v\", want nil.", err.Error())
 	}
 	i := oid.ToItem(true)
-	if i.Name != "ECC OID" {
-		t.Errorf("OID.Name = \"%v\", want \"ECC OID\".", i.Name)
+	if i.Name != "ECC Curve OID" {
+		t.Errorf("OID.Name = \"%v\", want \"ECC Curve OID\".", i.Name)
 	}
 	if i.Value != note {
 		t.Errorf("OID.Note = \"%v\", want \"%s\"", i.Value, note)
