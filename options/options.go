@@ -41,13 +41,10 @@ type OptFunc func(*Options)
 // New returns a new Options instance
 func New(opts ...OptFunc) *Options {
 	o := &Options{}
-	o.options(opts...)
-	return o
-}
-func (o *Options) options(opts ...OptFunc) {
 	for _, opt := range opts {
 		opt(o)
 	}
+	return o
 }
 
 //Set returns closure as type OptFunc
