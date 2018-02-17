@@ -3,22 +3,22 @@ package main
 import (
 	"os"
 
-	"github.com/spiegel-im-spiegel/gocli"
+	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gpgpdump/cli/gpgpdump/facade"
 )
 
 func main() {
-	os.Exit(facade.Execute(
-		gocli.NewUI(
-			gocli.Reader(os.Stdin),
-			gocli.Writer(os.Stdout),
-			gocli.ErrorWriter(os.Stderr),
+	facade.Execute(
+		rwi.New(
+			rwi.Reader(os.Stdin),
+			rwi.Writer(os.Stdout),
+			rwi.ErrorWriter(os.Stderr),
 		),
 		os.Args[1:],
-	).Int())
+	).Exit()
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017,2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
