@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gocli"
+	"github.com/spiegel-im-spiegel/gocli/exitcode"
+	"github.com/spiegel-im-spiegel/gocli/rwi"
 )
 
 var resJSON = `{
@@ -63,13 +64,12 @@ func TestJsonOn(t *testing.T) {
 	inData := bytes.NewReader(bindata1)
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := gocli.NewUI(gocli.Reader(inData), gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.Reader(inData), rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
 	args := []string{"-j"}
 
-	clearFlags()
 	exit := Execute(ui, args)
-	if exit != ExitNormal {
-		t.Errorf("Execute(json) = \"%v\", want \"%v\".", exit, ExitNormal)
+	if exit != exitcode.Normal {
+		t.Errorf("Execute(json) = \"%v\", want \"%v\".", exit, exitcode.Normal)
 	}
 	str := outErrBuf.String()
 	if str != "" {
@@ -81,7 +81,7 @@ func TestJsonOn(t *testing.T) {
 	}
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017,2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

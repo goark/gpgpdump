@@ -4,20 +4,20 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gocli"
+	"github.com/spiegel-im-spiegel/gocli/exitcode"
+	"github.com/spiegel-im-spiegel/gocli/rwi"
 )
 
 func TestArmorNormal(t *testing.T) {
 	inData := bytes.NewBufferString(ascdata1)
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := gocli.NewUI(gocli.Reader(inData), gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.Reader(inData), rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
 	args := []string{"-a", "-u"}
 
-	clearFlags()
 	exit := Execute(ui, args)
-	if exit != ExitNormal {
-		t.Errorf("Execute(armor) = \"%v\", want \"%v\".", exit, ExitNormal)
+	if exit != exitcode.Normal {
+		t.Errorf("Execute(armor) = \"%v\", want \"%v\".", exit, exitcode.Normal)
 	}
 	str := outErrBuf.String()
 	if str != "" {
@@ -33,17 +33,16 @@ func TestArmorErr(t *testing.T) {
 	inData := bytes.NewReader(bindata1)
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := gocli.NewUI(gocli.Reader(inData), gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.Reader(inData), rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
 	args := []string{"-a"}
 
-	clearFlags()
 	exit := Execute(ui, args)
-	if exit != ExitAbnormal {
-		t.Errorf("Execute(armor) = \"%v\", want \"%v\".", exit, ExitAbnormal)
+	if exit != exitcode.Abnormal {
+		t.Errorf("Execute(armor) = \"%v\", want \"%v\".", exit, exitcode.Abnormal)
 	}
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017,2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

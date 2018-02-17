@@ -33,19 +33,29 @@
 
 [[projects]]
   name = "github.com/spiegel-im-spiegel/gocli"
-  packages = ["."]
-  revision = "663c5d5d717eb8076219a392d2dd2b15e35a17bd"
-  version = "v0.4.3"
+  packages = [
+    "exitcode",
+    "rwi"
+  ]
+  revision = "f83c57ec2f52e7a75f17a16bd49300e331c3ec38"
+  version = "v0.5.0"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["cast5","openpgp/armor","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k"]
-  revision = "b080dc9a8c480b08e698fb1219160d598526310f"
+  packages = [
+    "cast5",
+    "openpgp/armor",
+    "openpgp/elgamal",
+    "openpgp/errors",
+    "openpgp/packet",
+    "openpgp/s2k"
+  ]
+  revision = "94eea52f7b742c7cbe0b03b22f0c4c8631ece122"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "38d1fe9bc280d7267c04d68559db7d09974f203ea7421312e633e3e7b549f950"
+  inputs-digest = "dc28f0bfbd783b8aa47bcbb083d7e1eed60a600c1a7f2f099119b545fad30665"
   solver-name = "gps-cdcl"
   solver-version = 1

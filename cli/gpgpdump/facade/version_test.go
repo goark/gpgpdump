@@ -4,21 +4,21 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gocli"
+	"github.com/spiegel-im-spiegel/gocli/exitcode"
+	"github.com/spiegel-im-spiegel/gocli/rwi"
 )
 
 func TestVersionMin(t *testing.T) {
-	result := "gpgpdump\nCopyright 2016,2017 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n"
+	result := "gpgpdump\nCopyright 2016-2018 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n"
 
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := gocli.NewUI(gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
 	args := []string{"-v"}
 
-	clearFlags()
 	exit := Execute(ui, args)
-	if exit != ExitNormal {
-		t.Errorf("Execute(version) = \"%v\", want \"%v\".", exit, ExitNormal)
+	if exit != exitcode.Normal {
+		t.Errorf("Execute(version) = \"%v\", want \"%v\".", exit, exitcode.Normal)
 	}
 	str := outBuf.String()
 	if str != "" {
@@ -32,17 +32,16 @@ func TestVersionMin(t *testing.T) {
 
 func TestVersionNum(t *testing.T) {
 	Version = "TestVersion"
-	result := "gpgpdump vTestVersion\nCopyright 2016,2017 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n"
+	result := "gpgpdump vTestVersion\nCopyright 2016-2018 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n"
 
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := gocli.NewUI(gocli.Writer(outBuf), gocli.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
 	args := []string{"-v"}
 
-	clearFlags()
 	exit := Execute(ui, args)
-	if exit != ExitNormal {
-		t.Errorf("Execute(version) = \"%v\", want \"%v\".", exit, ExitNormal)
+	if exit != exitcode.Normal {
+		t.Errorf("Execute(version) = \"%v\", want \"%v\".", exit, exitcode.Normal)
 	}
 	str := outBuf.String()
 	if str != "" {
@@ -54,7 +53,7 @@ func TestVersionNum(t *testing.T) {
 	}
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017,2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

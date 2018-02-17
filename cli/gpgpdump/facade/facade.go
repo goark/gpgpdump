@@ -7,7 +7,8 @@ import (
 	"runtime"
 
 	"github.com/spf13/cobra"
-	"github.com/spiegel-im-spiegel/gocli"
+	"github.com/spiegel-im-spiegel/gocli/exitcode"
+	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gpgpdump"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 )
@@ -20,62 +21,81 @@ var (
 )
 
 var (
-	versionFlag bool            //version flag
-	jsonFlag    bool            //output with JSON format
-	tomlFlag    bool            //output with TOML format
-	cui         = gocli.NewUI() //CUI instance
+	versionFlag bool        //version flag
+	jsonFlag    bool        //output with JSON format
+	tomlFlag    bool        //output with TOML format
+	cui         = rwi.New() //CUI instance
 )
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use: Name + " [flags] [OpenPGP file]",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		//parse options
-		if versionFlag {
-			cui.OutputErr(Name)
-			if len(Version) > 0 {
-				cui.OutputErr(fmt.Sprintf(" v%s", Version))
+//newRootCmd returns cobra.Command instance for root command
+func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
+	cui = ui
+	rootCmd := &cobra.Command{
+		Use: Name + " [flags] [OpenPGP file]",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			//parse options
+			if versionFlag {
+				cui.OutputErr(Name)
+				if len(Version) > 0 {
+					cui.OutputErr(fmt.Sprintf(" v%s", Version))
+				}
+				cui.OutputErrln()
+				cui.OutputErrln("Copyright 2016-2018 Spiegel (based on pgpdump by kazu-yamamoto)")
+				cui.OutputErrln("Licensed under Apache License, Version 2.0")
+				return nil
 			}
-			cui.OutputErrln()
-			cui.OutputErrln("Copyright 2016,2017 Spiegel (based on pgpdump by kazu-yamamoto)")
-			cui.OutputErrln("Licensed under Apache License, Version 2.0")
-			return nil
-		}
-		opts := parseOpt(cmd)
+			opts := parseOpt(cmd)
 
-		//open PGP file
-		reader := cui.Reader()
-		if len(args) > 0 {
-			file, err := os.Open(args[0]) //args[0] is maybe file path
+			//open PGP file
+			reader := cui.Reader()
+			if len(args) > 0 {
+				file, err := os.Open(args[0]) //args[0] is maybe file path
+				if err != nil {
+					return err
+				}
+				defer file.Close()
+				reader = file
+			}
+
+			//parse OpenPGP packets
+			info, err := gpgpdump.Parse(reader, opts)
 			if err != nil {
 				return err
 			}
-			defer file.Close()
-			reader = file
-		}
 
-		//parse OpenPGP packets
-		info, err := gpgpdump.Parse(reader, opts)
-		if err != nil {
-			return err
-		}
+			//marshal packet info
+			var result io.Reader
+			if jsonFlag {
+				result, err = info.JSON()
+			} else if tomlFlag {
+				result, err = info.TOML()
+			} else {
+				result = info.ToString("\t")
+				err = nil
+			}
+			if err != nil {
+				return err
+			}
+			cui.WriteFrom(result)
+			return nil
+		},
+	}
+	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
+	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
+	rootCmd.Flags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
+	rootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
+	rootCmd.Flags().BoolP(options.DebugOpt, "", false, "for debug") //not use
+	//rootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
+	rootCmd.Flags().BoolP(options.IntegerOpt, "i", false, "dumps multi-precision integers")
+	rootCmd.Flags().BoolP(options.LiteralOpt, "l", false, "dumps literal packets (tag 11)")
+	rootCmd.Flags().BoolP(options.MarkerOpt, "m", false, "dumps marker packets (tag 10)")
+	rootCmd.Flags().BoolP(options.PrivateOpt, "p", false, "dumps private packets (tag 60-63)")
+	rootCmd.Flags().BoolP(options.UTCOpt, "u", false, "output with UTC time")
 
-		//marshal packet info
-		var result io.Reader
-		if jsonFlag {
-			result, err = info.JSON()
-		} else if tomlFlag {
-			result, err = info.TOML()
-		} else {
-			result = info.ToString("\t")
-			err = nil
-		}
-		if err != nil {
-			return err
-		}
-		cui.WriteFrom(result)
-		return nil
-	},
+	rootCmd.SetArgs(args)
+	rootCmd.SetOutput(ui.ErrorWriter())
+
+	return rootCmd
 }
 
 func getBool(cmd *cobra.Command, name string) bool {
@@ -99,9 +119,8 @@ func parseOpt(cmd *cobra.Command) *options.Options {
 	)
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute(ui *gocli.UI, args []string) (exit ExitCode) {
+//Execute is called from main function
+func Execute(ui *rwi.RWI, args []string) (exit exitcode.ExitCode) {
 	defer func() {
 		//panic hundling
 		if r := recover(); r != nil {
@@ -113,36 +132,19 @@ func Execute(ui *gocli.UI, args []string) (exit ExitCode) {
 				}
 				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ":", src, ":", line)
 			}
-			exit = ExitAbnormal
+			exit = exitcode.Abnormal
 		}
 	}()
 
 	//execution
-	cui = ui
-	rootCmd.SetArgs(args)
-	rootCmd.SetOutput(ui.ErrorWriter())
-	exit = ExitNormal
-	if err := rootCmd.Execute(); err != nil {
-		exit = ExitAbnormal
+	exit = exitcode.Normal
+	if err := newRootCmd(ui, args).Execute(); err != nil {
+		exit = exitcode.Abnormal
 	}
 	return
 }
 
-func init() {
-	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
-	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
-	rootCmd.Flags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
-	rootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
-	rootCmd.Flags().BoolP(options.DebugOpt, "", false, "for debug") //not use
-	//rootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
-	rootCmd.Flags().BoolP(options.IntegerOpt, "i", false, "dumps multi-precision integers")
-	rootCmd.Flags().BoolP(options.LiteralOpt, "l", false, "dumps literal packets (tag 11)")
-	rootCmd.Flags().BoolP(options.MarkerOpt, "m", false, "dumps marker packets (tag 10)")
-	rootCmd.Flags().BoolP(options.PrivateOpt, "p", false, "dumps private packets (tag 60-63)")
-	rootCmd.Flags().BoolP(options.UTCOpt, "u", false, "output with UTC time")
-}
-
-/* Copyright 2017 Spiegel
+/* Copyright 2017,2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
