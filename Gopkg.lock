@@ -37,8 +37,8 @@
     "exitcode",
     "rwi"
   ]
-  revision = "f83c57ec2f52e7a75f17a16bd49300e331c3ec38"
-  version = "v0.5.0"
+  revision = "01a70c3cee15dcda5f0d24de666f1679605829d1"
+  version = "v0.7.0"
 
 [[projects]]
   branch = "master"
@@ -56,6 +56,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dc28f0bfbd783b8aa47bcbb083d7e1eed60a600c1a7f2f099119b545fad30665"
+  inputs-digest = "3b11b29ec327816d8ad87c5280a1f57bd14d6897b9940b05f57dd59d0102c041"
   solver-name = "gps-cdcl"
   solver-version = 1
