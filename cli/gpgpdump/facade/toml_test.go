@@ -115,7 +115,7 @@ func TestTOMLLoadByStdin(t *testing.T) {
 	inData := bytes.NewReader(binTOMLdata1)
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Reader(inData), rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"-t"}
 
 	exit := Execute(ui, args)
@@ -136,7 +136,7 @@ func TestTOMLLoadByNosata(t *testing.T) {
 	inData := bytes.NewReader([]byte{})
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Reader(inData), rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"-t"}
 
 	exit := Execute(ui, args)
@@ -156,7 +156,7 @@ func TestTOMLLoadByNosata(t *testing.T) {
 func TestTOMLLoadByFile(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"-t", "testdata/bindata1"}
 
 	exit := Execute(ui, args)
@@ -176,7 +176,7 @@ func TestTOMLLoadByFile(t *testing.T) {
 func TestTOMLLoadByNofile(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"-t", "noexist"}
 
 	exit := Execute(ui, args)

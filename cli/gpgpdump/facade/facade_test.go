@@ -52,7 +52,7 @@ func TestLoadByStdin(t *testing.T) {
 	inData := bytes.NewReader(bindata1)
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Reader(inData), rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{}
 
 	exit := Execute(ui, args)
@@ -73,7 +73,7 @@ func TestLoadByNosata(t *testing.T) {
 	inData := bytes.NewReader([]byte{})
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Reader(inData), rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{}
 
 	exit := Execute(ui, args)
@@ -93,7 +93,7 @@ func TestLoadByNosata(t *testing.T) {
 func TestLoadByFile(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"testdata/bindata1"}
 
 	exit := Execute(ui, args)
@@ -113,7 +113,7 @@ func TestLoadByFile(t *testing.T) {
 func TestLoadByNofile(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"noexist"}
 
 	exit := Execute(ui, args)
