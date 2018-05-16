@@ -72,9 +72,9 @@ func NewSubs(cxt *context.Context, osp *openpgp.OpaqueSubpacket, tagID values.Ta
 			// recursive call in sub32.Parse()
 			return newSub32(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 		}
-		return newFunctionsSub02.Get(int(osp.SubType), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
+		return newFunctionsSub02.Get(int(osp.SubType&0x7f), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 	} else if tagID == 17 {
-		return newFunctionsSub17.Get(int(osp.SubType), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
+		return newFunctionsSub17.Get(int(osp.SubType&0x7f), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 	}
 	return nil
 }
