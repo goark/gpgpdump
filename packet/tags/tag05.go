@@ -39,9 +39,9 @@ func (t *tag05) Parse() (*info.Item, error) {
 		return rootInfo, err
 	}
 
-	if t.reader.Rest() > 0 {
-		rootInfo.Add(values.RawData(t.reader, "Rest", t.cxt.Debug()))
-	}
+	// if t.reader.Rest() > 0 {
+	// 	rootInfo.Add(values.RawData(t.reader, "Rest", t.cxt.Debug()))
+	// }
 	return rootInfo, nil
 }
 

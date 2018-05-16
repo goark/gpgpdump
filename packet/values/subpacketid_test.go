@@ -48,7 +48,7 @@ var testSubpacketNames = []string{
 
 func TestSubpacketID(t *testing.T) {
 	var body = []byte{0x01, 0x02, 0x03, 0x04}
-	for tp := 0; tp <= 34; tp++ {
+	for tp := 0; tp < len(testSubpacketNames); tp++ {
 		i := SuboacketID(tp).ToItem(reader.New(body), true)
 		if i.Name != testSubpacketNames[tp] {
 			t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Name, testSubpacketNames[tp])
@@ -63,6 +63,68 @@ func TestSubpacketID(t *testing.T) {
 	for tp := 100; tp <= 110; tp++ {
 		i := SuboacketID(tp).ToItem(reader.New(body), true)
 		name := fmt.Sprintf("Private or experimental (sub %d)", tp)
+		if i.Name != name {
+			t.Errorf("PubAlg.Value = \"%s\", want \"%s\".", i.Name, name)
+		}
+	}
+}
+
+var testSubpacketNamesCritical = []string{
+	"Reserved <critical> (sub 0)",                                //00
+	"Image Attribute <critical> (sub 1)",                         //01
+	"Signature Creation Time <critical> (sub 2)",                 //02
+	"Signature Expiration Time <critical> (sub 3)",               //03
+	"Exportable Certification <critical> (sub 4)",                //04
+	"Trust Signature <critical> (sub 5)",                         //05
+	"Regular Expression <critical> (sub 6)",                      //06
+	"Revocable <critical> (sub 7)",                               //07
+	"Reserved <critical> (sub 8)",                                //08
+	"Key Expiration Time <critical> (sub 9)",                     //09
+	"Placeholder for backward compatibility <critical> (sub 10)", //10
+	"Preferred Symmetric Algorithms <critical> (sub 11)",         //11
+	"Revocation Key <critical> (sub 12)",                         //12
+	"Reserved <critical> (sub 13)",                               //13
+	"Reserved <critical> (sub 14)",                               //14
+	"Reserved <critical> (sub 15)",                               //15
+	"Issuer <critical> (sub 16)",                                 //16
+	"Reserved <critical> (sub 17)",                               //17
+	"Reserved <critical> (sub 18)",                               //18
+	"Reserved <critical> (sub 19)",                               //19
+	"Notation Data <critical> (sub 20)",                          //20
+	"Preferred Hash Algorithms <critical> (sub 21)",              //21
+	"Preferred Compression Algorithms <critical> (sub 22)",       //22
+	"Key Server Preferences <critical> (sub 23)",                 //23
+	"Preferred Key Server <critical> (sub 24)",                   //24
+	"Primary User ID <critical> (sub 25)",                        //25
+	"Policy URI <critical> (sub 26)",                             //26
+	"Key Flags <critical> (sub 27)",                              //27
+	"Signer's User ID <critical> (sub 28)",                       //28
+	"Reason for Revocation <critical> (sub 29)",                  //29
+	"Features <critical> (sub 30)",                               //30
+	"Signature Target <critical> (sub 31)",                       //31
+	"Embedded Signature <critical> (sub 32)",                     //32
+	"Issuer Fingerprint <critical> (sub 33)",                     //33
+	"Preferred AEAD Algorithms <critical> (sub 34)",              //34
+	"Unknown <critical> (sub 35)",                                //35
+}
+
+func TestSubpacketIDCritical(t *testing.T) {
+	var body = []byte{0x01, 0x02, 0x03, 0x04}
+	for tp := 0; tp < len(testSubpacketNamesCritical); tp++ {
+		i := SuboacketID(tp+0x80).ToItem(reader.New(body), true)
+		if i.Name != testSubpacketNamesCritical[tp] {
+			t.Errorf("Tag.Value = \"%s\", want \"%s\".", i.Name, testSubpacketNamesCritical[tp])
+		}
+		if i.Note != "4 bytes" {
+			t.Errorf("Tag.Note = \"%s\", want \"4 bytes\"", i.Note)
+		}
+		if i.Dump != "01 02 03 04" {
+			t.Errorf("Tag.Dump = \"%s\", want \"01 02 03 04\".", i.Dump)
+		}
+	}
+	for tp := 100; tp <= 110; tp++ {
+		i := SuboacketID(tp+0x80).ToItem(reader.New(body), true)
+		name := fmt.Sprintf("Private or experimental <critical> (sub %d)", tp)
 		if i.Name != name {
 			t.Errorf("PubAlg.Value = \"%s\", want \"%s\".", i.Name, name)
 		}
