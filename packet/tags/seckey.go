@@ -33,7 +33,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		return errors.Wrap(err, "error in tags.seckeyInfo,Parse() function (sid)")
 	}
 	switch sid {
-	case 1:
+	case 0:
 		parent.Note = "the secret-key data is not encrypted."
 		parent.Add(p.pubVer.ToItem(p.cxt.Debug()))
 		if !p.pubVer.IsUnknown() {
