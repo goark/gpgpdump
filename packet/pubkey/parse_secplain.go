@@ -47,10 +47,11 @@ func (p *Pubkey) ParseSecPlain(parent *info.Item) error {
 		))
 	}
 	switch p.reader.Rest() {
+	case 0: //no more data
 	case 2: //checksum
 		parent.Add(values.RawData(p.reader, "Checksum", true))
 	case 20: //SHA-1 hash
-		parent.Add(values.RawData(p.reader, "SHA-1 hash", true))
+		parent.Add(values.RawData(p.reader, "Other hash (SHA-1?)", true))
 	default:
 		parent.Add(values.RawData(p.reader, "Other hash", true))
 	}

@@ -8,7 +8,7 @@
 
 - Based on [pgpdump](https://github.com/kazu-yamamoto/pgpdump)
 - Provide [golang](https://golang.org/) package and command-line Interface
-- Output with [TOML](https://github.com/toml-lang/toml) (or [JSON](https://tools.ietf.org/html/rfc7159)) format
+- Output with plain text, [TOML](https://github.com/toml-lang/toml), and [JSON](https://tools.ietf.org/html/rfc7159) format
 - Support [RFC 5581] and [RFC 6637]
 
 ## Install
