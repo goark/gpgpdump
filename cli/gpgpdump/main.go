@@ -10,9 +10,9 @@ import (
 func main() {
 	facade.Execute(
 		rwi.New(
-			rwi.Reader(os.Stdin),
-			rwi.Writer(os.Stdout),
-			rwi.ErrorWriter(os.Stderr),
+			rwi.WithReader(os.Stdin),
+			rwi.WithWriter(os.Stdout),
+			rwi.WithErrorWriter(os.Stderr),
 		),
 		os.Args[1:],
 	).Exit()

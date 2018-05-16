@@ -13,7 +13,7 @@ func TestVersionMin(t *testing.T) {
 
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"-v"}
 
 	exit := Execute(ui, args)
@@ -36,7 +36,7 @@ func TestVersionNum(t *testing.T) {
 
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"-v"}
 
 	exit := Execute(ui, args)

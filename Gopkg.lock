@@ -22,14 +22,14 @@
 [[projects]]
   name = "github.com/spf13/cobra"
   packages = ["."]
-  revision = "7b2c5ac9fc04fc5efafb60700713d4fa609b777b"
-  version = "v0.0.1"
+  revision = "ef82de70bb3f60c65fb8eebacbb2d122ef517385"
+  version = "v0.0.3"
 
 [[projects]]
   name = "github.com/spf13/pflag"
   packages = ["."]
-  revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
-  version = "v1.0.0"
+  revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/spiegel-im-spiegel/gocli"
@@ -37,8 +37,8 @@
     "exitcode",
     "rwi"
   ]
-  revision = "f83c57ec2f52e7a75f17a16bd49300e331c3ec38"
-  version = "v0.5.0"
+  revision = "0334aa7af7c8088add48c6671c82a4c64acacd60"
+  version = "v0.8.0"
 
 [[projects]]
   branch = "master"
@@ -51,11 +51,11 @@
     "openpgp/packet",
     "openpgp/s2k"
   ]
-  revision = "94eea52f7b742c7cbe0b03b22f0c4c8631ece122"
+  revision = "1a580b3eff7814fc9b40602fd35256c63b50f491"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dc28f0bfbd783b8aa47bcbb083d7e1eed60a600c1a7f2f099119b545fad30665"
+  inputs-digest = "763ba6a34e6cb0b6cc81de6dd50b165a172dffdcd820e0a3e5c2a71fed469544"
   solver-name = "gps-cdcl"
   solver-version = 1

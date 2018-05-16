@@ -59,6 +59,7 @@ var newFunctionsSub02 = SubFuncMap{
 	30: newSub30, //Features
 	31: newSub31, //Signature Target
 	33: newSub33, //Issuer Fingerprint
+	34: newSub34, //Preferred AEAD Algorithms
 }
 
 var newFunctionsSub17 = SubFuncMap{
@@ -67,14 +68,15 @@ var newFunctionsSub17 = SubFuncMap{
 
 //NewSubs returns Tags instance for pasing
 func NewSubs(cxt *context.Context, osp *openpgp.OpaqueSubpacket, tagID values.TagID) Subs {
+	st := osp.SubType & 0x7f
 	if tagID == 2 {
-		if osp.SubType == 32 {
+		if st == 32 {
 			// recursive call in sub32.Parse()
 			return newSub32(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 		}
-		return newFunctionsSub02.Get(int(osp.SubType), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
+		return newFunctionsSub02.Get(int(st), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 	} else if tagID == 17 {
-		return newFunctionsSub17.Get(int(osp.SubType), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
+		return newFunctionsSub17.Get(int(st), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 	}
 	return nil
 }

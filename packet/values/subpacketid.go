@@ -42,6 +42,7 @@ var subpacketNames = Msgs{
 	31: "Signature Target",                       //31
 	32: "Embedded Signature",                     //32
 	33: "Issuer Fingerprint",                     //33
+	34: "Preferred AEAD Algorithms",              //34
 }
 
 //SuboacketID is sub-packet type ID
@@ -57,13 +58,18 @@ func (s SuboacketID) ToItem(r *reader.Reader, dumpFlag bool) *info.Item {
 }
 
 func (s SuboacketID) String() string {
+	c := ""
+	if s&0x80 != 0 { //critical bit
+		c = " <critical>"
+	}
+	s &= 0x7f
 	var name string
 	if 100 <= s && s <= 110 {
 		name = "Private or experimental"
 	} else {
 		name = subpacketNames.Get(int(s), Unknown)
 	}
-	return fmt.Sprintf("%s (sub %d)", name, s)
+	return fmt.Sprintf("%s (sub %d)", name+c, s)
 }
 
 /* Copyright 2016,2017 Spiegel

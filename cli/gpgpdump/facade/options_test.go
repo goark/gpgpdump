@@ -12,7 +12,7 @@ func TestOptionsNormal(t *testing.T) {
 	inData := bytes.NewReader(bindata1)
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Reader(inData), rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"-i", "-l", "-m", "-p", "-u", "--debug"}
 
 	exit := Execute(ui, args)
@@ -25,7 +25,7 @@ func TestOptionsAbnormal(t *testing.T) {
 	inData := bytes.NewReader(bindata1)
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.Reader(inData), rwi.Writer(outBuf), rwi.ErrorWriter(outErrBuf))
+	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
 	args := []string{"-d"}
 
 	exit := Execute(ui, args)
