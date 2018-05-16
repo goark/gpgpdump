@@ -42,6 +42,7 @@ var subpacketNames = Msgs{
 	31: "Signature Target",                       //31
 	32: "Embedded Signature",                     //32
 	33: "Issuer Fingerprint",                     //33
+	34: "Preferred AEAD Algorithms",              //34
 }
 
 //SuboacketID is sub-packet type ID

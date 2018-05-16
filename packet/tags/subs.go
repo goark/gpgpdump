@@ -59,6 +59,7 @@ var newFunctionsSub02 = SubFuncMap{
 	30: newSub30, //Features
 	31: newSub31, //Signature Target
 	33: newSub33, //Issuer Fingerprint
+	34: newSub34, //Preferred AEAD Algorithms
 }
 
 var newFunctionsSub17 = SubFuncMap{

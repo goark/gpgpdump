@@ -42,7 +42,8 @@ var testSubpacketNames = []string{
 	"Signature Target (sub 31)",                       //31
 	"Embedded Signature (sub 32)",                     //32
 	"Issuer Fingerprint (sub 33)",                     //33
-	"Unknown (sub 34)",                                //34
+	"Preferred AEAD Algorithms (sub 34)",              //34
+	"Unknown (sub 35)",                                //35
 }
 
 func TestSubpacketID(t *testing.T) {
