@@ -52,6 +52,7 @@ var newFunctions = FuncMap{
 	17: newTag17,      //User Attribute Packet
 	18: newTag18,      //Sym. Encrypted Integrity Protected Data Packet
 	19: newTag19,      //Modification Detection Code Packet
+	20: newTag20,      //AEAD Encrypted Data Packet Packet
 	60: newTagPrivate, //Private or Experimental Values
 	61: newTagPrivate, //Private or Experimental Values
 	62: newTagPrivate, //Private or Experimental Values
@@ -67,7 +68,7 @@ func NewTag(op *openpgp.OpaquePacket, cxt *context.Context) Tags {
 	return newFunctions.Get(int(op.Tag), newTagUnknown)(cxt, values.TagID(op.Tag), op.Contents)
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

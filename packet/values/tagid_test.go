@@ -27,7 +27,7 @@ var testTagNames = []string{
 	"User Attribute Packet (tag 17)",
 	"Sym. Encrypted Integrity Protected Data Packet (tag 18)",
 	"Modification Detection Code Packet (tag 19)",
-	"Unknown (tag 20)",
+	"AEAD Encrypted Data Packet (tag 20)",
 	"Unknown (tag 21)",
 	"Unknown (tag 22)",
 	"Unknown (tag 23)",
@@ -76,7 +76,7 @@ var testTagNames = []string{
 
 func TestTagID(t *testing.T) {
 	var body = []byte{0x01, 0x02, 0x03, 0x04}
-	for tag := 0; tag <= 64; tag++ {
+	for tag := 0; tag < len(testTagNames); tag++ {
 		i := TagID(tag).ToItem(reader.New(body), true)
 		if i.Name != testTagNames[tag] {
 			t.Errorf("Tag.Name = \"%s\", want \"%s\".", i.Name, testTagNames[tag])

@@ -25,7 +25,29 @@ func (t *tag03) Parse() (*info.Item, error) {
 	if err != nil {
 		return rootInfo, err
 	}
-	rootInfo.Add(values.SymSessKeyVer(v).ToItem(t.cxt.Debug()))
+	version := values.SymSessKeyVer(v)
+	rootInfo.Add(version.ToItem(t.cxt.Debug()))
+
+	if version.IsCurrent() {
+		_, err2 := t.parseV4(rootInfo)
+		if err2 != nil {
+			return rootInfo, err
+		}
+	} else if version.IsDraft() {
+		_, err2 := t.parseV5(rootInfo)
+		if err2 != nil {
+			return rootInfo, err
+		}
+	}
+
+	if t.reader.Rest() > 0 {
+		rootInfo.Add(values.RawData(t.reader, "Unknown data", t.cxt.Debug()))
+	}
+	return rootInfo, nil
+}
+
+func (t *tag03) parseV4(rootInfo *info.Item) (*info.Item, error) {
+	// [00] one-octet version number
 	// [01] one-octet number describing the symmetric algorithm used.
 	symid, err := t.reader.ReadByte()
 	if err != nil {
@@ -37,14 +59,21 @@ func (t *tag03) Parse() (*info.Item, error) {
 	if err := s2k.Parse(rootInfo, t.cxt.Debug()); err != nil {
 		return rootInfo, err
 	}
-
-	if t.reader.Rest() > 0 {
-		rootInfo.Add(values.RawData(t.reader, "Unknown data", t.cxt.Debug()))
-	}
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+func (t *tag03) parseV5(rootInfo *info.Item) (*info.Item, error) {
+	// [00] one-octet version number
+	// [01] one-octet cipher algorithm.
+	// [02] one-octet AEAD algorithm.
+	// [03] string-to-key (S2K) specifier
+	// [NN] A starting initialization vector of size specified by the AEAD algorithm.
+	// [NN] The encrypted session key itself, which is decrypted with the string-to-key object using the given cipher and AEAD mode.
+	// [NN] An authentication tag for the AEAD mode.
+	return rootInfo, nil
+}
+
+/* Copyright 2016-2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

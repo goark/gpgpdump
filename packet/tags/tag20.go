@@ -7,17 +7,17 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
-//subReserved class for Preferred AEAD Algorithms Sub-packet
-type sub34 subInfo
+// tag20 class for AEAD Encrypted Data Packet Packet
+type tag20 tagInfo
 
-//newSubReserved return sub34 instance
-func newSub34(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub34{cxt: cxt, subID: subID, reader: reader.New(body)}
+//newTag20 return tag20 instance
+func newTag20(cxt *context.Context, tag values.TagID, body []byte) Tags {
+	return &tag20{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
-// Parse parsing Preferred AEAD Algorithms Sub-packet
-func (s *sub34) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+// Parse parsing AEAD Encrypted Data Packet Packet
+func (t *tag20) Parse() (*info.Item, error) {
+	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
 	return rootInfo, nil
 }
 
