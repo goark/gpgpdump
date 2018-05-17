@@ -40,8 +40,10 @@ const (
 			c2 d8 c8 85 b0 0a 1b ea 8e 06 a7 1a 38 4d b4 6f 2e 90 20 7d fb f2 4f d5 5b bf 7c 81 15 3c 4b fa 21 b0 c3 46 b1 4f 25 e8 af 2e 0d e0 eb b1 96 06 a3 0c b7 35 aa bd 6d 55 7f c4 07 d0 1d 1f 67 95 73 86 ba 67 cc ad 6a f3 97 a1 f6 65 fa aa eb 24 d9 b2 30 63 a3 dc 9e 2f 89 f6 e9 52 20 7f 72 82 9a 9f a0 1d f6 18 e1 fb 48 ab f3 46 34 4b 4e 8a 31 48 d3 3d 74 31 30 f8 63 7c 47 f7 3c 92 d0 23
 		RSA u, the multiplicative inverse of p, mod q (1022 bits)
 			2a e3 ab 31 74 13 51 c4 c0 5e b5 ec ac 3c cc c6 c7 6a 8c e3 b1 81 06 c5 9b d2 26 dc 0c de 67 6e cb 10 0d 01 23 91 2c 68 90 71 9a 3d b7 c4 d2 64 18 b5 61 d1 77 0a d5 4e da cb 57 65 8f b7 ac 3d 5a 41 64 87 c5 b8 4d 86 11 9d af c0 97 67 9e d6 ab 7e b7 c2 2e 1e a7 15 63 e7 2f 83 13 cf 96 d9 14 ed 1d 45 a4 46 83 0d 47 b3 1a b4 ef 45 bb a7 f3 ae 12 6f 40 aa fd d2 68 80 c8 db 60 89 b6 86
-		Other hash (SHA-1?) (20 bytes)
-			7f 2a 90 1a 23 91 d2 12 b2 65 48 f6 a8 ee 1e 82 c1 81 5d 52
+		Checksum
+			7f 2a
+	Unknown data (18 bytes)
+		90 1a 23 91 d2 12 b2 65 48 f6 a8 ee 1e 82 c1 81 5d 52
 `
 )
 

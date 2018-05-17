@@ -37,6 +37,10 @@ func (t *tag03) Parse() (*info.Item, error) {
 	if err := s2k.Parse(rootInfo, t.cxt.Debug()); err != nil {
 		return rootInfo, err
 	}
+
+	if t.reader.Rest() > 0 {
+		rootInfo.Add(values.RawData(t.reader, "Unknown data", t.cxt.Debug()))
+	}
 	return rootInfo, nil
 }
 

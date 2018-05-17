@@ -31,7 +31,7 @@ func (t *tag06) Parse() (*info.Item, error) {
 	}
 
 	if t.reader.Rest() > 0 {
-		rootInfo.Add(values.RawData(t.reader, "Rest", t.cxt.Debug()))
+		rootInfo.Add(values.RawData(t.reader, "Unknown data", t.cxt.Debug()))
 	}
 	return rootInfo, nil
 }
