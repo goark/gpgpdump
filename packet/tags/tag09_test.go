@@ -31,77 +31,46 @@ const (
 `
 )
 
-func TestTag09Sym(t *testing.T) {
-	op := &openpgp.OpaquePacket{Tag: 9, Contents: tag09Body1}
-	cxt := context.NewContext(options.New(
-		options.Set(options.DebugOpt, true),
-		options.Set(options.IntegerOpt, true),
-		options.Set(options.MarkerOpt, true),
-		options.Set(options.LiteralOpt, true),
-		options.Set(options.PrivateOpt, true),
-		options.Set(options.UTCOpt, true),
-	))
-	cxt.SetAlgSymEnc()
-	i, err := NewTag(op, cxt).Parse()
-	if err != nil {
-		t.Errorf("NewTag() = %v, want nil error.", err)
-		return
+func TestTag09(t *testing.T) {
+	testCases := []struct {
+		tag     uint8
+		content []byte
+		cxt0    context.SymAlgMode
+		cxt     context.SymAlgMode
+		res     string
+	}{
+		{tag: 9, content: tag09Body1, cxt0: context.ModeSymEnc, cxt: context.ModeNotSpecified, res: tag09Result1a},
+		{tag: 9, content: tag09Body1, cxt0: context.ModePubEnc, cxt: context.ModeNotSpecified, res: tag09Result1b},
+		{tag: 9, content: tag09Body1, cxt0: context.ModeNotSpecified, cxt: context.ModeNotSpecified, res: tag09Result1c},
 	}
-	if cxt.AlgMode() != context.ModeNotSpecified {
-		t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModeNotSpecified)
-	}
-	str := i.String()
-	if str != tag09Result1a {
-		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, tag09Result1a)
-	}
-}
-
-func TestTag09Pub(t *testing.T) {
-	op := &openpgp.OpaquePacket{Tag: 9, Contents: tag09Body1}
-	cxt := context.NewContext(options.New(
-		options.Set(options.DebugOpt, true),
-		options.Set(options.IntegerOpt, true),
-		options.Set(options.MarkerOpt, true),
-		options.Set(options.LiteralOpt, true),
-		options.Set(options.PrivateOpt, true),
-		options.Set(options.UTCOpt, true),
-	))
-	cxt.SetAlgPubEnc()
-	i, err := NewTag(op, cxt).Parse()
-	if err != nil {
-		t.Errorf("NewTag() = %v, want nil error.", err)
-		return
-	}
-	if cxt.AlgMode() != context.ModeNotSpecified {
-		t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModeNotSpecified)
-	}
-	str := i.String()
-	if str != tag09Result1b {
-		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, tag09Result1b)
-	}
-}
-
-func TestTag09NoIDEA(t *testing.T) {
-	op := &openpgp.OpaquePacket{Tag: 9, Contents: tag09Body1}
-	cxt := context.NewContext(options.New(
-		options.Set(options.DebugOpt, true),
-		options.Set(options.IntegerOpt, true),
-		options.Set(options.MarkerOpt, true),
-		options.Set(options.LiteralOpt, true),
-		options.Set(options.PrivateOpt, true),
-		options.Set(options.UTCOpt, true),
-	))
-	i, err := NewTag(op, cxt).Parse()
-	if err != nil {
-		t.Errorf("NewTag() = %v, want nil error.", err)
-		return
-	}
-	if cxt.AlgMode() != context.ModeNotSpecified {
-		t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModeNotSpecified)
-	}
-	str := i.String()
-	if str != tag09Result1c {
-		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, tag09Result1c)
+	for _, tc := range testCases {
+		op := &openpgp.OpaquePacket{Tag: tc.tag, Contents: tc.content}
+		cxt := context.NewContext(options.New(
+			options.Set(options.DebugOpt, true),
+			options.Set(options.IntegerOpt, true),
+			options.Set(options.MarkerOpt, true),
+			options.Set(options.LiteralOpt, true),
+			options.Set(options.PrivateOpt, true),
+			options.Set(options.UTCOpt, true),
+		))
+		switch tc.cxt0 {
+		case context.ModeSymEnc:
+			cxt.SetAlgSymEnc()
+		case context.ModePubEnc:
+			cxt.SetAlgPubEnc()
+		}
+		i, err := NewTag(op, cxt).Parse()
+		if err != nil {
+			t.Errorf("NewTag() = %v, want nil error.", err)
+			return
+		}
+		if cxt.AlgMode() != tc.cxt {
+			t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), tc.cxt)
+		}
+		res := i.String()
+		if res != tc.res {
+			t.Errorf("Tag.String = \"%s\", want \"%s\".", res, tc.res)
+		}
 	}
 }
 

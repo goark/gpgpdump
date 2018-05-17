@@ -5,6 +5,8 @@ import (
 
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 
 	openpgp "golang.org/x/crypto/openpgp/packet"
 )
@@ -29,26 +31,41 @@ const (
 )
 
 func TestTag01(t *testing.T) {
-	op := &openpgp.OpaquePacket{Tag: 1, Contents: tag01Body}
-	cxt := context.NewContext(options.New(
-		options.Set(options.DebugOpt, true),
-		options.Set(options.IntegerOpt, true),
-		options.Set(options.MarkerOpt, true),
-		options.Set(options.LiteralOpt, true),
-		options.Set(options.PrivateOpt, true),
-		options.Set(options.UTCOpt, true),
-	))
-	i, err := NewTag(op, cxt).Parse()
-	if err != nil {
-		t.Errorf("NewTag() = %v, want nil error.", err)
-		return
+	testCases := []struct {
+		tag     uint8
+		content []byte
+		ktm     []byte
+		cxt     context.SymAlgMode
+		res     string
+	}{
+		{tag: 1, content: tag01Body, ktm: nil, cxt: context.ModePubEnc, res: tag01Redult},
 	}
-	if cxt.AlgMode() != context.ModePubEnc {
-		t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModePubEnc)
-	}
-	str := i.String()
-	if str != tag01Redult {
-		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, tag01Redult)
+	for _, tc := range testCases {
+		op := &openpgp.OpaquePacket{Tag: tc.tag, Contents: tc.content}
+		cxt := context.NewContext(options.New(
+			options.Set(options.DebugOpt, true),
+			options.Set(options.IntegerOpt, true),
+			options.Set(options.MarkerOpt, true),
+			options.Set(options.LiteralOpt, true),
+			options.Set(options.PrivateOpt, true),
+			options.Set(options.UTCOpt, true),
+		))
+		if tc.ktm != nil {
+			tm, _ := values.NewDateTime(reader.New(tc.ktm), cxt.UTC())
+			cxt.KeyCreationTime = tm
+		}
+		i, err := NewTag(op, cxt).Parse()
+		if err != nil {
+			t.Errorf("NewTag() = %v, want nil error.", err)
+			return
+		}
+		if cxt.AlgMode() != tc.cxt {
+			t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), tc.cxt)
+		}
+		res := i.String()
+		if res != tc.res {
+			t.Errorf("Tag.String = \"%s\", want \"%s\".", res, tc.res)
+		}
 	}
 }
 

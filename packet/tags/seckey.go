@@ -35,7 +35,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 	switch sid {
 	case 0:
 		parent.Note = "the secret-key data is not encrypted."
-		parent.Add(p.pubVer.ToItem(p.cxt.Debug()))
+		//parent.Add(p.pubVer.ToItem(p.cxt.Debug()))
 		if !p.pubVer.IsUnknown() {
 			if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecPlain(parent); err != nil {
 				return err
