@@ -5,6 +5,8 @@ import (
 
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
+	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 
 	openpgp "golang.org/x/crypto/openpgp/packet"
 )
@@ -31,77 +33,45 @@ const (
 `
 )
 
-func TestTag18a1(t *testing.T) {
-	op := &openpgp.OpaquePacket{Tag: 18, Contents: tag18Body1}
-	cxt := context.NewContext(options.New(
-		options.Set(options.DebugOpt, true),
-		options.Set(options.IntegerOpt, true),
-		options.Set(options.MarkerOpt, true),
-		options.Set(options.LiteralOpt, true),
-		options.Set(options.PrivateOpt, true),
-		options.Set(options.UTCOpt, true),
-	))
-	i, err := NewTag(op, cxt).Parse()
-	if err != nil {
-		t.Errorf("NewTag() = %v, want nil error.", err)
-		return
+func TestTag1(t *testing.T) {
+	testCases := []struct {
+		tag     uint8
+		content []byte
+		ktm     []byte
+		cxt     context.SymAlgMode
+		res     string
+	}{
+		{tag: 18, content: tag18Body1, ktm: nil, cxt: context.ModeNotSpecified, res: tag18Result11},
+		{tag: 18, content: tag18Body1, ktm: nil, cxt: context.ModePubEnc, res: tag18Result12},
+		{tag: 18, content: tag18Body1, ktm: nil, cxt: context.ModeSymEnc, res: tag18Result13},
 	}
-	if cxt.AlgMode() != context.ModeNotSpecified {
-		t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModeNotSpecified)
-	}
-	str := i.String()
-	if str != tag18Result11 {
-		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, tag18Result11)
-	}
-}
-
-func TestTag18a2(t *testing.T) {
-	op := &openpgp.OpaquePacket{Tag: 18, Contents: tag18Body1}
-	cxt := context.NewContext(options.New(
-		options.Set(options.DebugOpt, true),
-		options.Set(options.IntegerOpt, true),
-		options.Set(options.MarkerOpt, true),
-		options.Set(options.LiteralOpt, true),
-		options.Set(options.PrivateOpt, true),
-		options.Set(options.UTCOpt, true),
-	))
-	cxt.SetAlgPubEnc()
-	i, err := NewTag(op, cxt).Parse()
-	if err != nil {
-		t.Errorf("NewTag() = %v, want nil error.", err)
-		return
-	}
-	if cxt.AlgMode() != context.ModeNotSpecified {
-		t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModeNotSpecified)
-	}
-	str := i.String()
-	if str != tag18Result12 {
-		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, tag18Result12)
-	}
-}
-
-func TestTag18a3(t *testing.T) {
-	op := &openpgp.OpaquePacket{Tag: 18, Contents: tag18Body1}
-	cxt := context.NewContext(options.New(
-		options.Set(options.DebugOpt, true),
-		options.Set(options.IntegerOpt, true),
-		options.Set(options.MarkerOpt, true),
-		options.Set(options.LiteralOpt, true),
-		options.Set(options.PrivateOpt, true),
-		options.Set(options.UTCOpt, true),
-	))
-	cxt.SetAlgSymEnc()
-	i, err := NewTag(op, cxt).Parse()
-	if err != nil {
-		t.Errorf("NewTag() = %v, want nil error.", err)
-		return
-	}
-	if cxt.AlgMode() != context.ModeNotSpecified {
-		t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), context.ModeNotSpecified)
-	}
-	str := i.String()
-	if str != tag18Result13 {
-		t.Errorf("Tag.String = \"%s\", want \"%s\".", str, tag18Result13)
+	for _, tc := range testCases {
+		op := &openpgp.OpaquePacket{Tag: tc.tag, Contents: tc.content}
+		cxt := context.NewContext(options.New(
+			options.Set(options.DebugOpt, true),
+			options.Set(options.IntegerOpt, true),
+			options.Set(options.MarkerOpt, true),
+			options.Set(options.LiteralOpt, true),
+			options.Set(options.PrivateOpt, true),
+			options.Set(options.UTCOpt, true),
+		))
+		if tc.ktm != nil {
+			tm, _ := values.NewDateTime(reader.New(tc.ktm), cxt.UTC())
+			cxt.KeyCreationTime = tm
+		}
+		cxt.SymAlgMode = tc.cxt
+		i, err := NewTag(op, cxt).Parse()
+		if err != nil {
+			t.Errorf("NewTag() = %v, want nil error.", err)
+			return
+		}
+		if cxt.AlgMode() != context.ModeNotSpecified {
+			t.Errorf("Options.Mode = %v, want \"%v\".", cxt.AlgMode(), tc.cxt)
+		}
+		res := i.String()
+		if res != tc.res {
+			t.Errorf("Tag.String = \"%s\", want \"%s\".", res, tc.res)
+		}
 	}
 }
 
