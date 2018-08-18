@@ -28,6 +28,9 @@ func (t *tag13) Parse() (*info.Item, error) {
 		info.DumpStr(values.DumpBytes(body, t.cxt.Debug()).String()),
 	))
 
+	if t.reader.Rest() > 0 {
+		rootInfo.Add(values.RawData(t.reader, "Unknown data", t.cxt.Debug()))
+	}
 	return rootInfo, nil
 }
 

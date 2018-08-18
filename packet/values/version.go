@@ -108,10 +108,10 @@ func PubSessKeyVer(ver byte) *Version {
 
 // SymSessKeyVer is Symmetric-Key Encrypted Session Key Packet Version
 func SymSessKeyVer(ver byte) *Version {
-	return NewVersion(ver, 4, 0)
+	return NewVersion(ver, 4, 5)
 }
 
-/* Copyright 2016,2017 Spiegel
+/* Copyright 2016-2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

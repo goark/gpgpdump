@@ -46,14 +46,14 @@ func (p *Pubkey) ParseSecPlain(parent *info.Item) error {
 			info.DumpStr(values.DumpBytes(b, p.cxt.Debug()).String()),
 		))
 	}
-	switch p.reader.Rest() {
-	case 2: //checksum
-		parent.Add(values.RawData(p.reader, "Checksum", true))
-	case 20: //SHA-1 hash
-		parent.Add(values.RawData(p.reader, "SHA-1 hash", true))
-	default:
-		parent.Add(values.RawData(p.reader, "Other hash", true))
+	chk, err := p.reader.ReadBytes(2)
+	if err != nil {
+		return errors.Wrap(err, "error in pubkey.Pubkey.ParseSecPlain() function (Checksum)")
 	}
+	parent.Add(info.NewItem(
+		info.Name("Checksum"),
+		info.DumpStr(values.DumpBytes(chk, true).String()),
+	))
 	return nil
 }
 
@@ -126,7 +126,7 @@ func (p *Pubkey) eddsaSec(item *info.Item) error {
 	return nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -20,6 +20,8 @@ func newSub27(cxt *context.Context, subID values.SuboacketID, body []byte) Subs 
 // Parse parsing Key Flags Sub-packet
 func (s *sub27) Parse() (*info.Item, error) {
 	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+
+	//First octet
 	flag, err := s.reader.ReadByte()
 	if err != nil {
 		return nil, err
@@ -32,6 +34,18 @@ func (s *sub27) Parse() (*info.Item, error) {
 	rootInfo.Add(values.Flag2Item(flag&0x20, "This key may be used for authentication."))
 	rootInfo.Add(values.Flag2Item(flag&0x40, fmt.Sprintf("Unknown flag1(%#02x)", flag&0x40)))
 	rootInfo.Add(values.Flag2Item(flag&0x80, "The private component of this key may be in the possession of more than one person."))
+
+	//second octet
+	if s.reader.Rest() > 0 {
+		flag, err := s.reader.ReadByte()
+		if err != nil {
+			return nil, err
+		}
+		rootInfo.Add(values.Flag2Item(flag&0x04, "This key may be used as an additional decryption subkey (ADSK)."))
+		rootInfo.Add(values.Flag2Item(flag&0xfb, fmt.Sprintf("Unknown flag2(%#02x)", flag&0xfb)))
+	}
+
+	//other flags
 	if s.reader.Rest() > 0 {
 		flags, _ := s.reader.Read2EOF()
 		for i, flag := range flags {

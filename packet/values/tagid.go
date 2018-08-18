@@ -26,6 +26,7 @@ var tagNames = Msgs{
 	17: "User Attribute Packet",
 	18: "Sym. Encrypted Integrity Protected Data Packet",
 	19: "Modification Detection Code Packet",
+	20: "AEAD Encrypted Data Packet",
 	60: "Private or Experimental Values",
 	61: "Private or Experimental Values",
 	62: "Private or Experimental Values",

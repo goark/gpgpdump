@@ -43,6 +43,10 @@ func (t *tag01) Parse() (*info.Item, error) {
 	if err := pubkey.New(t.cxt, values.PubID(pubid), t.reader).ParseSes(rootInfo); err != nil {
 		return rootInfo, err
 	}
+
+	if t.reader.Rest() > 0 {
+		rootInfo.Add(values.RawData(t.reader, "Unknown data", t.cxt.Debug()))
+	}
 	return rootInfo, nil
 }
 

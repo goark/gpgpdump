@@ -119,7 +119,7 @@ func (p *pubkeyInfo) parseV5(parent *info.Item) error {
 		return errors.Wrap(err, "error in tags.pubkey,parseV5() function (key material data)")
 	}
 	// [10] series of multiprecision integers comprising the key material.
-	return pubkey.New(p.cxt, p.pubID, reader.New(b)).ParsePub(parent)
+	return pubkey.New(p.cxt, p.pubID, reader.New(b)).ParsePub(parent) //TODO: new logic for key material
 }
 
 //PubID returns pubID

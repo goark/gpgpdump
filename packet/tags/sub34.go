@@ -7,21 +7,21 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
-//subReserved class for Reserved Sub-packet
+//subReserved class for Preferred AEAD Algorithms Sub-packet
 type sub34 subInfo
 
-//newSubReserved return subReserved instance
+//newSubReserved return sub34 instance
 func newSub34(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
 	return &sub34{cxt: cxt, subID: subID, reader: reader.New(body)}
 }
 
-// Parse parsing Reserved Sub-packet
+// Parse parsing Preferred AEAD Algorithms Sub-packet
 func (s *sub34) Parse() (*info.Item, error) {
 	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -7,36 +7,21 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
-// tag06 class for Public-Key Packet
-type tag06 tagInfo
+// tag20 class for AEAD Encrypted Data Packet Packet
+type tag20 tagInfo
 
-//newTag06 return tag06 instance
-func newTag06(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag06{cxt: cxt, tag: tag, reader: reader.New(body)}
+//newTag20 return tag20 instance
+func newTag20(cxt *context.Context, tag values.TagID, body []byte) Tags {
+	return &tag20{cxt: cxt, tag: tag, reader: reader.New(body)}
 }
 
-// Parse parsing Public-Key Packet
-func (t *tag06) Parse() (*info.Item, error) {
+// Parse parsing AEAD Encrypted Data Packet Packet
+func (t *tag20) Parse() (*info.Item, error) {
 	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
-	// [00] One-octet version number.
-	v, err := t.reader.ReadByte()
-	if err != nil {
-		return rootInfo, err
-	}
-	version := values.PubVer(v)
-	rootInfo.Add(version.ToItem(t.cxt.Debug()))
-
-	if err := newPubkey(t.cxt, t.reader, version).Parse(rootInfo); err != nil {
-		return rootInfo, err
-	}
-
-	if t.reader.Rest() > 0 {
-		rootInfo.Add(values.RawData(t.reader, "Unknown data", t.cxt.Debug()))
-	}
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
