@@ -10,6 +10,7 @@
 - Provide [golang](https://golang.org/) package and command-line Interface
 - Output with plain text, [TOML](https://github.com/toml-lang/toml), and [JSON](https://tools.ietf.org/html/rfc7159) format
 - Support [RFC 5581] and [RFC 6637]
+- Support a part of [RFC 4880bis]
 
 ## Install
 
@@ -217,6 +218,7 @@ $ dep status -dot | dot -Tpng -o dependency.png
 
 [gpgpdump]: https://github.com/spiegel-im-spiegel/gpgpdump "spiegel-im-spiegel/gpgpdump: gpgpdump - OpenPGP packet visualizer"
 [RFC 4880]: https://tools.ietf.org/html/rfc4880
+[RFC 4880bis]: https://datatracker.ietf.org/doc/draft-ietf-openpgp-rfc4880bis/
 [RFC 5581]: http://tools.ietf.org/html/rfc5581
 [RFC 6637]: http://tools.ietf.org/html/rfc6637
 [dep]: https://github.com/golang/dep "golang/dep: Go dependency management tool"
