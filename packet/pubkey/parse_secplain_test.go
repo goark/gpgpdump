@@ -29,7 +29,7 @@ const (
 		7f 2a
 `
 	secPlainResult22 = `
-	EdDSA EC point (255 bits)
+	EdDSA secret key (255 bits)
 		50 5e cc 13 31 23 59 49 c2 cc 48 1d 7c e8 39 85 ac 36 2f 76 ff 5a e5 d6 09 68 c6 e7 de cb 00 5c
 	Checksum
 		10 55

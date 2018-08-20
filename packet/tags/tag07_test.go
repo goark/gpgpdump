@@ -36,7 +36,7 @@ const (
 			Symmetric Algorithm: AES with 256-bit key (sym 9)
 				09
 	Secret-Key (the secret-key data is not encrypted.)
-		ECDH EC point (255 bits)
+		ECDH secret key (255 bits)
 			78 d6 1d 85 a4 dd 46 38 2f d6 aa 70 7c 09 8f d5 5d 2b 1a e3 3f 9b 28 c9 4c 75 51 ec bf e1 d5 18
 		Checksum
 			10 d1

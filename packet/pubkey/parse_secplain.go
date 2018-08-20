@@ -104,14 +104,7 @@ func (p *Pubkey) ecdhSec(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	switch (mpi.Rawdata())[0] {
-	case 0x04:
-		item.Add(mpi.ToItem("ECDH EC point (04 || X || Y)", p.cxt.Integer()))
-	case 0x40:
-		item.Add(mpi.ToItem("ECDH EC point (40 || X)", p.cxt.Integer()))
-	default:
-		item.Add(mpi.ToItem("ECDH EC point", p.cxt.Integer()))
-	}
+	item.Add(mpi.ToItem("ECDH secret key", p.cxt.Integer()))
 	return nil
 }
 
@@ -120,14 +113,7 @@ func (p *Pubkey) ecdsaSec(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	switch (mpi.Rawdata())[0] {
-	case 0x04:
-		item.Add(mpi.ToItem("ECDSA EC point (04 || X || Y)", p.cxt.Integer()))
-	case 0x40:
-		item.Add(mpi.ToItem("ECDSA EC point (40 || X)", p.cxt.Integer()))
-	default:
-		item.Add(mpi.ToItem("ECDSA EC point", p.cxt.Integer()))
-	}
+	item.Add(mpi.ToItem("ECDSA secret key", p.cxt.Integer()))
 	return nil
 }
 
@@ -136,14 +122,7 @@ func (p *Pubkey) eddsaSec(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	switch (mpi.Rawdata())[0] {
-	case 0x04:
-		item.Add(mpi.ToItem("EdDSA EC point (04 || uncompressd format)", p.cxt.Integer()))
-	case 0x40:
-		item.Add(mpi.ToItem("EdDSA EC point (40 || compressd format)", p.cxt.Integer()))
-	default:
-		item.Add(mpi.ToItem("EdDSA EC point", p.cxt.Integer()))
-	}
+	item.Add(mpi.ToItem("EdDSA secret key", p.cxt.Integer()))
 	return nil
 }
 
