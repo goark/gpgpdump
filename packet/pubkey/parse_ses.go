@@ -72,7 +72,14 @@ func (p *Pubkey) ecdhSes(item *info.Item) error {
 	if err != nil || mpi == nil {
 		return err
 	}
-	item.Add(mpi.ToItem("ECDH EC point (04 || X || Y)", p.cxt.Integer()))
+	switch (mpi.Rawdata())[0] {
+	case 0x04:
+		item.Add(mpi.ToItem("ECDH EC point (04 || X || Y)", p.cxt.Integer()))
+	case 0x40:
+		item.Add(mpi.ToItem("ECDH EC point (40 || X)", p.cxt.Integer()))
+	default:
+		item.Add(mpi.ToItem("ECDH EC point", p.cxt.Integer()))
+	}
 	ep, err := values.NewECParm(p.reader)
 	if err != nil || ep == nil {
 		return err
@@ -81,7 +88,7 @@ func (p *Pubkey) ecdhSes(item *info.Item) error {
 	return nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -27,7 +27,7 @@ const (
 			12
 		ECC Curve OID: cv25519 (256bits key size)
 			2b 06 01 04 01 97 55 01 05 01
-		ECDH EC point (04 || X || Y) (263 bits)
+		ECDH EC point (40 || X) (263 bits)
 			40 4a fb 95 cb 33 b2 d9 d5 76 19 13 39 81 9f 64 9b 98 43 39 c6 a5 fc f6 fc 9c 9d ba 0d cc 9a 7d 7d
 		KDF parameters (3 bytes)
 			01 0a 09
@@ -36,7 +36,7 @@ const (
 			Symmetric Algorithm: AES with 256-bit key (sym 9)
 				09
 	Secret-Key (the secret-key data is not encrypted.)
-		ECDH EC point (04 || X || Y) (255 bits)
+		ECDH EC point (255 bits)
 			78 d6 1d 85 a4 dd 46 38 2f d6 aa 70 7c 09 8f d5 5d 2b 1a e3 3f 9b 28 c9 4c 75 51 ec bf e1 d5 18
 		Checksum
 			10 d1

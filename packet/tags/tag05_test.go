@@ -81,10 +81,10 @@ const (
 			16
 		ECC Curve OID: ed25519 (256bits key size)
 			2b 06 01 04 01 da 47 0f 01
-		EdDSA EC point (04 || X || Y) (263 bits)
+		EdDSA EC point (40 || compressd format) (263 bits)
 			40 c6 ae d8 56 62 34 73 e7 f1 86 ff 5f 09 dd d2 c2 b5 48 bd 78 94 90 a8 d2 fd 9c fc c6 69 15 fb 86
 	Secret-Key (the secret-key data is not encrypted.)
-		ECDSA EC point (04 || X || Y) (255 bits)
+		EdDSA EC point (255 bits)
 			50 5e cc 13 31 23 59 49 c2 cc 48 1d 7c e8 39 85 ac 36 2f 76 ff 5a e5 d6 09 68 c6 e7 de cb 00 5c
 		Checksum
 			10 55
