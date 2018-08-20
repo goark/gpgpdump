@@ -52,80 +52,39 @@ const (
 `
 )
 
-var cxtSes = context.NewContext(options.New(
-	options.Set(options.DebugOpt, true), //not use
-	options.Set(options.GDumpOpt, true), //not use
-	options.Set(options.IntegerOpt, true),
-	options.Set(options.LiteralOpt, true),
-	options.Set(options.MarkerOpt, true),
-	options.Set(options.PrivateOpt, true),
-	options.Set(options.UTCOpt, true),
-))
-
-func TestPubkeySes16(t *testing.T) {
-	parent := info.NewItem()
-	New(cxtSes, values.PubID(pubkeySes16[0]), reader.New(pubkeySes16[1:])).ParseSes(parent)
-	str := parent.String()
-	if str != pubkeySesResult16 {
-		t.Errorf("pubkey.ParseSes() = \"%v\", want \"%v\".", str, pubkeySesResult16)
+func TestPubkeySes(t *testing.T) {
+	testCases := []struct {
+		content []byte
+		res     string
+	}{
+		{content: pubkeySes16, res: pubkeySesResult16},
+		{content: pubkeySes17, res: pubkeySesResult17},
+		{content: pubkeySes18a, res: pubkeySesResult18a},
+		{content: pubkeySes18b, res: pubkeySesResult18b},
+		{content: pubkeySes18c, res: pubkeySesResult18c},
+		{content: pubkeySes19, res: pubkeySesResult19},
+		{content: pubkeySesUn, res: pubkeySesResultUnknown},
+	}
+	for _, tc := range testCases {
+		parent := info.NewItem()
+		cxt := context.NewContext(options.New(
+			options.Set(options.DebugOpt, true), //not use
+			options.Set(options.GDumpOpt, true), //not use
+			options.Set(options.IntegerOpt, true),
+			options.Set(options.LiteralOpt, true),
+			options.Set(options.MarkerOpt, true),
+			options.Set(options.PrivateOpt, true),
+			options.Set(options.UTCOpt, true),
+		))
+		New(cxt, values.PubID(tc.content[0]), reader.New(tc.content[1:])).ParseSes(parent)
+		str := parent.String()
+		if str != tc.res {
+			t.Errorf("Parse() = \"%v\", want \"%v\".", str, tc.res)
+		}
 	}
 }
 
-func TestPubkeySes17(t *testing.T) {
-	parent := info.NewItem()
-	New(cxtSes, values.PubID(pubkeySes17[0]), reader.New(pubkeySes17[1:])).ParseSes(parent)
-	str := parent.String()
-	if str != pubkeySesResult17 {
-		t.Errorf("pubkey.ParseSes() = \"%v\", want \"%v\".", str, pubkeySesResult17)
-	}
-}
-
-func TestPubkeySes18(t *testing.T) {
-	parent := info.NewItem()
-	New(cxtSes, values.PubID(pubkeySes18a[0]), reader.New(pubkeySes18a[1:])).ParseSes(parent)
-	str := parent.String()
-	if str != pubkeySesResult18a {
-		t.Errorf("pubkey.ParseSes() = \"%v\", want \"%v\".", str, pubkeySesResult18a)
-	}
-}
-
-func TestPubkeySes18Err1(t *testing.T) {
-	parent := info.NewItem()
-	New(cxtSes, values.PubID(pubkeySes18b[0]), reader.New(pubkeySes18b[1:])).ParseSes(parent)
-	str := parent.String()
-	if str != pubkeySesResult18b {
-		t.Errorf("pubkey.ParseSes() = \"%v\", want \"%v\".", str, pubkeySesResult18b)
-	}
-}
-
-func TestPubkeySes18Err2(t *testing.T) {
-	parent := info.NewItem()
-	New(cxtSes, values.PubID(pubkeySes18c[0]), reader.New(pubkeySes18c[1:])).ParseSes(parent)
-	str := parent.String()
-	if str != pubkeySesResult18c {
-		t.Errorf("pubkey.ParseSes() = \"%v\", want \"%v\".", str, pubkeySesResult18c)
-	}
-}
-
-func TestPubkeySes19(t *testing.T) {
-	parent := info.NewItem()
-	New(cxtSes, values.PubID(pubkeySes19[0]), reader.New(pubkeySes19[1:])).ParseSes(parent)
-	str := parent.String()
-	if str != pubkeySesResult19 {
-		t.Errorf("pubkey.ParseSes() = \"%v\", want \"%v\".", str, pubkeySesResult19)
-	}
-}
-
-func TestPubkeySesUnknown(t *testing.T) {
-	parent := info.NewItem()
-	New(cxtSes, values.PubID(pubkeySesUn[0]), reader.New(pubkeySesUn[1:])).ParseSes(parent)
-	str := parent.String()
-	if str != pubkeySesResultUnknown {
-		t.Errorf("pubkey.ParseSes() = \"%v\", want \"%v\".", str, pubkeySesResultUnknown)
-	}
-}
-
-/* Copyright 2016,2017 Spiegel
+/* Copyright 2016-2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

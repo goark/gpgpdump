@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	pubkeyPub19      = []byte{19, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x02, 0x03, 0x04, 0xa5, 0xd5, 0xbc, 0x76, 0x07, 0xdb, 0xb8, 0x8f, 0xb2, 0x21, 0x19, 0x11, 0xb0, 0xd0, 0x5a, 0x7e, 0xe9, 0x34, 0xdf, 0xa3, 0x8d, 0x8e, 0xf9, 0xb9, 0x7e, 0xb6, 0xd8, 0x63, 0x0a, 0xee, 0x92, 0xee, 0x0d, 0x74, 0xc7, 0xc0, 0x48, 0xf3, 0xb8, 0xd5, 0xaa, 0xa8, 0x73, 0xbd, 0xe7, 0x19, 0xb5, 0xda, 0xd8, 0xf6, 0x68, 0x05, 0x03, 0x15, 0x7d, 0x9a, 0x84, 0x43, 0x61, 0xca, 0xee, 0xdf, 0xd6, 0x0e}
-	pubkeyPubUnknown = []byte{99, 0x01, 0x02, 0x03, 0x04}
+	pubkeyPub19      = []byte{0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x02, 0x03, 0x04, 0xa5, 0xd5, 0xbc, 0x76, 0x07, 0xdb, 0xb8, 0x8f, 0xb2, 0x21, 0x19, 0x11, 0xb0, 0xd0, 0x5a, 0x7e, 0xe9, 0x34, 0xdf, 0xa3, 0x8d, 0x8e, 0xf9, 0xb9, 0x7e, 0xb6, 0xd8, 0x63, 0x0a, 0xee, 0x92, 0xee, 0x0d, 0x74, 0xc7, 0xc0, 0x48, 0xf3, 0xb8, 0xd5, 0xaa, 0xa8, 0x73, 0xbd, 0xe7, 0x19, 0xb5, 0xda, 0xd8, 0xf6, 0x68, 0x05, 0x03, 0x15, 0x7d, 0x9a, 0x84, 0x43, 0x61, 0xca, 0xee, 0xdf, 0xd6, 0x0e}
+	pubkeyPubUnknown = []byte{0x01, 0x02, 0x03, 0x04}
 )
 
 const (
@@ -28,35 +28,37 @@ const (
 `
 )
 
-var cxtPub = context.NewContext(options.New(
-	options.Set(options.DebugOpt, true), //not use
-	options.Set(options.GDumpOpt, true), //not use
-	options.Set(options.IntegerOpt, true),
-	options.Set(options.LiteralOpt, true),
-	options.Set(options.MarkerOpt, true),
-	options.Set(options.PrivateOpt, true),
-	options.Set(options.UTCOpt, true),
-))
-
-func TestPubkeyPub19(t *testing.T) {
-	parent := info.NewItem()
-	New(cxtPub, values.PubID(pubkeyPub19[0]), reader.New(pubkeyPub19[1:])).ParsePub(parent)
-	str := parent.String()
-	if str != pubkeyPubResult19 {
-		t.Errorf("pubkey.ParsePub() = \"%v\", want \"%v\".", str, pubkeyPubResult19)
+func TestPubkeyPub(t *testing.T) {
+	testCases := []struct {
+		pubID   uint8
+		content []byte
+		res     string
+	}{
+		{pubID: 19, content: pubkeyPub19, res: pubkeyPubResult19},
+		{pubID: 99, content: pubkeyPubUnknown, res: pubkeyPubResultUnknown},
+	}
+	for _, tc := range testCases {
+		parent := info.NewItem()
+		cxt := context.NewContext(options.New(
+			options.Set(options.DebugOpt, true), //not use
+			options.Set(options.GDumpOpt, true), //not use
+			options.Set(options.IntegerOpt, true),
+			options.Set(options.LiteralOpt, true),
+			options.Set(options.MarkerOpt, true),
+			options.Set(options.PrivateOpt, true),
+			options.Set(options.UTCOpt, true),
+		))
+		if err := New(cxt, values.PubID(tc.pubID), reader.New(tc.content)).ParsePub(parent); err != nil {
+			t.Errorf("Parse() = %v, want nil error.", err)
+		}
+		str := parent.String()
+		if str != tc.res {
+			t.Errorf("Parse() = \"%v\", want \"%v\".", str, tc.res)
+		}
 	}
 }
 
-func TestPubkeyPubUnknown(t *testing.T) {
-	parent := info.NewItem()
-	New(cxtPub, values.PubID(pubkeyPubUnknown[0]), reader.New(pubkeyPubUnknown[1:])).ParsePub(parent)
-	str := parent.String()
-	if str != pubkeyPubResultUnknown {
-		t.Errorf("pubkey.ParsePub() = \"%v\", want \"%v\".", str, pubkeyPubResultUnknown)
-	}
-}
-
-/* Copyright 2017 Spiegel
+/* Copyright 2017,2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

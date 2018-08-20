@@ -15,15 +15,6 @@ var (
 	pubkeySigUnknown = []byte{0x01, 0x02, 0x03, 0x04}
 )
 
-var (
-	pubkeySigName19a = "ECDSA value r"
-	pubkeySigNote19a = "256 bits"
-	pubkeySigName19b = "ECDSA value s"
-	pubkeySigNote19b = "252 bits"
-	//pubkeySigName19b = "ECDH 04 || EC point (X,Y)"
-	//pubkeySigNote19b = "515 bits"
-)
-
 const (
 	pubkeySigResult19 = `
 	ECDSA value r (256 bits)
@@ -37,39 +28,37 @@ const (
 `
 )
 
-var cxtSig = context.NewContext(options.New(
-	options.Set(options.DebugOpt, true), //not use
-	options.Set(options.GDumpOpt, true), //not use
-	options.Set(options.IntegerOpt, true),
-	options.Set(options.LiteralOpt, true),
-	options.Set(options.MarkerOpt, true),
-	options.Set(options.PrivateOpt, true),
-	options.Set(options.UTCOpt, true),
-))
-
-func TestPubkeySig19(t *testing.T) {
-	parent := info.NewItem()
-	if err := New(cxtSig, values.PubID(19), reader.New(pubkeySig19)).ParseSig(parent); err != nil {
-		t.Errorf("ParseSig() = %v, want nil error.", err)
+func TestPubkeySig(t *testing.T) {
+	testCases := []struct {
+		pubID   uint8
+		content []byte
+		res     string
+	}{
+		{pubID: 19, content: pubkeySig19, res: pubkeySigResult19},
+		{pubID: 99, content: pubkeySigUnknown, res: pubkeySigResultUnknown},
 	}
-	str := parent.String()
-	if str != pubkeySigResult19 {
-		t.Errorf("pubkey.ParseSig() = \"%v\", want \"%v\".", str, pubkeySigResult19)
-	}
-}
-
-func TestPubkeySigUnknown(t *testing.T) {
-	parent := info.NewItem()
-	if err := New(cxtSig, values.PubID(99), reader.New(pubkeySigUnknown)).ParseSig(parent); err != nil {
-		t.Errorf("ParseSig() = %v, want nil error.", err)
-	}
-	str := parent.String()
-	if str != pubkeySigResultUnknown {
-		t.Errorf("pubkey.ParseSig() = \"%v\", want \"%v\".", str, pubkeySigResultUnknown)
+	for _, tc := range testCases {
+		parent := info.NewItem()
+		cxt := context.NewContext(options.New(
+			options.Set(options.DebugOpt, true), //not use
+			options.Set(options.GDumpOpt, true), //not use
+			options.Set(options.IntegerOpt, true),
+			options.Set(options.LiteralOpt, true),
+			options.Set(options.MarkerOpt, true),
+			options.Set(options.PrivateOpt, true),
+			options.Set(options.UTCOpt, true),
+		))
+		if err := New(cxt, values.PubID(tc.pubID), reader.New(tc.content)).ParseSig(parent); err != nil {
+			t.Errorf("Parse() = %v, want nil error.", err)
+		}
+		str := parent.String()
+		if str != tc.res {
+			t.Errorf("Parse() = \"%v\", want \"%v\".", str, tc.res)
+		}
 	}
 }
 
-/* Copyright 2016,2017 Spiegel
+/* Copyright 2016-2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
