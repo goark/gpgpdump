@@ -221,8 +221,6 @@ github.com/spiegel-im-spiegel/gpgpdump github.com/spiegel-im-spiegel/gocli@v0.8.
 github.com/spiegel-im-spiegel/gpgpdump golang.org/x/crypto@v0.0.0-20180910181607-0e37d006457b
 ```
 
-[![Dependencies](dependency.png)](dependency.png)
-
 [gpgpdump]: https://github.com/spiegel-im-spiegel/gpgpdump "spiegel-im-spiegel/gpgpdump: gpgpdump - OpenPGP packet visualizer"
 [RFC 4880]: https://tools.ietf.org/html/rfc4880
 [RFC 4880bis]: https://datatracker.ietf.org/doc/draft-ietf-openpgp-rfc4880bis/
