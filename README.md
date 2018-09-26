@@ -208,10 +208,17 @@ $ cat sig | gpgpdump -j -u
 }
 ```
 
-## Dependencies
+## Module Requirement Graph
 
 ```
-$ dep status -dot | dot -Tpng -o dependency.png
+$ go mod graph
+github.com/spiegel-im-spiegel/gpgpdump github.com/BurntSushi/toml@v0.3.1
+github.com/spiegel-im-spiegel/gpgpdump github.com/inconshreveable/mousetrap@v1.0.0
+github.com/spiegel-im-spiegel/gpgpdump github.com/pkg/errors@v0.8.0
+github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/cobra@v0.0.3
+github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/pflag@v1.0.2
+github.com/spiegel-im-spiegel/gpgpdump github.com/spiegel-im-spiegel/gocli@v0.8.0
+github.com/spiegel-im-spiegel/gpgpdump golang.org/x/crypto@v0.0.0-20180910181607-0e37d006457b
 ```
 
 [![Dependencies](dependency.png)](dependency.png)
