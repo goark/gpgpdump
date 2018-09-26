@@ -3,11 +3,8 @@ language: go
 go:
   - "1.11"
 
-env:
-  - GO111MODULE=on
-
 script:
-  - go test ./...
+  - env GO111MODULE=on go test ./...
 
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
