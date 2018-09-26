@@ -5,7 +5,9 @@ release:
     name: gpgpdump
 
 builds:
-- goos:
+- env:
+  - GO111MODULE=on
+  goos:
   - linux
   - darwin
   - windows
