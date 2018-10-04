@@ -24,6 +24,10 @@ func TestNewMPINoName(t *testing.T) {
 	if err != nil {
 		t.Errorf("NewMPI() = \"%v\", want nil error.", err)
 	}
+	r := m.Rawdata()
+	if r[0] != data1[2] {
+		t.Errorf("MPIdata[0] = %v, want %v.", r[0], data1[2])
+	}
 	i := m.ToItem("", true)
 	if i.Name != "Multi-precision integer" {
 		t.Errorf("MPI.Name = \"%v\", want \"Multi-precision integer\".", i.Name)
@@ -91,7 +95,7 @@ func TestMPINil(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

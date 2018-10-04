@@ -5,7 +5,9 @@ release:
     name: gpgpdump
 
 builds:
-- goos:
+- env:
+  - GO111MODULE=on
+  goos:
   - linux
   - darwin
   - windows
@@ -39,7 +41,6 @@ archive:
   files:
   - LICENSE*
   - README*
-  - dependency.png
 
 changelog:
   sort: asc

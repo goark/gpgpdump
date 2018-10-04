@@ -30,6 +30,11 @@ func NewMPI(r *reader.Reader) (*MPI, error) {
 	return &MPI{bitLength: bitLength, data: data}, nil
 }
 
+//Rawdata returns MPI raw data
+func (mpi *MPI) Rawdata() []byte {
+	return mpi.data
+}
+
 //ToItem returns Item instance
 func (mpi *MPI) ToItem(name string, dumpFlag bool) *info.Item {
 	if mpi == nil {
@@ -45,7 +50,7 @@ func (mpi *MPI) ToItem(name string, dumpFlag bool) *info.Item {
 	)
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2018 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
