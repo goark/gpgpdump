@@ -3,6 +3,9 @@ language: go
 go:
   - "1.11.x"
 
+install:
+  - env GO111MODULE=on go mod download
+
 script:
   - env GO111MODULE=on go test ./...
 
