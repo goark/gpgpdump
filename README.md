@@ -12,21 +12,34 @@
 - Support [RFC 5581] and [RFC 6637]
 - Support a part of [RFC 4880bis]
 
-## Install
+## Declare [gpgpdump] module
+
+See [go.mod](https://github.com/spiegel-im-spiegel/gpgpdump/blob/master/go.mod) file. 
+
+### Module Requirement Graph
 
 ```
-$ go get -v github.com/spiegel-im-spiegel/gpgpdump
+$ go mod graph
+github.com/spiegel-im-spiegel/gpgpdump github.com/BurntSushi/toml@v0.3.1
+github.com/spiegel-im-spiegel/gpgpdump github.com/inconshreveable/mousetrap@v1.0.0
+github.com/spiegel-im-spiegel/gpgpdump github.com/pkg/errors@v0.8.0
+github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/cobra@v0.0.3
+github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/pflag@v1.0.3
+github.com/spiegel-im-spiegel/gpgpdump github.com/spiegel-im-spiegel/gocli@v0.8.1
+github.com/spiegel-im-spiegel/gpgpdump golang.org/x/crypto@v0.0.0-20181009213950-7c1a557ab941
 ```
 
-Installing by [dep].
-
-```
-$ dep ensure -add github.com/spiegel-im-spiegel/godump
-```
-
-### Usage
+## Usage of [gpgpdump] package
 
 ```go
+import (
+	"fmt"
+	"strings"
+
+	"github.com/spiegel-im-spiegel/gpgpdump"
+	"github.com/spiegel-im-spiegel/gpgpdump/options"
+)
+
 const openpgpStr = `
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
@@ -206,19 +219,6 @@ $ cat sig | gpgpdump -j -u
     }
   ]
 }
-```
-
-## Module Requirement Graph
-
-```
-$ go mod graph
-github.com/spiegel-im-spiegel/gpgpdump github.com/BurntSushi/toml@v0.3.1
-github.com/spiegel-im-spiegel/gpgpdump github.com/inconshreveable/mousetrap@v1.0.0
-github.com/spiegel-im-spiegel/gpgpdump github.com/pkg/errors@v0.8.0
-github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/cobra@v0.0.3
-github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/pflag@v1.0.2
-github.com/spiegel-im-spiegel/gpgpdump github.com/spiegel-im-spiegel/gocli@v0.8.0
-github.com/spiegel-im-spiegel/gpgpdump golang.org/x/crypto@v0.0.0-20180910181607-0e37d006457b
 ```
 
 [gpgpdump]: https://github.com/spiegel-im-spiegel/gpgpdump "spiegel-im-spiegel/gpgpdump: gpgpdump - OpenPGP packet visualizer"
