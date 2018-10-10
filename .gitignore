@@ -2,6 +2,9 @@
 *.o
 *.a
 *.so
+*.exe
+*.test
+*.prof
 
 # Folders
 _obj
@@ -24,6 +27,3 @@ _cgo_export.*
 _testmain.go
 
 go.sum
-*.exe
-*.test
-*.prof

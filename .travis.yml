@@ -1,13 +1,18 @@
 language: go
 
 go:
-  - "1.11.x"
+- "1.11.x"
 
 install:
-  - env GO111MODULE=on go mod download
+- env GO111MODULE=on go mod download
 
 script:
-  - env GO111MODULE=on go test ./...
+- env GO111MODULE=on go test ./...
 
-after_success:
-  - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: curl -sL https://git.io/goreleaser | bash
+  on:
+    tags: true
+    condition: $TRAVIS_OS_NAME = linux
