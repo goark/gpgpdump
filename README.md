@@ -26,7 +26,7 @@ github.com/spiegel-im-spiegel/gpgpdump github.com/pkg/errors@v0.8.0
 github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/cobra@v0.0.3
 github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/pflag@v1.0.3
 github.com/spiegel-im-spiegel/gpgpdump github.com/spiegel-im-spiegel/gocli@v0.8.1
-github.com/spiegel-im-spiegel/gpgpdump golang.org/x/crypto@v0.0.0-20181009213950-7c1a557ab941
+github.com/spiegel-im-spiegel/gpgpdump golang.org/x/crypto@v0.0.0-20181015023909-0c41d7ab0a0e
 ```
 
 ## Usage of [gpgpdump] package

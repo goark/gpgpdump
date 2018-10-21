@@ -7,9 +7,6 @@ env:
   global:
   - GO111MODULE=on
 
-install:
-- go mod download
-
 script:
 - go test ./...
 
