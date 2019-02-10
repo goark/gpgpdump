@@ -10,19 +10,21 @@ import (
 )
 
 //sub23 class for Key Server Preferences Sub-packet
-type sub23 subInfo
+type sub23 struct {
+	subInfo
+}
 
 //newSub23 return sub23 instance
 func newSub23(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub23{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub23{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Key Server Preferences Sub-packet
 func (s *sub23) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	flag, err := s.reader.ReadByte()
 	if err != nil {
-		return nil, err
+		return rootInfo, err
 	}
 	rootInfo.Add(values.Flag2Item(flag&0x80, "No-modify"))
 	rootInfo.Add(values.Flag2Item(flag&0x7f, fmt.Sprintf("Unknown flag1(%#02x)", flag&0x7f)))
@@ -35,7 +37,7 @@ func (s *sub23) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

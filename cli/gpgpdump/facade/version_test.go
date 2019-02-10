@@ -9,7 +9,7 @@ import (
 )
 
 func TestVersionMin(t *testing.T) {
-	result := "gpgpdump\nCopyright 2016-2018 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n"
+	result := "gpgpdump dev-version\nCopyright 2016-2019 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n"
 
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
@@ -30,30 +30,7 @@ func TestVersionMin(t *testing.T) {
 	}
 }
 
-func TestVersionNum(t *testing.T) {
-	Version = "TestVersion"
-	result := "gpgpdump vTestVersion\nCopyright 2016-2018 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n"
-
-	outBuf := new(bytes.Buffer)
-	outErrBuf := new(bytes.Buffer)
-	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
-	args := []string{"-v"}
-
-	exit := Execute(ui, args)
-	if exit != exitcode.Normal {
-		t.Errorf("Execute(version) = \"%v\", want \"%v\".", exit, exitcode.Normal)
-	}
-	str := outBuf.String()
-	if str != "" {
-		t.Errorf("Execute(version) = \"%v\", want \"%v\".", str, "")
-	}
-	str = outErrBuf.String()
-	if str != result {
-		t.Errorf("Execute(version) = \"%v\", want \"%v\".", str, result)
-	}
-}
-
-/* Copyright 2017,2018 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

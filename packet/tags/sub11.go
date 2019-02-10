@@ -8,24 +8,25 @@ import (
 )
 
 //sub11 class for Preferred Symmetric Algorithms Sub-packet
-type sub11 subInfo
+type sub11 struct {
+	subInfo
+}
 
 //newSub11 return sub11 instance
 func newSub11(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub11{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub11{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Preferred Symmetric Algorithms Sub-packet
 func (s *sub11) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
-	algs, _ := s.reader.Read2EOF()
-	for _, alg := range algs {
+	rootInfo := s.ToItem()
+	for _, alg := range s.reader.GetBody() {
 		rootInfo.Add(values.SymID(alg).ToItem(s.cxt.Debug()))
 	}
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

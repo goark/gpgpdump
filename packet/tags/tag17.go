@@ -8,21 +8,19 @@ import (
 )
 
 // tag17 class for User Attribute Packet
-type tag17 tagInfo
+type tag17 struct {
+	tagInfo
+}
 
 //newTag17 return tag17 instance
 func newTag17(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag17{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag17{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing User Attribute Packet
 func (t *tag17) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
-	sp, err := t.reader.Read2EOF()
-	if err != nil {
-		return rootInfo, err
-	}
-	subpcket, err := newSubparser(t.cxt, t.tag, "Subpacket", sp)
+	rootInfo := t.ToItem()
+	subpcket, err := newSubparser(t.cxt, t.tag, "Subpacket", t.reader.GetBody())
 	if err != nil {
 		return rootInfo, err
 	}
@@ -34,7 +32,7 @@ func (t *tag17) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

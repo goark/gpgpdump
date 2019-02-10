@@ -10,7 +10,6 @@ func TestMsgsGetNormal(t *testing.T) {
 	res := names.Get(1, "Unknown")
 	if res != "Name1" {
 		t.Errorf("Msgs.Get() = \"%v\", want \"Name1\".", res)
-
 	}
 }
 
@@ -18,7 +17,6 @@ func TestMsgsGetNG(t *testing.T) {
 	res := names.Get(0, "Unknown")
 	if res != "Unknown" {
 		t.Errorf("Msgs.Get() = \"%v\", want \"Unknown\".", res)
-
 	}
 }
 

@@ -39,8 +39,7 @@ func NewParser(reader io.Reader, o *options.Options) (*Parser, error) {
 		r, err = newParserArmor(reader)
 	} else {
 		buf := new(bytes.Buffer)
-		tee := io.TeeReader(reader, buf)
-		r, err = newParserArmor(tee)
+		r, err = newParserArmor(io.TeeReader(reader, buf))
 		if err != nil {
 			r, err = buf, nil
 		}

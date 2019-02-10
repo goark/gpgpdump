@@ -8,16 +8,18 @@ import (
 )
 
 // tag18 class for TSym. Encrypted Integrity Protected Data Packet
-type tag18 tagInfo
+type tag18 struct {
+	tagInfo
+}
 
 //NewTag18 return tag18 instance
 func newTag18(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag18{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag18{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing Sym. Encrypted Integrity Protected Data Packet
 func (t *tag18) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	itm := values.RawData(t.reader, "Encrypted data", t.cxt.Debug())
 	switch true {
 	case t.cxt.IsSymEnc():
@@ -32,7 +34,7 @@ func (t *tag18) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

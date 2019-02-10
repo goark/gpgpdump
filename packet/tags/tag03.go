@@ -9,17 +9,19 @@ import (
 )
 
 //tag03 class for Symmetric-Key Encrypted Session Key Packet
-type tag03 tagInfo
+type tag03 struct {
+	tagInfo
+}
 
 //newTag03 return tag03 instance
 func newTag03(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag03{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag03{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing tag03 instance
 func (t *tag03) Parse() (*info.Item, error) {
 	t.cxt.SetAlgSymEnc()
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	// [00] one-octet version number
 	v, err := t.reader.ReadByte()
 	if err != nil {
@@ -73,7 +75,7 @@ func (t *tag03) parseV5(rootInfo *info.Item) (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2018 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

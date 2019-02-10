@@ -8,24 +8,25 @@ import (
 )
 
 //sub22 class for Preferred Compression Algorithms Sub-packet
-type sub22 subInfo
+type sub22 struct {
+	subInfo
+}
 
 //newSub22 return sub22 instance
 func newSub22(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub22{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub22{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Preferred Compression Algorithms Sub-packet
 func (s *sub22) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
-	algs, _ := s.reader.Read2EOF()
-	for _, alg := range algs {
+	rootInfo := s.ToItem()
+	for _, alg := range s.reader.GetBody() {
 		rootInfo.Add(values.CompID(alg).ToItem(s.cxt.Debug()))
 	}
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

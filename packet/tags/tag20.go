@@ -8,20 +8,22 @@ import (
 )
 
 // tag20 class for AEAD Encrypted Data Packet Packet
-type tag20 tagInfo
+type tag20 struct {
+	tagInfo
+}
 
 //newTag20 return tag20 instance
 func newTag20(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag20{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag20{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing AEAD Encrypted Data Packet Packet
 func (t *tag20) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	return rootInfo, nil
 }
 
-/* Copyright 2018 Spiegel
+/* Copyright 2018,2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

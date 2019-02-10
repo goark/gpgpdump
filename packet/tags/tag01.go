@@ -9,18 +9,20 @@ import (
 )
 
 // tag01 class for Public-Key Encrypted Session Key Packet
-type tag01 tagInfo
+type tag01 struct {
+	tagInfo
+}
 
 //newTag01 return tag01 instance
 func newTag01(cxt *context.Context, tag values.TagID, body []byte) Tags {
 	//func newTag01(cxt *context.Context, tag values.TagID, body []byte) *tag01 {
-	return &tag01{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag01{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing tag01 instance
 func (t *tag01) Parse() (*info.Item, error) {
 	t.cxt.SetAlgPubEnc() //set Pubkey Encryption Mode
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	// [00] one-octet number giving the version number of the packet type.
 	ver, err := t.reader.ReadByte()
 	if err != nil {
@@ -50,7 +52,7 @@ func (t *tag01) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

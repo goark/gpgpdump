@@ -8,18 +8,19 @@ import (
 )
 
 // sub32 class for Embedded Signature Sub-packet
-type sub32 subInfo
+type sub32 struct {
+	subInfo
+}
 
 //newSub32 return sub32 instance
 func newSub32(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub32{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub32{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Embedded Signature Sub-packet
 func (s *sub32) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
-	body, _ := s.reader.Read2EOF()
-	itm, err := newTag02(s.cxt, values.TagID(2), body).Parse()
+	rootInfo := s.ToItem()
+	itm, err := newTag02(s.cxt, values.TagID(2), s.reader.GetBody()).Parse()
 	if err != nil {
 		return rootInfo, err
 	}
@@ -27,7 +28,7 @@ func (s *sub32) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

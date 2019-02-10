@@ -8,20 +8,27 @@ import (
 )
 
 // tagPrivate class for Unknown Packet
-type tagPrivate tagInfo
+type tagPrivate struct {
+	tagInfo
+}
 
 //NewTagUnknown return Unknown instance
 func newTagPrivate(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tagPrivate{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tagPrivate{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
+}
+
+//ToItem returns info.Item instance
+func (t *tagPrivate) ToItem() *info.Item {
+	return t.tag.ToItem(t.reader, t.cxt.Private())
 }
 
 // Parse parsing Unknown Packet
 func (t *tagPrivate) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Private())
+	rootInfo := t.ToItem()
 	return rootInfo, nil
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

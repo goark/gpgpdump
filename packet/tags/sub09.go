@@ -8,21 +8,27 @@ import (
 )
 
 //sub09 class for Key Expiration Time Sub-packet
-type sub09 subInfo
+type sub09 struct {
+	subInfo
+}
 
 //newSub09 return sub09 instance
 func newSub09(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub09{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub09{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Key Expiration Time Sub-packet
 func (s *sub09) Parse() (*info.Item, error) {
-	exp, _ := values.NewExpire(s.reader, s.cxt.KeyCreationTime)
+	rootInfo := s.ToItem()
+	exp, err := values.NewExpire(s.reader, s.cxt.KeyCreationTime)
+	if err != nil {
+		return rootInfo, err
+	}
 	s.cxt.KeyCreationTime = nil
-	return exp.ToItem(s.subID.ToItem(s.reader, s.cxt.Debug()).Name, s.cxt.Debug()), nil
+	return exp.ToItem(rootInfo.Name, s.cxt.Debug()), nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

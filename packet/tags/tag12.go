@@ -8,21 +8,23 @@ import (
 )
 
 // tag12 class for Trust Packet
-type tag12 tagInfo
+type tag12 struct {
+	tagInfo
+}
 
 //newTag12 return tag12 instance
 func newTag12(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag12{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag12{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing Trust Packet
 func (t *tag12) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	rootInfo.Add(values.RawData(t.reader, "Trust", true))
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

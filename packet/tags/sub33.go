@@ -10,16 +10,18 @@ import (
 )
 
 //sub33 class for Issuer Fingerprint Sub-packet
-type sub33 subInfo
+type sub33 struct {
+	subInfo
+}
 
 //newSub33 return sub33 instance
 func newSub33(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub33{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub33{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Issuer Fingerprint Sub-packet
 func (s *sub33) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	ver, err := s.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
@@ -41,7 +43,7 @@ func (s *sub33) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

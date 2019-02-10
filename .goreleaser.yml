@@ -5,7 +5,7 @@ release:
     name: gpgpdump
 
 builds:
-- 
+-
   env:
   - GO111MODULE=on
   goos:
@@ -21,7 +21,7 @@ builds:
   goarm:
   - "6"
   main: ./cli/gpgpdump/
-  ldflags: -s -w -X github.com/spiegel-im-spiegel/gpgpdump/cli/gpgpdump/facade.Version={{ .Version }}
+  ldflags: -s -w -X github.com/spiegel-im-spiegel/gpgpdump/cli/gpgpdump/facade.Version=v{{ .Version }}
   binary: gpgpdump
 
 archive:

@@ -8,23 +8,29 @@ import (
 )
 
 //sub02 class for Signature Creation Time Sub-packet
-type sub02 subInfo
+type sub02 struct {
+	subInfo
+}
 
 //newSub02 return sub02 instance
 func newSub02(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub02{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub02{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Signature Creation Time Sub-packet
 func (s *sub02) Parse() (*info.Item, error) {
-	tm, _ := values.NewDateTime(s.reader, s.cxt.UTC())
+	rootInfo := s.ToItem()
+	tm, err := values.NewDateTime(s.reader, s.cxt.UTC())
+	if err != nil {
+		return rootInfo, err
+	}
 	sigTime := values.SigTimeItem(tm, s.cxt.Debug())
-	sigTime.Name = s.subID.ToItem(s.reader, s.cxt.Debug()).Name
+	sigTime.Name = rootInfo.Name
 	s.cxt.SigCreationTime = tm
 	return sigTime, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

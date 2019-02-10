@@ -8,21 +8,27 @@ import (
 )
 
 //sub03 class for Signature Expiration Time Sub-packet
-type sub03 subInfo
+type sub03 struct {
+	subInfo
+}
 
 //newSub03 return sub03 instance
 func newSub03(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub03{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub03{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Signature Expiration Timee Sub-packet
 func (s *sub03) Parse() (*info.Item, error) {
-	exp, _ := values.NewExpire(s.reader, s.cxt.SigCreationTime)
+	rootInfo := s.ToItem()
+	exp, err := values.NewExpire(s.reader, s.cxt.SigCreationTime)
+	if err != nil {
+		return rootInfo, err
+	}
 	s.cxt.SigCreationTime = nil
-	return exp.ToItem(s.subID.ToItem(s.reader, s.cxt.Debug()).Name, s.cxt.Debug()), nil
+	return exp.ToItem(rootInfo.Name, s.cxt.Debug()), nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

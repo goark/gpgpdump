@@ -11,19 +11,21 @@ import (
 )
 
 //sub20 class for Notation Data Sub-packet
-type sub20 subInfo
+type sub20 struct {
+	subInfo
+}
 
 //newSub20 return sub20 instance
 func newSub20(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub20{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub20{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Notation Data Sub-packet
 func (s *sub20) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	flags, err := s.reader.ReadBytes(8)
 	if err != nil {
-		return nil, err
+		return rootInfo, err
 	}
 	human := flags[0] & 0x80
 	rootInfo.Add(values.Flag2Item(human, "Human-readable"))
@@ -34,15 +36,15 @@ func (s *sub20) Parse() (*info.Item, error) {
 
 	nameLength, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return nil, err
+		return rootInfo, err
 	}
 	valueLength, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return nil, err
+		return rootInfo, err
 	}
 	name, err := s.reader.ReadBytes(int64(binary.BigEndian.Uint16(nameLength)))
 	if err != nil {
-		return nil, err
+		return rootInfo, err
 	}
 	rootInfo.Add(info.NewItem(
 		info.Name("Name"),
@@ -50,7 +52,7 @@ func (s *sub20) Parse() (*info.Item, error) {
 	))
 	value, err := s.reader.ReadBytes(int64(binary.BigEndian.Uint16(valueLength)))
 	if err != nil {
-		return nil, err
+		return rootInfo, err
 	}
 	itm := info.NewItem(
 		info.Name("Value"),
@@ -65,7 +67,7 @@ func (s *sub20) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

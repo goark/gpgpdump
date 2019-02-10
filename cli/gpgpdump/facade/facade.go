@@ -1,7 +1,6 @@
 package facade
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"runtime"
@@ -17,37 +16,34 @@ var (
 	//Name is applicatin name
 	Name = "gpgpdump"
 	//Version is version for applicatin
-	Version string
+	Version = "dev-version"
 )
 
 var (
-	versionFlag bool        //version flag
-	jsonFlag    bool        //output with JSON format
-	tomlFlag    bool        //output with TOML format
-	cui         = rwi.New() //CUI instance
+	versionFlag bool //version flag
+	jsonFlag    bool //output with JSON format
+	tomlFlag    bool //output with TOML format
 )
 
 //newRootCmd returns cobra.Command instance for root command
 func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
-	cui = ui
 	rootCmd := &cobra.Command{
 		Use: Name + " [flags] [OpenPGP file]",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			//parse options
 			if versionFlag {
-				cui.OutputErr(Name)
-				if len(Version) > 0 {
-					cui.OutputErr(fmt.Sprintf(" v%s", Version))
+				if err := ui.OutputErrln(Name, Version); err != nil {
+					return err
 				}
-				cui.OutputErrln()
-				cui.OutputErrln("Copyright 2016-2018 Spiegel (based on pgpdump by kazu-yamamoto)")
-				cui.OutputErrln("Licensed under Apache License, Version 2.0")
-				return nil
+				if err := ui.OutputErrln("Copyright 2016-2019 Spiegel (based on pgpdump by kazu-yamamoto)"); err != nil {
+					return err
+				}
+				return ui.OutputErrln("Licensed under Apache License, Version 2.0")
 			}
 			opts := parseOpt(cmd)
 
 			//open PGP file
-			reader := cui.Reader()
+			reader := ui.Reader()
 			if len(args) > 0 {
 				file, err := os.Open(args[0]) //args[0] is maybe file path
 				if err != nil {
@@ -76,8 +72,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			cui.WriteFrom(result)
-			return nil
+			return ui.WriteFrom(result)
 		},
 	}
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
@@ -124,13 +119,13 @@ func Execute(ui *rwi.RWI, args []string) (exit exitcode.ExitCode) {
 	defer func() {
 		//panic hundling
 		if r := recover(); r != nil {
-			cui.OutputErrln("Panic:", r)
+			_ = ui.OutputErrln("Panic:", r)
 			for depth := 0; ; depth++ {
 				pc, src, line, ok := runtime.Caller(depth)
 				if !ok {
 					break
 				}
-				cui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ":", src, ":", line)
+				_ = ui.OutputErrln(" ->", depth, ":", runtime.FuncForPC(pc).Name(), ":", src, ":", line)
 			}
 			exit = exitcode.Abnormal
 		}
@@ -144,7 +139,7 @@ func Execute(ui *rwi.RWI, args []string) (exit exitcode.ExitCode) {
 	return
 }
 
-/* Copyright 2017,2018 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

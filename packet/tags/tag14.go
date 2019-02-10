@@ -8,20 +8,21 @@ import (
 )
 
 // tag14 class for Public-Subkey Packet
-type tag14 tagInfo
+type tag14 struct {
+	tagInfo
+}
 
 //newTag14 return tag14 instance
 func newTag14(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag14{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag14{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing Public-Subkey Packet
 func (t *tag14) Parse() (*info.Item, error) {
-	body, _ := t.reader.Read2EOF()
-	return newTag06(t.cxt, t.tag, body).Parse() //redirect to Tag06
+	return newTag06(t.cxt, t.tag, t.reader.GetBody()).Parse() //redirect to Tag06
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016,2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

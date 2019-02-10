@@ -47,7 +47,6 @@ qYr/qc8A
 var sample4 = []byte{0xa8, 0x03, 0x50, 0x47, 0x50, 0xc3, 0x04, 0x04, 0x03, 0x00, 0x01, 0xc9, 0x38, 0xe7, 0x2d, 0x2f, 0xb1, 0xf1, 0x0f, 0xc3, 0xce, 0x55, 0x5d, 0xb2, 0x8a, 0x4b, 0xe8, 0x4f, 0x43, 0x15, 0x6e, 0x7d, 0x90, 0x90, 0x53, 0x6a, 0x9a, 0xe3, 0xaa, 0x1c, 0x68, 0xd6, 0xd3, 0xfc, 0x6a, 0x4e, 0x79, 0xa8, 0xe7, 0xb1, 0xa5, 0x87, 0xea, 0xcc, 0xcc, 0x99, 0x66, 0x31, 0xad, 0xff, 0xe1, 0xa3, 0x03, 0xb6, 0x47, 0x85, 0x76, 0xbd, 0x0b}
 
 const (
-	result1 = "{}\n"
 	result2 = `{
   "Packet": [
     {
@@ -105,10 +104,12 @@ const (
         },
         {
           "name": "ECDSA value r",
+          "dump": "ea 1d a2 14 5b 82 06 fd d5 ae c4 9f d8 14 44 41 a4 f5 4f 56 69 ad 9a b0 44 f3 a3 88 b2 60 f4 0c",
           "note": "256 bits"
         },
         {
           "name": "ECDSA value s",
+          "dump": "0a d3 c0 23 f3 ed cd af 9b 19 6f ee c4 65 44 b5 08 e8 27 6c 3a a8 6e 3b 52 9f 61 7a ea ee 27 48",
           "note": "252 bits"
         }
       ]
@@ -190,10 +191,12 @@ const (
         },
         {
           "name": "DSA value r",
+          "dump": "77 ed 18 05 4b 09 81 4d 02 37 a5 fd 84 bd 28 fe 88 fb d9 a3 a3 cb 8f 4c 7f 8f 3e 58 71 8a 28 77",
           "note": "255 bits"
         },
         {
           "name": "DSA value s",
+          "dump": "61 b0 85 8d 5e f2 76 38 29 e9 bb dd 3d e4 5e ba b8 54 23 96 b6 95 41 91 bd 4e e1 f8 3d ca 6c 36",
           "note": "255 bits"
         }
       ]
@@ -210,6 +213,7 @@ const (
       "Item": [
         {
           "name": "Literal data",
+          "dump": "50 47 50",
           "note": "3 bytes"
         }
       ]
@@ -285,6 +289,7 @@ const (
 			Modification time of a file: 2017-11-25T06:29:56Z
 				5a 19 0d e4
 			Literal data (13 bytes)
+				48 65 6c 6c 6f 20 77 6f 72 6c 64 0d 0a
 		Signature Packet (tag 2) (117 bytes)
 			04 00 11 08 00 1d 16 21 04 1b 52 02 db 4a 3e c7 76 f1 e0 ad 18 b4 da 3b ae 7e 20 b8 1c 05 02 5a 19 0d e4 00 0a 09 10 b4 da 3b ae 7e 20 b8 1c 73 3c 01 00 84 ef ee ae 22 69 2e af 33 b3 85 e1 ee aa 5d 2f 7a d4 ae a3 92 d3 e8 73 d4 b0 00 3e c9 2b 80 f7 00 ff 7c cc b9 d2 06 48 b3 39 58 9b a8 99 c5 c2 53 62 bd 8f 16 49 73 e0 65 fe a6 f7 18 1a 78 ff 65 e6
 			Version: 4 (current)
@@ -310,7 +315,9 @@ const (
 			Hash left 2 bytes
 				73 3c
 			DSA value r (256 bits)
+				84 ef ee ae 22 69 2e af 33 b3 85 e1 ee aa 5d 2f 7a d4 ae a3 92 d3 e8 73 d4 b0 00 3e c9 2b 80 f7
 			DSA value s (255 bits)
+				7c cc b9 d2 06 48 b3 39 58 9b a8 99 c5 c2 53 62 bd 8f 16 49 73 e0 65 fe a6 f7 18 1a 78 ff 65 e6
 `
 )
 
@@ -369,7 +376,10 @@ func TestParse(t *testing.T) {
 		return
 	}
 	buf := new(bytes.Buffer)
-	io.Copy(buf, json)
+	if _, err := io.Copy(buf, json); err != nil {
+		t.Errorf("io.Copy()  = %v, want nil error.", err)
+		return
+	}
 	str := buf.String()
 	if str != result2 {
 		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result2)
@@ -420,7 +430,10 @@ func TestParseClearSignText(t *testing.T) {
 		return
 	}
 	buf := new(bytes.Buffer)
-	io.Copy(buf, json)
+	if _, err := io.Copy(buf, json); err != nil {
+		t.Errorf("io.Copy()  = %v, want nil error.", err)
+		return
+	}
 	str := buf.String()
 	if str != result3 {
 		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result3)
@@ -448,7 +461,10 @@ func TestParseBindata(t *testing.T) {
 		return
 	}
 	buf := new(bytes.Buffer)
-	io.Copy(buf, json)
+	if _, err := io.Copy(buf, json); err != nil {
+		t.Errorf("io.Copy()  = %v, want nil error.", err)
+		return
+	}
 	str := buf.String()
 	if str != result4 {
 		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result4)
@@ -467,7 +483,7 @@ func TestNilParser(t *testing.T) {
 	}
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

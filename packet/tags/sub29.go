@@ -10,7 +10,9 @@ import (
 )
 
 //sub29 class for Reason for Revocation Sub-packet
-type sub29 subInfo
+type sub29 struct {
+	subInfo
+}
 
 var reasonNames = values.Msgs{
 	0:  "No reason specified (key revocations or cert revocations)",
@@ -22,12 +24,12 @@ var reasonNames = values.Msgs{
 
 //newSub29 return sub29 instance
 func newSub29(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub29{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub29{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Reason for Revocation Sub-packet
 func (s *sub29) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	code, err := s.reader.ReadByte()
 	var name string
 	if err != nil {
@@ -42,7 +44,7 @@ func (s *sub29) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

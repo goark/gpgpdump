@@ -71,7 +71,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 		if err != nil {
 			return errors.Wrap(err, "error in s2k.S2K.Parse() function (gnu-div)")
 		}
-		if bytes.Compare(mrk, []byte("GNU")) == 0 {
+		if bytes.Equal(mrk, []byte("GNU")) {
 			s.hasIV = false
 			n, err := s.reader.ReadByte()
 			if err != nil {
@@ -109,7 +109,7 @@ func (s *S2K) HasIV() bool {
 	return s.hasIV
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

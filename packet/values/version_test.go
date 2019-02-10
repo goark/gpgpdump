@@ -4,6 +4,15 @@ import "testing"
 
 func TestVersionNew(t *testing.T) {
 	v := NewVersion(4, 4, 5)
+	if !v.IsCurrent() {
+		t.Errorf("Version.IsCurrent = %v, want true.", v.IsCurrent())
+	}
+	if v.IsOld() {
+		t.Errorf("Version.IsOld = %v, want false.", v.IsOld())
+	}
+	if v.IsDraft() {
+		t.Errorf("Version.IsUnknown = %v, want false.", v.IsDraft())
+	}
 	if v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
 	}
@@ -26,21 +35,17 @@ func TestVersionNew(t *testing.T) {
 	}
 }
 
-func TestVersionOldNew(t *testing.T) {
-	v := (*Version)(nil)
-	if v.IsCurrent() {
-		t.Errorf("Current Version = %v, want false.", v.IsCurrent())
-	}
-	if v.IsOld() {
-		t.Errorf("Old Version = %v, want false.", v.IsOld())
-	}
-	if v.Number() != 0 {
-		t.Errorf("Version.Number = %v, want 0.", v.Number())
-	}
-}
-
 func TestVersionOld(t *testing.T) {
 	v := NewVersion(3, 4, 5)
+	if v.IsCurrent() {
+		t.Errorf("Version.IsCurrent = %v, want false.", v.IsCurrent())
+	}
+	if !v.IsOld() {
+		t.Errorf("Version.IsOld = %v, want true.", v.IsOld())
+	}
+	if v.IsDraft() {
+		t.Errorf("Version.IsUnknown = %v, want false.", v.IsDraft())
+	}
 	if v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
 	}
@@ -62,6 +67,15 @@ func TestVersionOld(t *testing.T) {
 
 func TestVersionDraft(t *testing.T) {
 	v := NewVersion(5, 4, 5)
+	if v.IsCurrent() {
+		t.Errorf("Version.IsCurrent = %v, want false.", v.IsCurrent())
+	}
+	if v.IsOld() {
+		t.Errorf("Version.IsOld = %v, want false.", v.IsOld())
+	}
+	if !v.IsDraft() {
+		t.Errorf("Version.IsUnknown = %v, want true.", v.IsDraft())
+	}
 	if v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want false.", v.IsUnknown())
 	}
@@ -81,22 +95,17 @@ func TestVersionDraft(t *testing.T) {
 	}
 }
 
-func TestVersionOldNil(t *testing.T) {
-	v := (*Version)(nil)
-	if v.IsOld() {
-		t.Errorf("Old Version = %v, want false.", v.IsOld())
-	}
-}
-
-func TestVersionToItemNil(t *testing.T) {
-	v := (*Version)(nil)
-	if v.ToItem(true) != nil {
-		t.Error("Version to Item: not nil, want nil.")
-	}
-}
-
 func TestVersionUnknown(t *testing.T) {
 	v := NewVersion(6, 4, 5)
+	if v.IsCurrent() {
+		t.Errorf("Version.IsCurrent = %v, want false.", v.IsCurrent())
+	}
+	if v.IsOld() {
+		t.Errorf("Version.IsOld = %v, want false.", v.IsOld())
+	}
+	if v.IsDraft() {
+		t.Errorf("Version.IsDraft = %v, want false.", v.IsDraft())
+	}
 	if !v.IsUnknown() {
 		t.Errorf("Version.IsUnknown = %v, want true.", v.IsUnknown())
 	}
@@ -113,6 +122,28 @@ func TestVersionUnknown(t *testing.T) {
 	}
 	if i.Dump != "06" {
 		t.Errorf("Version.Dump = \"%v\", want \"06\".", i.Dump)
+	}
+}
+
+func TestVersionNil(t *testing.T) {
+	v := (*Version)(nil)
+	if v.IsCurrent() {
+		t.Errorf("Version.IsCurrent = %v, want false.", v.IsCurrent())
+	}
+	if v.IsOld() {
+		t.Errorf("Version.IsOld = %v, want false.", v.IsOld())
+	}
+	if v.IsDraft() {
+		t.Errorf("Version.IsDraft = %v, want false.", v.IsDraft())
+	}
+	if !v.IsUnknown() {
+		t.Errorf("Version.IsUnknown = %v, want true.", v.IsUnknown())
+	}
+	if v.Number() != 0 {
+		t.Errorf("Version.Number = %v, want 0.", v.Number())
+	}
+	if v.ToItem(true) != nil {
+		t.Error("Version to Item: not nil, want nil.")
 	}
 }
 
@@ -172,7 +203,7 @@ func TestSymSessKeyVer5(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

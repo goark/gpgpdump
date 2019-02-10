@@ -8,22 +8,23 @@ import (
 )
 
 //sub24 class for Preferred Key Server Sub-packet
-type sub24 subInfo
+type sub24 struct {
+	subInfo
+}
 
 //newSub24 return sub24 instance
 func newSub24(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub24{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub24{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Preferred Key Server Sub-packet
 func (s *sub24) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
-	server, _ := s.reader.Read2EOF()
-	rootInfo.Value = string(server)
+	rootInfo := s.ToItem()
+	rootInfo.Value = string(s.reader.GetBody())
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

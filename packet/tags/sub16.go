@@ -8,25 +8,28 @@ import (
 )
 
 //sub16 class for Issuer Sub-packet
-type sub16 subInfo
+type sub16 struct {
+	subInfo
+}
 
 //newSub16 return sub16 instance
 func newSub16(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub16{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub16{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Issuer Sub-packet
 func (s *sub16) Parse() (*info.Item, error) {
+	rootInfo := s.ToItem()
 	keyid, err := s.reader.ReadBytes(8)
 	if err != nil {
-		return nil, err
+		return rootInfo, err
 	}
-	rootInfo := values.NewKeyID(keyid).ToItem()
-	rootInfo.Name = s.subID.ToItem(s.reader, s.cxt.Debug()).Name
-	return rootInfo, nil
+	issuer := values.NewKeyID(keyid).ToItem()
+	issuer.Name = rootInfo.Name
+	return issuer, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

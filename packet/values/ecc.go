@@ -52,7 +52,7 @@ func (oid OID) ToItem(dumpFlag bool) *info.Item {
 //Stringer of OID
 func (oid OID) String() string {
 	for k, v := range oidList {
-		if bytes.Compare(oid, v) == 0 {
+		if bytes.Equal(oid, v) {
 			return k
 		}
 	}
@@ -87,7 +87,7 @@ func (ep ECParm) ToItem(name string, dumpFlag bool) *info.Item {
 	)
 }
 
-/* Copyright 2016,2017 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

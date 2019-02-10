@@ -8,22 +8,23 @@ import (
 )
 
 //sub26 class for Policy URI Sub-packet
-type sub26 subInfo
+type sub26 struct {
+	subInfo
+}
 
 //newSub26 return sub26 instance
 func newSub26(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub26{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub26{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Policy URI Sub-packet
 func (s *sub26) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
-	url, _ := s.reader.Read2EOF()
-	rootInfo.Value = string(url)
+	rootInfo := s.ToItem()
+	rootInfo.Value = string(s.reader.GetBody())
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -10,16 +10,18 @@ import (
 )
 
 // tag04 class for One-Pass Signature Packet
-type tag04 tagInfo
+type tag04 struct {
+	tagInfo
+}
 
 //newTag04 return tag04 instance
 func newTag04(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag04{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag04{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing tag04 instance
 func (t *tag04) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	// [00] one-octet version number
 	v, err := t.reader.ReadByte()
 	if err != nil {
@@ -72,7 +74,7 @@ func (t *tag04) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
