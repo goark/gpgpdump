@@ -8,20 +8,22 @@ import (
 )
 
 //subReserved class for Reserved Sub-packet
-type subReserved subInfo
+type subReserved struct {
+	subInfo
+}
 
 //newSubReserved return subReserved instance
 func newSubReserved(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &subReserved{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &subReserved{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Reserved Sub-packet
 func (s *subReserved) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

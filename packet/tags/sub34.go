@@ -8,20 +8,22 @@ import (
 )
 
 //subReserved class for Preferred AEAD Algorithms Sub-packet
-type sub34 subInfo
+type sub34 struct {
+	subInfo
+}
 
 //newSubReserved return sub34 instance
 func newSub34(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub34{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub34{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Preferred AEAD Algorithms Sub-packet
 func (s *sub34) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	return rootInfo, nil
 }
 
-/* Copyright 2018 Spiegel
+/* Copyright 2018,2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

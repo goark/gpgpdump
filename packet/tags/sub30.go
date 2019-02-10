@@ -10,19 +10,21 @@ import (
 )
 
 //sub30 class for Features Sub-packet
-type sub30 subInfo
+type sub30 struct {
+	subInfo
+}
 
 //newSub30 return sub30 instance
 func newSub30(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub30{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub30{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Features Sub-packet
 func (s *sub30) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	flag, err := s.reader.ReadByte()
 	if err != nil {
-		return nil, err
+		return rootInfo, err
 	}
 	rootInfo.Add(values.Flag2Item(flag&0x01, "Modification Detection (packets 18 and 19)"))
 	rootInfo.Add(values.Flag2Item(flag&0xfe, fmt.Sprintf("Unknown flag1(%#02x)", flag&0xfe)))
@@ -35,7 +37,7 @@ func (s *sub30) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

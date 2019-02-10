@@ -83,19 +83,19 @@ func (o *Options) Armor() bool { return o.armorFlag }
 func (o *Options) Debug() bool { return o.debugFlag }
 
 //GDump return flag value of gdumpFlag
-func (o *Options) GDump() bool { return o.gdumpFlag }
+func (o *Options) GDump() bool { return o.gdumpFlag || o.debugFlag }
 
 //Integer return flag value of intFlag
-func (o *Options) Integer() bool { return o.intFlag }
+func (o *Options) Integer() bool { return o.intFlag || o.debugFlag }
 
 //Literal return flag value of literalFlag
-func (o *Options) Literal() bool { return o.literalFlag }
+func (o *Options) Literal() bool { return o.literalFlag || o.debugFlag }
 
 //Marker return flag value of markerFlag
-func (o *Options) Marker() bool { return o.markerFlag }
+func (o *Options) Marker() bool { return o.markerFlag || o.debugFlag }
 
 //Private return flag value of privateFlag
-func (o *Options) Private() bool { return o.privateFlag }
+func (o *Options) Private() bool { return o.privateFlag || o.debugFlag }
 
 //UTC return flag value of utcFlag
 func (o *Options) UTC() bool { return o.utcFlag }

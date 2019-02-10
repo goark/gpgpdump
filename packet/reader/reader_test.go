@@ -3,7 +3,6 @@ package reader
 import (
 	"bytes"
 	"io"
-	"reflect"
 	"testing"
 )
 
@@ -110,7 +109,7 @@ func TestWriteTo(t *testing.T) {
 		t.Errorf("WriteTo() size = %v, want %v.", s, 4)
 	}
 	v := buf.Bytes()
-	if !reflect.DeepEqual(v, res) {
+	if !bytes.Equal(res, v) {
 		t.Errorf("WriteTo() = %v, want %v.", v, res)
 	}
 }
@@ -145,7 +144,7 @@ func TestRead2EOF(t *testing.T) {
 	if err != nil {
 		t.Errorf("Read2EOF() = \"%v\", want nil.", err)
 	}
-	if !reflect.DeepEqual(v, res) {
+	if !bytes.Equal(res, v) {
 		t.Errorf("Read2EOF() = %v, want %v.", v, res)
 	}
 	if _, err := reader.Read2EOF(); err != io.EOF {
@@ -170,6 +169,15 @@ func TestReadByte(t *testing.T) {
 	}
 }
 
+func TestGetBody(t *testing.T) {
+	var res = []byte{0x01, 0x02, 0x03, 0x04}
+	reader := New(buffer)
+	v := reader.GetBody()
+	if !bytes.Equal(res, v) {
+		t.Errorf("Read2EOF() = %v, want %v.", v, res)
+	}
+}
+
 func TestDump(t *testing.T) {
 	reader := New(buffer)
 	d := reader.DumpString(2)
@@ -189,7 +197,7 @@ func TestDump(t *testing.T) {
 	}
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

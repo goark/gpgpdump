@@ -6,6 +6,7 @@ import (
 	"compress/flate"
 	"compress/zlib"
 	"io"
+	"io/ioutil"
 
 	"github.com/pkg/errors"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
@@ -16,19 +17,18 @@ import (
 
 //Tag08 class for Compressed Data Packet
 type Tag08 struct {
-	*tagInfo
+	tagInfo
 	data io.Reader
 }
 
 //newTag08 return tag08 instance
 func newTag08(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	info := &tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}
-	return &Tag08{tagInfo: info, data: nil}
+	return &Tag08{tagInfo: tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}, data: ioutil.NopCloser(bytes.NewReader(nil))}
 }
 
 // Parse parsing Compressed Data Packet
 func (t *Tag08) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	compID, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
@@ -44,7 +44,7 @@ func (t *Tag08) Parse() (*info.Item, error) {
 			var zd []byte
 			zd, err = t.reader.Read2EOF()
 			if err != nil {
-				return nil, errors.Wrap(err, "error in Tag08.Parse() function (no data)")
+				return rootInfo, errors.Wrap(err, "error in Tag08.Parse() function (no data)")
 			}
 			t.data = bytes.NewReader(zd)
 		case 1: //zip <RFC1951>
@@ -68,40 +68,40 @@ func (t *Tag08) Reader() io.Reader {
 func (t *Tag08) extractZip() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return nil, errors.Wrap(err, "error in Tag08.extractZip() function (no data)")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errors.Wrap(err, "error in Tag08.extractZip() function (no data)")
 	}
 	zr := flate.NewReader(bytes.NewReader(zd))
 	buf := new(bytes.Buffer)
-	io.Copy(buf, zr)
-	return buf, nil
+	_, err = io.Copy(buf, zr)
+	return buf, err
 }
 
 func (t *Tag08) extractZLib() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return nil, errors.Wrap(err, "error in Tag08.extractZip() function (no data)")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errors.Wrap(err, "error in Tag08.extractZip() function (no data)")
 	}
 	zr, err := zlib.NewReader(bytes.NewReader(zd))
 	if err != nil {
-		return nil, errors.Wrap(err, "error in Tag08.extractZip() function")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errors.Wrap(err, "error in Tag08.extractZip() function")
 	}
 	buf := new(bytes.Buffer)
-	io.Copy(buf, zr)
-	return buf, nil
+	_, err = io.Copy(buf, zr)
+	return buf, err
 }
 
 func (t *Tag08) extractBzip2() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return nil, errors.Wrap(err, "error in Tag08.extractZip() function (no data)")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errors.Wrap(err, "error in Tag08.extractZip() function (no data)")
 	}
 	zr := bzip2.NewReader(bytes.NewReader(zd))
 	buf := new(bytes.Buffer)
-	io.Copy(buf, zr)
-	return buf, nil
+	_, err = io.Copy(buf, zr)
+	return buf, err
 }
 
-/* Copyright 2016,2017 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

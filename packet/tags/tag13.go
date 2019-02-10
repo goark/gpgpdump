@@ -8,33 +8,28 @@ import (
 )
 
 // tag13 class for User ID Packet
-type tag13 tagInfo
+type tag13 struct {
+	tagInfo
+}
 
 //newTag13 return tag13 instance
 func newTag13(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag13{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag13{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing User ID Packet
 func (t *tag13) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
-	body, err := t.reader.Read2EOF()
-	if err != nil {
-		return rootInfo, err
-	}
+	rootInfo := t.ToItem()
+	body := t.reader.GetBody()
 	rootInfo.Add(info.NewItem(
 		info.Name("User ID"),
 		info.Value(string(body)),
 		info.DumpStr(values.DumpBytes(body, t.cxt.Debug()).String()),
 	))
-
-	if t.reader.Rest() > 0 {
-		rootInfo.Add(values.RawData(t.reader, "Unknown data", t.cxt.Debug()))
-	}
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

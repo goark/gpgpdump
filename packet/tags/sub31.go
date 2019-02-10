@@ -8,16 +8,18 @@ import (
 )
 
 //sub31 class for Signature Target Sub-packet
-type sub31 subInfo
+type sub31 struct {
+	subInfo
+}
 
 //newSub31 return sub31 instance
 func newSub31(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub31{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub31{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Signature Target Sub-packet
 func (s *sub31) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	pubid, err := s.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
@@ -32,7 +34,7 @@ func (s *sub31) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

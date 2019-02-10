@@ -8,16 +8,18 @@ import (
 )
 
 // tag06 class for Public-Key Packet
-type tag06 tagInfo
+type tag06 struct {
+	tagInfo
+}
 
 //newTag06 return tag06 instance
 func newTag06(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag06{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag06{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing Public-Key Packet
 func (t *tag06) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	// [00] One-octet version number.
 	v, err := t.reader.ReadByte()
 	if err != nil {
@@ -36,7 +38,7 @@ func (t *tag06) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

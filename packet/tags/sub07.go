@@ -8,16 +8,18 @@ import (
 )
 
 //sub07 class for Revocable Sub-packet
-type sub07 subInfo
+type sub07 struct {
+	subInfo
+}
 
 //newSub07 return sub07 instance
 func newSub07(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub07{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub07{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Revocable Sub-packet
 func (s *sub07) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	b, err := s.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
@@ -30,7 +32,7 @@ func (s *sub07) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

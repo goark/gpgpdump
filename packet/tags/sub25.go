@@ -8,16 +8,18 @@ import (
 )
 
 //sub25 class for Primary User ID Sub-packet
-type sub25 subInfo
+type sub25 struct {
+	subInfo
+}
 
 //newSub25 return sub25 instance
 func newSub25(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub25{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub25{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Primary User ID Sub-packet
 func (s *sub25) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	b, err := s.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
@@ -30,7 +32,7 @@ func (s *sub25) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

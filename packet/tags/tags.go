@@ -15,6 +15,11 @@ type tagInfo struct {
 	reader *reader.Reader
 }
 
+//ToItem returns info.Item instance
+func (t *tagInfo) ToItem() *info.Item {
+	return t.tag.ToItem(t.reader, t.cxt.Debug())
+}
+
 //Tags parsing interface
 type Tags interface {
 	Parse() (*info.Item, error)

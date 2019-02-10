@@ -8,23 +8,25 @@ import (
 )
 
 // tag19 class for Modification Detection Code Packet
-type tag19 tagInfo
+type tag19 struct {
+	tagInfo
+}
 
 //newTag19 return tag19 instance
 func newTag19(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag19{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag19{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing Modification Detection Code Packet
 func (t *tag19) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	itm := values.RawData(t.reader, "MDC", t.cxt.Debug())
 	itm.Note = "SHA-1 (20 bytes)"
 	rootInfo.Add(itm)
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -8,16 +8,18 @@ import (
 )
 
 //sub04 class for Exportable Certification Sub-packet
-type sub04 subInfo
+type sub04 struct {
+	subInfo
+}
 
 //newSub04 return sub04 instance
 func newSub04(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub04{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub04{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Exportable Certification Sub-packet
 func (s *sub04) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+	rootInfo := s.ToItem()
 	b, err := s.reader.ReadByte()
 	if err != nil {
 		return rootInfo, err
@@ -31,7 +33,7 @@ func (s *sub04) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

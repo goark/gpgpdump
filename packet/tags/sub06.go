@@ -8,22 +8,23 @@ import (
 )
 
 //sub06 class for Regular Expression Sub-packet
-type sub06 subInfo
+type sub06 struct {
+	subInfo
+}
 
 //newSub06 return sub06 instance
 func newSub06(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub06{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub06{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Regular Expression Sub-packet
 func (s *sub06) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
-	b, _ := s.reader.Read2EOF()
-	rootInfo.Value = string(b)
+	rootInfo := s.ToItem()
+	rootInfo.Value = string(s.reader.GetBody())
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

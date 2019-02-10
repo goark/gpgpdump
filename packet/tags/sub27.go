@@ -10,21 +10,22 @@ import (
 )
 
 //sub27 class for Key Flags Sub-packet
-type sub27 subInfo
+type sub27 struct {
+	subInfo
+}
 
 //newSub27 return sub27 instance
 func newSub27(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub27{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub27{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Key Flags Sub-packet
 func (s *sub27) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
-
+	rootInfo := s.ToItem()
 	//First octet
 	flag, err := s.reader.ReadByte()
 	if err != nil {
-		return nil, err
+		return rootInfo, err
 	}
 	rootInfo.Add(values.Flag2Item(flag&0x01, "This key may be used to certify other keys."))
 	rootInfo.Add(values.Flag2Item(flag&0x02, "This key may be used to sign data."))
@@ -39,7 +40,7 @@ func (s *sub27) Parse() (*info.Item, error) {
 	if s.reader.Rest() > 0 {
 		flag, err := s.reader.ReadByte()
 		if err != nil {
-			return nil, err
+			return rootInfo, err
 		}
 		rootInfo.Add(values.Flag2Item(flag&0x04, "This key may be used as an additional decryption subkey (ADSK)."))
 		rootInfo.Add(values.Flag2Item(flag&0xfb, fmt.Sprintf("Unknown flag2(%#02x)", flag&0xfb)))
@@ -55,7 +56,7 @@ func (s *sub27) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

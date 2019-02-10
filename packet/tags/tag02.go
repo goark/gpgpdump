@@ -12,16 +12,18 @@ import (
 )
 
 // tag02 class for Signature Packet
-type tag02 tagInfo
+type tag02 struct {
+	tagInfo
+}
 
 //newTag02 return tag02 instance
 func newTag02(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag02{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag02{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing tag02 instance
 func (t *tag02) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	// [00] One-octet version number.
 	v, err := t.reader.ReadByte()
 	if err != nil {
@@ -199,10 +201,9 @@ func (t *tag02) hashLeft2(hv []byte) *info.Item {
 		info.Name("Hash left 2 bytes"),
 		info.DumpStr(values.DumpBytes(hv, true).String()),
 	)
-	//return values.NewRawData("Hash left 2 bytes", "", h, true)
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

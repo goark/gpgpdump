@@ -15,6 +15,11 @@ type subInfo struct {
 	reader *reader.Reader
 }
 
+//ToItem returns info.Item instance
+func (s *subInfo) ToItem() *info.Item {
+	return s.subID.ToItem(s.reader, s.cxt.Debug())
+}
+
 //Subs is parsing interface
 type Subs interface {
 	Parse() (*info.Item, error)

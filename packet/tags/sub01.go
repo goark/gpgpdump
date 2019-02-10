@@ -12,16 +12,18 @@ import (
 )
 
 // sub01 class for Image Attribute Sub-packet
-type sub01 subInfo
+type sub01 struct {
+	subInfo
+}
 
 //newSubReserved return subInfo instance
 func newSub01(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}
+	return &sub01{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Image Attribute Sub-packet
-func (s *subInfo) Parse() (*info.Item, error) {
-	rootInfo := s.subID.ToItem(s.reader, s.cxt.Debug())
+func (s *sub01) Parse() (*info.Item, error) {
+	rootInfo := s.ToItem()
 	l, err := s.reader.ReadBytes(2)
 	if err != nil {
 		return rootInfo, err
@@ -68,7 +70,7 @@ func (s *subInfo) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

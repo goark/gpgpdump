@@ -8,16 +8,18 @@ import (
 )
 
 // tag09 class for Symmetrically Encrypted Data Packet
-type tag09 tagInfo
+type tag09 struct {
+	tagInfo
+}
 
 //newTag09 return Tag01 instance
 func newTag09(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &tag09{cxt: cxt, tag: tag, reader: reader.New(body)}
+	return &tag09{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
 // Parse parsing Symmetrically Encrypted Data Packet
 func (t *tag09) Parse() (*info.Item, error) {
-	rootInfo := t.tag.ToItem(t.reader, t.cxt.Debug())
+	rootInfo := t.ToItem()
 	itm := values.RawData(t.reader, "Encrypted data", t.cxt.Debug())
 	switch true {
 	case t.cxt.IsSymEnc():
@@ -33,7 +35,7 @@ func (t *tag09) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

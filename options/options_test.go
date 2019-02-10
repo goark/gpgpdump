@@ -49,7 +49,7 @@ func TestArmorOpt(t *testing.T) {
 
 func TestDebugOpt(t *testing.T) {
 	o := New(Set(DebugOpt, true))
-	res := "armor:false,debug:true,gdump:false,int:false,literal:false,marker:false,private:false,utc:false"
+	res := "armor:false,debug:true,gdump:true,int:true,literal:true,marker:true,private:true,utc:false"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
 	}
