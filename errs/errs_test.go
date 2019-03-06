@@ -33,10 +33,12 @@ func TestNumErrorEquality(t *testing.T) {
 		err2 error
 		res  bool
 	}{
+		{err1: nil, err2: nil, res: true},
+		{err1: nil, err2: ErrNullPointer, res: false},
 		{err1: ErrNullPointer, err2: ErrNullPointer, res: true},
 		{err1: ErrNullPointer, err2: Wrap(ErrNullPointer, "wrapping error"), res: false},
-		{err1: ErrNullPointer, err2: nil, res: false},
 		{err1: ErrNullPointer, err2: Num(0), res: false},
+		{err1: ErrNullPointer, err2: nil, res: false},
 	}
 
 	for _, tc := range testCases {
@@ -101,10 +103,11 @@ func TestWrapErrorEquality(t *testing.T) {
 		err2 error
 		res  bool
 	}{
+		{err1: nil, err2: Wrap(ErrNullPointer, "wrapping error"), res: false},
 		{err1: Wrap(ErrNullPointer, "wrapping error"), err2: ErrNullPointer, res: true},
-		{err1: Wrap(ErrNullPointer, "wrapping error"), err2: nil, res: false},
-		{err1: Wrap(ErrNullPointer, "wrapping error"), err2: Num(0), res: false},
 		{err1: Wrap(ErrNullPointer, "wrapping error"), err2: Wrap(Num(0), "wrapping error"), res: false},
+		{err1: Wrap(ErrNullPointer, "wrapping error"), err2: Num(0), res: false},
+		{err1: Wrap(ErrNullPointer, "wrapping error"), err2: nil, res: false},
 	}
 
 	for _, tc := range testCases {
