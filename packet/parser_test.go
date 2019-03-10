@@ -324,150 +324,150 @@ const (
 func TestParseNilOption(t *testing.T) {
 	_, err := NewParser(bytes.NewBufferString(sample2), nil)
 	if err != nil {
-		t.Errorf("NewParser()  = \"%v\", want nil error.", err)
+		t.Errorf("NewParser() = \"%+v\", want nil error.", err)
 	}
 }
 
 func TestParseNilData(t *testing.T) {
 	opts := options.New(
-		options.Set(options.ArmorOpt, true),
-		options.Set(options.DebugOpt, true),
+		options.Set(options.ARMOR, true),
+		options.Set(options.DEBUG, true),
 	)
 	_, err := NewParser(nil, opts)
 	if err == nil {
-		t.Error("NewParser()  = nil error, not want nil error.")
+		t.Error("NewParser() = nil error, not want nil error.")
 	} else {
-		fmt.Println("info:", err)
+		fmt.Printf("info: %+v\n", err)
 	}
 }
 
 func TestParseEmptyData(t *testing.T) {
 	opts := options.New(
-		options.Set(options.ArmorOpt, true),
-		options.Set(options.DebugOpt, true),
+		options.Set(options.ARMOR, true),
+		options.Set(options.DEBUG, true),
 	)
 	_, err := NewParser(bytes.NewBufferString(sample0), opts)
 	if err == nil {
-		t.Error("NewParser()  = nil error, not want nil error.")
+		t.Error("NewParser() = nil error, not want nil error.")
 	} else {
-		fmt.Println("info:", err)
+		fmt.Printf("info: %+v\n", err)
 	}
 }
 
 func TestParse(t *testing.T) {
 	opts := options.New(
-		options.Set(options.ArmorOpt, true),
-		options.Set(options.DebugOpt, true),
-		options.Set(options.UTCOpt, true),
+		options.Set(options.ARMOR, true),
+		options.Set(options.DEBUG, true),
+		options.Set(options.UTC, true),
 	)
 	parser, err := NewParser(bytes.NewBufferString(sample2), opts)
 	if err != nil {
-		t.Errorf("NewParser()  = %v, want nil error.", err)
+		t.Errorf("NewParser() = \"%+v\", want nil error.", err)
 		return
 	}
 	info, err := parser.Parse()
 	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
+		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
 	json, err := info.JSON()
 	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
+		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
 	buf := new(bytes.Buffer)
 	if _, err := io.Copy(buf, json); err != nil {
-		t.Errorf("io.Copy()  = %v, want nil error.", err)
+		t.Errorf("io.Copy() = \"%+v\", want nil error.", err)
 		return
 	}
 	str := buf.String()
 	if str != result2 {
-		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result2)
+		t.Errorf("Parse() = \"%v\", want \"%v\".", str, result2)
 	}
 }
 
 func TestParseCompressData(t *testing.T) {
 	opts := options.New(
-		options.Set(options.ArmorOpt, true),
-		options.Set(options.DebugOpt, true),
-		options.Set(options.UTCOpt, true),
+		options.Set(options.ARMOR, true),
+		options.Set(options.DEBUG, true),
+		options.Set(options.UTC, true),
 	)
 	parser, err := NewParser(bytes.NewBufferString(sample5), opts)
 	if err != nil {
-		t.Errorf("NewParser()  = %v, want nil error.", err)
+		t.Errorf("NewParser() = \"%+v\", want nil error.", err)
 		return
 	}
 	info, err := parser.Parse()
 	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
+		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
 	str := info.String()
 	if str != result5 {
-		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result5)
+		t.Errorf("Parse() = \"%v\", want \"%v\".", str, result5)
 	}
 }
 
 func TestParseClearSignText(t *testing.T) {
 	opts := options.New(
-		options.Set(options.ArmorOpt, true),
-		options.Set(options.DebugOpt, true),
-		options.Set(options.UTCOpt, true),
+		options.Set(options.ARMOR, true),
+		options.Set(options.DEBUG, true),
+		options.Set(options.UTC, true),
 	)
 	parser, err := NewParser(bytes.NewBufferString(sample3), opts)
 	if err != nil {
-		t.Errorf("NewParser()  = %v, want nil error.", err)
+		t.Errorf("NewParser() = \"%+v\", want nil error.", err)
 		return
 	}
 	info, err := parser.Parse()
 	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
+		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
 	json, err := info.JSON()
 	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
+		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
 	buf := new(bytes.Buffer)
 	if _, err := io.Copy(buf, json); err != nil {
-		t.Errorf("io.Copy()  = %v, want nil error.", err)
+		t.Errorf("io.Copy() = \"%+v\", want nil error.", err)
 		return
 	}
 	str := buf.String()
 	if str != result3 {
-		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result3)
+		t.Errorf("Parse() = \"%v\", want \"%v\".", str, result3)
 	}
 }
 
 func TestParseBindata(t *testing.T) {
 	opts := options.New(
-		options.Set(options.DebugOpt, true),
-		options.Set(options.UTCOpt, true),
+		options.Set(options.DEBUG, true),
+		options.Set(options.UTC, true),
 	)
 	parser, err := NewParser(bytes.NewBuffer(sample4), opts)
 	if err != nil {
-		t.Errorf("NewParser()  = %v, want nil error.", err)
+		t.Errorf("NewParser() = \"%+v\", want nil error.", err)
 		return
 	}
 	info, err := parser.Parse()
 	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
+		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
 	json, err := info.JSON()
 	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
+		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
 	buf := new(bytes.Buffer)
 	if _, err := io.Copy(buf, json); err != nil {
-		t.Errorf("io.Copy()  = %v, want nil error.", err)
+		t.Errorf("io.Copy() = \"%+v\", want nil error.", err)
 		return
 	}
 	str := buf.String()
 	if str != result4 {
-		t.Errorf("Parse()  = \"%v\", want \"%v\".", str, result4)
+		t.Errorf("Parse() = \"%v\", want \"%v\".", str, result4)
 	}
 }
 
@@ -475,11 +475,11 @@ func TestNilParser(t *testing.T) {
 	parser := (*Parser)(nil)
 	info, err := parser.Parse()
 	if err != nil {
-		t.Errorf("Parse()  = %v, want nil error.", err)
+		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
 	if info.String() != "" {
-		t.Errorf("Parse()  = \"%v\", want \"\".", info)
+		t.Errorf("Parse() = \"%v\", want \"\".", info)
 	}
 }
 

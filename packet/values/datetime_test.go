@@ -4,7 +4,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -16,7 +16,7 @@ var (
 func TestRFC3339(t *testing.T) {
 	dt, err := NewDateTime(reader.New(ut), true) //UTC
 	if err != nil {
-		t.Errorf("NewDateTime() = \"%v\", want nil error.", err)
+		t.Errorf("NewDateTime() = \"%+v\", want nil error.", err)
 	}
 	res := dt.RFC3339()
 	if res != rfc3339 {
@@ -27,12 +27,8 @@ func TestRFC3339(t *testing.T) {
 func TestRFC3339Err(t *testing.T) {
 	ut2 := []byte{0x36}
 	_, err := NewDateTime(reader.New(ut2), true) //UTC
-	if err != nil {
-		if errors.Cause(err) != io.ErrUnexpectedEOF {
-			t.Errorf("NewDateTime() = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
-		}
-	} else {
-		t.Errorf("NewDateTime() = nil error, want \"%v\".", io.ErrUnexpectedEOF)
+	if !errs.Is(err, io.ErrUnexpectedEOF) {
+		t.Errorf("NewDateTime() = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	}
 }
 
@@ -62,7 +58,7 @@ func TestFileTimeItem(t *testing.T) {
 	name := "Modification time of a file"
 	dt, err := NewDateTime(reader.New(ut), true) //UTC
 	if err != nil {
-		t.Errorf("NewDateTime() = \"%v\", want nil error.", err)
+		t.Errorf("NewDateTime() = \"%+v\", want nil error.", err)
 	}
 	itm := FileTimeItem(dt, true)
 	if itm.Name != name {
@@ -77,7 +73,7 @@ func TestPubKeyTimeItem(t *testing.T) {
 	name := "Public key creation time"
 	dt, err := NewDateTime(reader.New(ut), true) //UTC
 	if err != nil {
-		t.Errorf("NewDateTime() = \"%v\", want nil error.", err)
+		t.Errorf("NewDateTime() = \"%+v\", want nil error.", err)
 	}
 	itm := PubKeyTimeItem(dt, true)
 	if itm.Name != name {
@@ -92,7 +88,7 @@ func TestSigTimeItem(t *testing.T) {
 	name := "Signature creation time"
 	dt, err := NewDateTime(reader.New(ut), true) //UTC
 	if err != nil {
-		t.Errorf("NewDateTime() = \"%v\", want nil error.", err)
+		t.Errorf("NewDateTime() = \"%+v\", want nil error.", err)
 	}
 	itm := SigTimeItem(dt, true)
 	if itm.Name != name {
@@ -103,7 +99,7 @@ func TestSigTimeItem(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

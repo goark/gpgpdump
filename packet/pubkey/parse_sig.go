@@ -3,6 +3,7 @@ package pubkey
 import (
 	"fmt"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
@@ -38,8 +39,8 @@ func (p *Pubkey) ParseSig(parent *info.Item) error {
 
 func (p *Pubkey) rsaSig(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Signiture packet (RSA)")
 	}
 	item.Add(mpi.ToItem("RSA signature value m^d mod n", p.cxt.Integer()))
 	return nil
@@ -47,13 +48,13 @@ func (p *Pubkey) rsaSig(item *info.Item) error {
 
 func (p *Pubkey) dsaSig(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Signiture packet (DSA)")
 	}
 	item.Add(mpi.ToItem("DSA value r", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Signiture packet (DSA)")
 	}
 	item.Add(mpi.ToItem("DSA value s", p.cxt.Integer()))
 	return nil
@@ -61,13 +62,13 @@ func (p *Pubkey) dsaSig(item *info.Item) error {
 
 func (p *Pubkey) elgSig(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Signiture packet (ElGamal)")
 	}
 	item.Add(mpi.ToItem("ElGamal a = g^k mod p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Signiture packet (ElGamal)")
 	}
 	item.Add(mpi.ToItem("ElGamal b = (h - a*x)/k mod p - 1", p.cxt.Integer()))
 	return nil
@@ -75,13 +76,13 @@ func (p *Pubkey) elgSig(item *info.Item) error {
 
 func (p *Pubkey) ecdsaSig(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Signiture packet (ECDSA)")
 	}
 	item.Add(mpi.ToItem("ECDSA value r", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Signiture packet (ECDSA)")
 	}
 	item.Add(mpi.ToItem("ECDSA value s", p.cxt.Integer()))
 	return nil
@@ -89,19 +90,19 @@ func (p *Pubkey) ecdsaSig(item *info.Item) error {
 
 func (p *Pubkey) eddsaSig(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Signiture packet (EdDSA)")
 	}
 	item.Add(mpi.ToItem("EdDSA compressed value r", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Signiture packet (EdDSA)")
 	}
 	item.Add(mpi.ToItem("EdDSA compressed value s", p.cxt.Integer()))
 	return nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

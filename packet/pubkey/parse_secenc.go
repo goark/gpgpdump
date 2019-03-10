@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
@@ -56,12 +56,12 @@ func (p *Pubkey) ParseSecEnc(parent *info.Item) error {
 		))
 	}
 	if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip
-		return errors.Wrap(err, "error in pubkey.Pubkey.ParseSecPlain() function (skip)")
+		return errs.Wrap(err, "error in parsing encrypted secret-key packet")
 	}
 	return nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

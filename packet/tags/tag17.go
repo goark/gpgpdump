@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -22,11 +23,11 @@ func (t *tag17) Parse() (*info.Item, error) {
 	rootInfo := t.ToItem()
 	subpcket, err := newSubparser(t.cxt, t.tag, "Subpacket", t.reader.GetBody())
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal subpacket in parsing tag %d", int(t.tag))
 	}
 	itm, err := subpcket.Parse()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
 	}
 	rootInfo.Add(itm)
 	return rootInfo, nil

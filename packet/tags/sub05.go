@@ -3,6 +3,7 @@ package tags
 import (
 	"strconv"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -24,7 +25,7 @@ func (s *sub05) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	b, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal Level in parsing sub packet %d", int(s.subID))
 	}
 	rootInfo.Add(info.NewItem(
 		info.Name("Level"),
@@ -32,7 +33,7 @@ func (s *sub05) Parse() (*info.Item, error) {
 	))
 	b, err = s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal Trust amount in parsing sub packet %d", int(s.subID))
 	}
 	rootInfo.Add(info.NewItem(
 		info.Name("Trust amount"),

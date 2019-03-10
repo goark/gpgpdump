@@ -6,6 +6,9 @@ import (
 
 //Is is wrapping function for errors.Is
 func Is(err, target error) bool {
+	if err == nil || target == nil {
+		return err == target
+	}
 	return errors.Is(err, target)
 }
 

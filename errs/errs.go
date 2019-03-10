@@ -7,6 +7,7 @@ type Num int
 
 const (
 	ErrNullPointer Num = iota + 1
+	ErrInvalidOption
 	ErrArmorText
 	ErrInvalidWhence
 	ErrInvalidOffset
@@ -14,6 +15,7 @@ const (
 
 var errMessage = map[Num]string{
 	ErrNullPointer:   "Null reference instance",
+	ErrInvalidOption: "Invalid option",
 	ErrArmorText:     "Cannot find OpenPGP armor boundary",
 	ErrInvalidWhence: "Invalid whence",
 	ErrInvalidOffset: "Invalid offset",

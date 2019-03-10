@@ -3,6 +3,7 @@ package pubkey
 import (
 	"fmt"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
@@ -34,13 +35,13 @@ func (p *Pubkey) ParsePub(parent *info.Item) error {
 
 func (p *Pubkey) rsaPub(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (RSA)")
 	}
 	item.Add(mpi.ToItem("RSA public modulus n", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (RSA)")
 	}
 	item.Add(mpi.ToItem("RSA public encryption exponent e", p.cxt.Integer()))
 	return nil
@@ -48,23 +49,23 @@ func (p *Pubkey) rsaPub(item *info.Item) error {
 
 func (p *Pubkey) dsaPub(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (DSA)")
 	}
 	item.Add(mpi.ToItem("DSA p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (DSA)")
 	}
 	item.Add(mpi.ToItem("DSA q (q is a prime divisor of p-1)", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (DSA)")
 	}
 	item.Add(mpi.ToItem("DSA g", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (DSA)")
 	}
 	item.Add(mpi.ToItem("DSA y (= g^x mod p where x is secret)", p.cxt.Integer()))
 	return nil
@@ -72,18 +73,18 @@ func (p *Pubkey) dsaPub(item *info.Item) error {
 
 func (p *Pubkey) elgPub(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (ElGamal)")
 	}
 	item.Add(mpi.ToItem("ElGamal prime p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (ElGamal)")
 	}
 	item.Add(mpi.ToItem("ElGamal group generator g", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (ElGamal)")
 	}
 	item.Add(mpi.ToItem("ElGamal public key value y (= g^x mod p where x is secret)", p.cxt.Integer()))
 	return nil
@@ -92,26 +93,31 @@ func (p *Pubkey) elgPub(item *info.Item) error {
 func (p *Pubkey) ecdhPub(item *info.Item) error {
 	oid, err := values.NewOID(p.reader)
 	if err != nil {
-		return err
+		return errs.Wrap(err, "error in parsing Public-key packet (ECDH)")
 	}
 	item.Add(oid.ToItem(true)) //enable dump data
 
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (ECDH)")
 	}
-	switch (mpi.Rawdata())[0] {
-	case 0x04:
-		item.Add(mpi.ToItem("ECDH EC point (04 || X || Y)", p.cxt.Integer()))
-	case 0x40:
-		item.Add(mpi.ToItem("ECDH EC point (40 || X)", p.cxt.Integer()))
-	default:
+	body := mpi.Rawdata()
+	if len(body) > 0 {
+		switch body[0] {
+		case 0x04:
+			item.Add(mpi.ToItem("ECDH EC point (04 || X || Y)", p.cxt.Integer()))
+		case 0x40:
+			item.Add(mpi.ToItem("ECDH EC point (40 || X)", p.cxt.Integer()))
+		default:
+			item.Add(mpi.ToItem("ECDH EC point", p.cxt.Integer()))
+		}
+	} else {
 		item.Add(mpi.ToItem("ECDH EC point", p.cxt.Integer()))
 	}
 
 	ep, err := values.NewECParm(p.reader)
-	if err != nil || ep == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (ECDH)")
 	}
 	i := ep.ToItem("KDF parameters", p.cxt.Integer())
 	ln := len(ep)
@@ -138,19 +144,24 @@ func (p *Pubkey) ecdhPub(item *info.Item) error {
 func (p *Pubkey) ecdsaPub(item *info.Item) error {
 	oid, err := values.NewOID(p.reader)
 	if err != nil {
-		return err
+		return errs.Wrap(err, "error in parsing Public-key packet (ECDSA)")
 	}
 	item.Add(oid.ToItem(true)) //enable dump data
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (ECDSA)")
 	}
-	switch (mpi.Rawdata())[0] {
-	case 0x04:
-		item.Add(mpi.ToItem("ECDSA EC point (04 || X || Y)", p.cxt.Integer()))
-	case 0x40:
-		item.Add(mpi.ToItem("ECDSA EC point (40 || X)", p.cxt.Integer()))
-	default:
+	body := mpi.Rawdata()
+	if len(body) > 0 {
+		switch body[0] {
+		case 0x04:
+			item.Add(mpi.ToItem("ECDSA EC point (04 || X || Y)", p.cxt.Integer()))
+		case 0x40:
+			item.Add(mpi.ToItem("ECDSA EC point (40 || X)", p.cxt.Integer()))
+		default:
+			item.Add(mpi.ToItem("ECDSA EC point", p.cxt.Integer()))
+		}
+	} else {
 		item.Add(mpi.ToItem("ECDSA EC point", p.cxt.Integer()))
 	}
 	return nil
@@ -159,25 +170,30 @@ func (p *Pubkey) ecdsaPub(item *info.Item) error {
 func (p *Pubkey) eddsaPub(item *info.Item) error {
 	oid, err := values.NewOID(p.reader)
 	if err != nil {
-		return err
+		return errs.Wrap(err, "error in parsing Public-key packet (EdDSA)")
 	}
 	item.Add(oid.ToItem(true)) //enable dump data
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-key packet (EdDSA)")
 	}
-	switch (mpi.Rawdata())[0] {
-	case 0x04:
-		item.Add(mpi.ToItem("EdDSA EC point (04 || uncompressd format)", p.cxt.Integer()))
-	case 0x40:
-		item.Add(mpi.ToItem("EdDSA EC point (40 || compressd format)", p.cxt.Integer()))
-	default:
+	body := mpi.Rawdata()
+	if len(body) > 0 {
+		switch body[0] {
+		case 0x04:
+			item.Add(mpi.ToItem("EdDSA EC point (04 || uncompressd format)", p.cxt.Integer()))
+		case 0x40:
+			item.Add(mpi.ToItem("EdDSA EC point (40 || compressd format)", p.cxt.Integer()))
+		default:
+			item.Add(mpi.ToItem("EdDSA EC point", p.cxt.Integer()))
+		}
+	} else {
 		item.Add(mpi.ToItem("EdDSA EC point", p.cxt.Integer()))
 	}
 	return nil
 }
 
-/* Copyright 2016-2018 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

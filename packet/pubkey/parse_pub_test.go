@@ -47,17 +47,17 @@ func TestPubkeyPub(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		parent := info.NewItem()
-		cxt := context.NewContext(options.New(
-			options.Set(options.DebugOpt, true), //not use
-			options.Set(options.GDumpOpt, true), //not use
-			options.Set(options.IntegerOpt, true),
-			options.Set(options.LiteralOpt, true),
-			options.Set(options.MarkerOpt, true),
-			options.Set(options.PrivateOpt, true),
-			options.Set(options.UTCOpt, true),
+		cxt := context.New(options.New(
+			options.Set(options.DEBUG, true),
+			options.Set(options.GDUMP, true),
+			options.Set(options.INTEGER, true),
+			options.Set(options.LITERAL, true),
+			options.Set(options.MARKER, true),
+			options.Set(options.PRIVATE, true),
+			options.Set(options.UTC, true),
 		))
 		if err := New(cxt, values.PubID(tc.pubID), reader.New(tc.content)).ParsePub(parent); err != nil {
-			t.Errorf("Parse() = %v, want nil error.", err)
+			t.Errorf("Parse() = %+v, want nil error.", err)
 		}
 		str := parent.String()
 		if str != tc.res {
@@ -66,7 +66,7 @@ func TestPubkeyPub(t *testing.T) {
 	}
 }
 
-/* Copyright 2017,2018 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

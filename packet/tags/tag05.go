@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -23,7 +24,7 @@ func (t *tag05) Parse() (*info.Item, error) {
 	// [00] One-octet version number.
 	v, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal version in parsing tag %d", int(t.tag))
 	}
 	version := values.PubVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
@@ -32,13 +33,13 @@ func (t *tag05) Parse() (*info.Item, error) {
 	rootInfo.Add(pub)
 	pubkey := newPubkey(t.cxt, t.reader, version)
 	if err := pubkey.Parse(pub); err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
 	}
 
 	sec := info.NewItem(info.Name("Secret-Key"))
 	rootInfo.Add(sec)
 	if err := newSeckey(t.cxt, t.reader, version, pubkey.PubID()).Parse(sec); err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
 	}
 
 	if t.reader.Rest() > 0 {

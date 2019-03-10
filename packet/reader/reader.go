@@ -2,9 +2,10 @@ package reader
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
+
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 )
 
 //Reader class as reading stream for []byte buffer
@@ -23,7 +24,7 @@ func (r *Reader) Read(p []byte) (int, error) {
 	pl := len(p)
 	b, err := r.ReadBytes(int64(pl))
 	if err != nil {
-		return 0, err
+		return 0, errs.Wrapf(err, "error in reading data (length: %d bytes)", pl)
 	}
 	copy(p, b)
 	return pl, nil
@@ -32,19 +33,19 @@ func (r *Reader) Read(p []byte) (int, error) {
 //ReadAt returns []byte data from off pinter (io.ReaderAt compatible)
 func (r *Reader) ReadAt(p []byte, off int64) (int, error) {
 	if _, err := r.Seek(off, io.SeekStart); err != nil {
-		return 0, err
+		return 0, errs.Wrapf(err, "error in reading data at %d", off)
 	}
 	pl, err := r.Read(p)
-	return pl, err
+	return pl, errs.Wrapf(err, "error in reading data at %d", off)
 }
 
 //ReadByte returns byte data (io.ByteReader compatible)
 func (r *Reader) ReadByte() (byte, error) {
 	b, err := r.ReadBytes(1)
 	if len(b) == 0 {
-		return byte(0), err
+		return byte(0), errs.Wrap(err, "error in reading one byte")
 	}
-	return b[0], err
+	return b[0], errs.Wrap(err, "error in reading one byte")
 }
 
 //WriteTo is copying buffer to io.Writer (io.WriterTo compatible)
@@ -53,15 +54,8 @@ func (r *Reader) WriteTo(w io.Writer) (int64, error) {
 	if err == nil {
 		r.offset = r.Size()
 	}
-	return size, err
+	return size, errs.Wrap(err, "error in writing data")
 }
-
-var (
-	//ErrWhence as invalid whence in Reader.Seek function
-	ErrWhence = errors.New("Reader.Seek: invalid whence")
-	//ErrOffset as invalid offset in Reader.Seek function
-	ErrOffset = errors.New("Reader.Seek: invalid offset")
-)
 
 //Seek is changing offset in buffer (io.Seeker compatible)
 func (r *Reader) Seek(offset int64, whence int) (int64, error) {
@@ -75,11 +69,11 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 	case io.SeekEnd:
 		origin = rl
 	default: //error ?
-		return r.offset, ErrWhence
+		return r.offset, errs.Wrap(errs.ErrInvalidWhence, "error in Seeking")
 	}
 	origin += offset
 	if origin < 0 || origin > rl {
-		return r.offset, ErrOffset
+		return r.offset, errs.Wrap(errs.ErrInvalidOffset, "error in Seeking")
 	}
 	r.offset = origin
 	return origin, nil
@@ -107,10 +101,10 @@ func (r *Reader) ReadBytes(size int64) ([]byte, error) {
 	}
 	rl := r.Size()
 	if r.offset >= rl {
-		return nil, io.EOF
+		return nil, errs.Wrapf(io.EOF, "error in reading data (size: %d bytes)", size)
 	}
 	if r.offset+size > rl {
-		return nil, io.ErrUnexpectedEOF
+		return nil, errs.Wrapf(io.ErrUnexpectedEOF, "error in reading data (size: %d bytes)", size)
 	}
 	b := r.buffer[r.offset : r.offset+size]
 	r.offset += size
@@ -121,7 +115,7 @@ func (r *Reader) ReadBytes(size int64) ([]byte, error) {
 func (r *Reader) Read2EOF() ([]byte, error) {
 	rl := r.Size()
 	if r.offset >= rl {
-		return nil, io.EOF
+		return nil, errs.Wrap(io.EOF, "error in reading data to EOF")
 	}
 	b := r.buffer[r.offset:]
 	r.offset += rl

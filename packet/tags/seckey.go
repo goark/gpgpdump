@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/pubkey"
@@ -30,7 +30,7 @@ func newSeckey(cxt *context.Context, reader *reader.Reader, pubVer *values.Versi
 func (p *seckeyInfo) Parse(parent *info.Item) error {
 	sid, err := p.reader.ReadByte()
 	if err != nil {
-		return errors.Wrap(err, "error in tags.seckeyInfo,Parse() function (sid)")
+		return errs.Wrap(err, "illegal sid in parsing Secret-key packet")
 	}
 	switch sid {
 	case 0:
@@ -38,12 +38,12 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		//parent.Add(p.pubVer.ToItem(p.cxt.Debug()))
 		if !p.pubVer.IsUnknown() {
 			if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecPlain(parent); err != nil {
-				return err
+				return errs.Wrapf(err, "error in parsing Secret-key packet (sid %d)", sid)
 			}
 		} else {
 			parent.Add(p.unknownMPI())
 			if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip
-				return errors.Wrap(err, "error in tags.seckeyInfo.Parse() function (skip)")
+				return errs.Wrapf(err, "error in parsing Secret-key packet (sid %d)", sid)
 			}
 		}
 	case 254, 255:
@@ -54,12 +54,12 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		}
 		symid, err := p.reader.ReadByte()
 		if err != nil {
-			return errors.Wrap(err, "error in tags.seckeyInfo.Parse() function (sym id)")
+			return errs.Wrapf(err, "illegal symid in parsing Secret-key packet (sid %d)", sid)
 		}
 		parent.Add(values.SymID(symid).ToItem(p.cxt.Debug()))
 		s2k := s2k.New(p.reader)
 		if err := s2k.Parse(parent, p.cxt.Debug()); err != nil {
-			return errors.Wrap(err, "error in tags.seckeyInfo.Parse() function (s2k)")
+			return errs.Wrapf(err, "illegal s2k in parsing Secret-key packet (sid %d)", sid)
 		}
 		if s2k.HasIV() {
 			iv, err := p.iv(values.SymID(symid))
@@ -70,24 +70,24 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		}
 		if !p.pubVer.IsUnknown() {
 			if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecEnc(parent); err != nil {
-				return err
+				return errs.Wrapf(err, "illegal pubkey in parsing Secret-key packet (sid %d)", sid)
 			}
 		} else {
 			parent.Add(p.unknownMPI())
 			if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip
-				return errors.Wrap(err, "error in tags.seckeyInfo.Parse() function (skip)")
+				return errs.Wrapf(err, "error in parsing Secret-key packet (sid %d)", sid)
 			}
 		}
 	default:
 		parent.Note = "Simple string-to-key for IDEA (encrypted checksum)."
 		symid, err := p.reader.ReadByte()
 		if err != nil {
-			return errors.Wrap(err, "error in tags.seckeyInfo.Parse() function (sym id)")
+			return errs.Wrapf(err, "illegal symid in parsing Secret-key packet (sid %d)", sid)
 		}
 		parent.Add(values.SymID(symid).ToItem(p.cxt.Debug()))
 		iv, err := p.iv(values.SymID(symid))
 		if err != nil {
-			return err
+			return errs.Wrapf(err, "illegal iv in parsing Secret-key packet (sid %d)", sid)
 		}
 		parent.Add(iv)
 		if !p.pubVer.IsUnknown() {
@@ -97,7 +97,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		} else {
 			parent.Add(p.unknownMPI())
 			if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip
-				return errors.Wrap(err, "error in tags.seckeyInfo.Parse() function (skip)")
+				return errs.Wrapf(err, "error in parsing Secret-key packet (sid %d)", sid)
 			}
 		}
 	}
@@ -112,9 +112,10 @@ func (p *seckeyInfo) unknownMPI() *info.Item {
 }
 
 func (p *seckeyInfo) iv(symid values.SymID) (*info.Item, error) {
-	iv, err := p.reader.ReadBytes(int64(symid.IVLen()))
+	sz64 := int64(symid.IVLen())
+	iv, err := p.reader.ReadBytes(sz64)
 	if err != nil {
-		return nil, errors.Wrap(err, "error in tags.seckeyInfo.iv() function (s2k iv)")
+		return nil, errs.Wrapf(err, "illegal s2k iv (length: %d bytes)", sz64)
 	}
 	return info.NewItem(
 		info.Name("IV"),

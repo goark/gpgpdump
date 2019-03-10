@@ -1,46 +1,65 @@
 package options
 
-import "fmt"
-
-const (
-	//ArmorOpt is name of armor option
-	ArmorOpt = "armor"
-	//DebugOpt is name of debug option
-	DebugOpt = "debug"
-	//GDumpOpt is name of gdump option
-	GDumpOpt = "gdump"
-	//IntegerOpt is name of int option
-	IntegerOpt = "int"
-	//JSONOpt is name of json option (CLI only)
-	JSONOpt = "json"
-	//LiteralOpt is name of literal option
-	LiteralOpt = "literal"
-	//MarkerOpt is name of marker option
-	MarkerOpt = "marker"
-	//PrivateOpt is name of private option
-	PrivateOpt = "private"
-	//UTCOpt is name of utc option
-	UTCOpt = "utc"
+import (
+	"fmt"
+	"strings"
 )
 
-// Options for gpgpdump
-type Options struct {
-	armorFlag   bool //accepts ASCII input only
-	debugFlag   bool //for debug
-	gdumpFlag   bool //selects alternate (GnuPG type) dump format (not used)
-	intFlag     bool //dumps multi-precision integers
-	literalFlag bool //dumps literal packets (tag 11)
-	markerFlag  bool //dumps marker packets (tag 10)
-	privateFlag bool //dumps private packets (tag 60-63)
-	utcFlag     bool //output UTC time
+//Level is log level
+type OptCode int
+
+const (
+	ARMOR   OptCode = iota //accepts ASCII input only
+	DEBUG                  //for debug
+	GDUMP                  //selects alternate (GnuPG type) dump format (not used)
+	INTEGER                //dumps multi-precision integers
+	LITERAL                //dumps literal packets (tag 11)
+	MARKER                 //dumps marker packets (tag 10)
+	PRIVATE                //dumps private packets (tag 60-63)
+	UTC                    //output UTC time
+)
+
+var optcodeMap = map[OptCode]string{
+	ARMOR:   "armor",
+	DEBUG:   "debug",
+	GDUMP:   "gdump",
+	INTEGER: "int",
+	LITERAL: "literal",
+	MARKER:  "marker",
+	PRIVATE: "private",
+	UTC:     "utc",
 }
 
+//GetOptCode returns OptCode from string
+func GetOptCode(s string) OptCode {
+	for k, v := range optcodeMap {
+		if strings.ToLower(s) == v {
+			return k
+		}
+	}
+	return OptCode(-1)
+}
+
+func (oc OptCode) String() string {
+	if s, ok := optcodeMap[oc]; ok {
+		return s
+	}
+	return "unknown"
+}
+
+func (oc OptCode) integer() int {
+	return int(oc)
+}
+
+//Options for gpgpdump
+type Options map[OptCode]bool
+
 //OptFunc is self-referential function for functional options pattern
-type OptFunc func(*Options)
+type OptFunc func(Options)
 
 // New returns a new Options instance
-func New(opts ...OptFunc) *Options {
-	o := &Options{}
+func New(opts ...OptFunc) Options {
+	o := Options{}
 	for _, opt := range opts {
 		opt(o)
 	}
@@ -48,72 +67,83 @@ func New(opts ...OptFunc) *Options {
 }
 
 //Set returns closure as type OptFunc
-func Set(name string, f bool) OptFunc {
-	return func(o *Options) {
-		o.Set(name, f)
+func Set(code OptCode, f bool) OptFunc {
+	return func(o Options) { o.Set(code, f) }
+}
+
+//SetByString returns closure as type OptFunc
+func SetByString(name string, f bool) OptFunc {
+	return func(o Options) { o.Set(GetOptCode(name), f) }
+}
+
+//Set sets option to Options.
+func (o Options) Set(code OptCode, f bool) {
+	if code.integer() >= 0 {
+		o[code] = f
 	}
 }
 
 //Set sets option to Options.
-func (o *Options) Set(name string, f bool) {
-	switch name {
-	case ArmorOpt:
-		o.armorFlag = f
-	case DebugOpt:
-		o.debugFlag = f
-	case GDumpOpt:
-		o.gdumpFlag = f
-	case IntegerOpt:
-		o.intFlag = f
-	case LiteralOpt:
-		o.literalFlag = f
-	case MarkerOpt:
-		o.markerFlag = f
-	case PrivateOpt:
-		o.privateFlag = f
-	case UTCOpt:
-		o.utcFlag = f
+func (o Options) Get(code OptCode) bool {
+	if f, ok := o[code]; ok {
+		return f
 	}
+	return false
 }
 
 //Armor return flag value of armorFlag
-func (o *Options) Armor() bool { return o.armorFlag }
+func (o Options) Armor() bool { return o.Get(ARMOR) }
 
 //Debug return flag value of debugFlag
-func (o *Options) Debug() bool { return o.debugFlag }
+func (o Options) Debug() bool { return o.Get(DEBUG) }
 
 //GDump return flag value of gdumpFlag
-func (o *Options) GDump() bool { return o.gdumpFlag || o.debugFlag }
+func (o Options) GDump() bool { return o.Get(GDUMP) || o.Get(DEBUG) }
 
 //Integer return flag value of intFlag
-func (o *Options) Integer() bool { return o.intFlag || o.debugFlag }
+func (o Options) Integer() bool { return o.Get(INTEGER) || o.Get(DEBUG) }
 
 //Literal return flag value of literalFlag
-func (o *Options) Literal() bool { return o.literalFlag || o.debugFlag }
+func (o Options) Literal() bool { return o.Get(LITERAL) || o.Get(DEBUG) }
 
 //Marker return flag value of markerFlag
-func (o *Options) Marker() bool { return o.markerFlag || o.debugFlag }
+func (o Options) Marker() bool { return o.Get(MARKER) || o.Get(DEBUG) }
 
 //Private return flag value of privateFlag
-func (o *Options) Private() bool { return o.privateFlag || o.debugFlag }
+func (o Options) Private() bool { return o.Get(PRIVATE) || o.Get(DEBUG) }
 
 //UTC return flag value of utcFlag
-func (o *Options) UTC() bool { return o.utcFlag }
+func (o Options) UTC() bool { return o.Get(UTC) }
 
 //Stringer
-func (o *Options) String() string {
-	return fmt.Sprint(
-		ArmorOpt, ":", o.Armor(), ",",
-		DebugOpt, ":", o.Debug(), ",",
-		GDumpOpt, ":", o.GDump(), ",",
-		IntegerOpt, ":", o.Integer(), ",",
-		LiteralOpt, ":", o.Literal(), ",",
-		MarkerOpt, ":", o.Marker(), ",",
-		PrivateOpt, ":", o.Private(), ",",
-		UTCOpt, ":", o.UTC())
+func (o Options) String() string {
+	strs := []string{}
+	for c := 0; c < len(optcodeMap); c++ {
+		flag := false
+		switch OptCode(c) {
+		case ARMOR:
+			flag = o.Armor()
+		case DEBUG:
+			flag = o.Debug()
+		case GDUMP:
+			flag = o.GDump()
+		case INTEGER:
+			flag = o.Integer()
+		case LITERAL:
+			flag = o.Literal()
+		case MARKER:
+			flag = o.Marker()
+		case PRIVATE:
+			flag = o.Private()
+		case UTC:
+			flag = o.UTC()
+		}
+		strs = append(strs, fmt.Sprintf("%v:%v", OptCode(c), flag))
+	}
+	return strings.Join(strs, ",")
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

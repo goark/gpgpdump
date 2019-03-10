@@ -12,10 +12,11 @@ func TestNumError(t *testing.T) {
 	}{
 		{err: Num(0), str: "Unknown error (0)"},
 		{err: ErrNullPointer, str: "Null reference instance"},
+		{err: ErrInvalidOption, str: "Invalid option"},
 		{err: ErrArmorText, str: "Cannot find OpenPGP armor boundary"},
 		{err: ErrInvalidWhence, str: "Invalid whence"},
 		{err: ErrInvalidOffset, str: "Invalid offset"},
-		{err: Num(5), str: "Unknown error (5)"},
+		{err: Num(6), str: "Unknown error (6)"},
 	}
 
 	for _, tc := range testCases {

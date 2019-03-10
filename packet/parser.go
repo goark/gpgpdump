@@ -5,12 +5,11 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	openpgp "golang.org/x/crypto/openpgp/packet"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
@@ -26,12 +25,9 @@ type Parser struct {
 }
 
 //NewParser returns Parser for parsing packet
-func NewParser(reader io.Reader, o *options.Options) (*Parser, error) {
+func NewParser(reader io.Reader, o options.Options) (*Parser, error) {
 	if reader == nil {
-		return nil, errors.Wrap(os.ErrInvalid, "error in packet.NewParser() function (null data)")
-	}
-	if o == nil {
-		o = options.New()
+		return nil, errs.Wrap(errs.ErrNullPointer, "no data for parsing packet")
 	}
 	var r io.Reader
 	var err error
@@ -44,7 +40,7 @@ func NewParser(reader io.Reader, o *options.Options) (*Parser, error) {
 			r, err = buf, nil
 		}
 	}
-	return newParser(context.NewContext(o), openpgp.NewOpaqueReader(r), info.NewInfo()), err
+	return newParser(context.New(o), openpgp.NewOpaqueReader(r), info.NewInfo()), err
 }
 
 func newParser(cxt *context.Context, op *openpgp.OpaqueReader, info *info.Info) *Parser {
@@ -55,9 +51,12 @@ func newParser(cxt *context.Context, op *openpgp.OpaqueReader, info *info.Info) 
 func newParserArmor(r io.Reader) (io.Reader, error) {
 	buf := getASCIIArmorText(r)
 	if buf == nil {
-		return nil, errors.New("can't find OpenPGP armor boundary")
+		return nil, errs.Wrap(errs.ErrArmorText, "error in parsing armor text")
 	}
-	block, _ := armor.Decode(buf)
+	block, err := armor.Decode(buf)
+	if err != nil {
+		return nil, errs.Wrap(err, "error in parsing armor text")
+	}
 	return block.Body, nil
 }
 
@@ -106,7 +105,7 @@ func (r *Parser) Parse() (*info.Info, error) {
 		tag := tags.NewTag(op, r.cxt)
 		item, err := tag.Parse()
 		if err != nil {
-			return r.info, err
+			return r.info, errs.Wrapf(err, "error in parsing packet")
 		}
 		r.info.Add(item)
 		switch t := tag.(type) {
@@ -115,7 +114,7 @@ func (r *Parser) Parse() (*info.Info, error) {
 				parser := newParser(r.cxt, openpgp.NewOpaqueReader(t.Reader()), info.NewInfo())
 				info, err := parser.Parse()
 				if err != nil {
-					return r.info, err
+					return r.info, errs.Wrapf(err, "error in parsing body of tag(8) packet")
 				}
 				if len(item.Items) > 0 {
 					item = item.Items[len(item.Items)-1]
@@ -127,20 +126,20 @@ func (r *Parser) Parse() (*info.Info, error) {
 		default:
 		}
 	}
-	return r.info, nil //stub
+	return r.info, nil
 }
 func (r *Parser) next() (*openpgp.OpaquePacket, error) {
 	op, err := r.opaqueReader.Next()
 	if err != nil {
-		if err != io.EOF { //EOF is not error
-			return nil, errors.Wrap(err, "error in packet.Parser.next() function")
+		if !errs.Is(err, io.EOF) { //EOF is not error
+			return nil, errs.Wrap(err, "error in parsing OpaquePacket")
 		}
 		return nil, nil
 	}
 	return op, nil
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

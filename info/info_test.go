@@ -6,20 +6,29 @@ import (
 	"io"
 	"strings"
 	"testing"
+
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 )
+
+func r2s(r io.Reader) string {
+	buf := new(bytes.Buffer)
+	if _, err := io.Copy(buf, r); !errs.Is(err, nil) {
+		return ""
+	}
+	return buf.String()
+}
 
 func TestTOMLNull(t *testing.T) {
 	info := (*Info)(nil)
 	info.Add(nil)
 	res, err := info.TOML()
 	if err != nil {
-		t.Errorf("TOML() err = %v, want nil.", err)
+		t.Errorf("TOML() err = \"%+v\", want nil.", err)
 		return
 	}
-	buf := new(bytes.Buffer)
-	io.Copy(buf, res)
-	if buf.String() != "" {
-		t.Errorf("TOML() = %v, want \"\".", buf.String())
+	str := r2s(res)
+	if str != "" {
+		t.Errorf("TOML() = \"%v\", want \"\".", str)
 	}
 }
 
@@ -27,13 +36,12 @@ func TestTOMLEmpty(t *testing.T) {
 	info := NewInfo()
 	res, err := info.TOML()
 	if err != nil {
-		t.Errorf("TOML() err = %v, want nil.", err)
+		t.Errorf("TOML() err = \"%+v\", want nil.", err)
 		return
 	}
-	buf := new(bytes.Buffer)
-	io.Copy(buf, res)
-	if buf.String() != "" {
-		t.Errorf("TOML() = %v, want \"\".", buf.String())
+	str := r2s(res)
+	if str != "" {
+		t.Errorf("TOML() = \"%v\", want \"\".", str)
 	}
 }
 
@@ -70,12 +78,10 @@ func TestTOML(t *testing.T) {
 	info.Add(nil) //abnormal
 	toml, err := info.TOML()
 	if err != nil {
-		t.Errorf("MarshalTOML() = \"%v\"want nil.", err)
+		t.Errorf("TOML() err = \"%+v\", want nil.", err)
 		return
 	}
-	buf := new(bytes.Buffer)
-	io.Copy(buf, toml)
-	str := buf.String()
+	str := r2s(toml)
 	if str != output {
 		t.Errorf("TOML output = \n%s\n want \n%s\n", str, output)
 	}
@@ -122,30 +128,27 @@ func TestJSONNull(t *testing.T) {
 	info.Add(nil)
 	res, err := info.JSON()
 	if err != nil {
-		t.Errorf("JSON() err = %v, want nil.", err)
+		t.Errorf("JSON() err = \"%+v\", want nil.", err)
 		return
 	}
-	buf := new(bytes.Buffer)
-	io.Copy(buf, res)
-	if buf.String() != "" {
-		t.Errorf("JSON() = %v, want \"\".", buf.String())
+	str := r2s(res)
+	if str != "" {
+		t.Errorf("JSON() = \"%v\", want \"\".", str)
 	}
 }
 
 func TestJSONEmpty(t *testing.T) {
 	info := NewInfo()
+	output := "{}"
 	res, err := info.JSON()
 	if err != nil {
-		t.Errorf("JSON() err = %v, want nil.", err)
+		t.Errorf("JSON() err = \"%+v\", want nil.", err)
 		return
 	}
-	buf := new(bytes.Buffer)
-	io.Copy(buf, res)
-	str := buf.String()
-	if str != "{}\n" {
-		t.Errorf("TOML() = %v, want {}.", str)
+	str := r2s(res)
+	if str != output+"\n" {
+		t.Errorf("JSON() = \"%v\", want \"%v\n\".", str, output)
 	}
-
 }
 
 func TestJSON(t *testing.T) {
@@ -186,12 +189,10 @@ func TestJSON(t *testing.T) {
 	info.Add(item1)
 	json, err := info.JSON()
 	if err != nil {
-		t.Errorf("JSON() = \"%v\"want nil.", err)
+		t.Errorf("JSON() err = \"%+v\", want nil.", err)
 		return
 	}
-	buf := new(bytes.Buffer)
-	io.Copy(buf, json)
-	str := buf.String()
+	str := r2s(json)
 	if str != output+"\n" {
 		t.Errorf("JSON output = \"%s\" want \"%s\"", str, output)
 	}
@@ -225,7 +226,7 @@ func TestStringer(t *testing.T) {
 	}
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

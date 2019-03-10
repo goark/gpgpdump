@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -22,7 +23,7 @@ func (s *sub16) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	keyid, err := s.reader.ReadBytes(8)
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal keyid in parsing sub packet %d", int(s.subID))
 	}
 	issuer := values.NewKeyID(keyid).ToItem()
 	issuer.Name = rootInfo.Name

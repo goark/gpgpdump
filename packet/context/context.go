@@ -7,18 +7,18 @@ import (
 
 //Context class fir parsing packets
 type Context struct {
-	*options.Options
+	options.Options
 	SymAlgMode
 	SigCreationTime *values.DateTime
 	KeyCreationTime *values.DateTime
 }
 
-//NewContext returns Context instance
-func NewContext(o *options.Options) *Context {
+//New returns Context instance
+func New(o options.Options) *Context {
 	return &Context{Options: o, SymAlgMode: ModeNotSpecified}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

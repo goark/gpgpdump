@@ -1,10 +1,11 @@
 package values
 
 import (
+	"fmt"
 	"io"
 	"testing"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -21,12 +22,10 @@ func TestExpireErr(t *testing.T) {
 	//dump := "00 09 3a 80"
 	dayErr := []byte{0x00}
 	_, err := NewExpire(reader.New(dayErr), dt)
-	if err != nil {
-		if errors.Cause(err) != io.ErrUnexpectedEOF {
-			t.Errorf("NewExpire() = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
-		}
+	if !errs.Is(err, io.ErrUnexpectedEOF) {
+		t.Errorf("NewExpire() = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	} else {
-		t.Errorf("NewExpire() = nil error, want \"%v\".", io.ErrUnexpectedEOF)
+		fmt.Printf("Info: %+v\n", err)
 	}
 }
 
@@ -46,7 +45,7 @@ func TestSigExpireItem(t *testing.T) {
 	dump := "00 09 3a 80"
 	exp, err := NewExpire(reader.New(day), dt)
 	if err != nil {
-		t.Errorf("NewDateTime() = \"%v\", want nil error.", err)
+		t.Errorf("NewDateTime() = \"%+v\", want nil error.", err)
 	}
 	itm := SigExpireItem(exp, true)
 	if itm.Name != name {
@@ -71,7 +70,7 @@ func TestKeyExpireItem(t *testing.T) {
 	dump := "00 09 3a 80"
 	exp, err := NewExpire(reader.New(day), dt)
 	if err != nil {
-		t.Errorf("NewDateTime() = \"%v\", want nil error.", err)
+		t.Errorf("NewDateTime() = \"%+v\", want nil error.", err)
 	}
 	itm := KeyExpireItem(exp, true)
 	if itm.Name != name {
@@ -88,7 +87,7 @@ func TestKeyExpireItem(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -1,10 +1,11 @@
 package values
 
 import (
+	"fmt"
 	"io"
 	"testing"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -22,9 +23,12 @@ func TestNewMPINoName(t *testing.T) {
 	reader := reader.New(data1)
 	m, err := NewMPI(reader)
 	if err != nil {
-		t.Errorf("NewMPI() = \"%v\", want nil error.", err)
+		t.Errorf("NewMPI() = \"%+v\", want nil error.", err)
 	}
 	r := m.Rawdata()
+	if len(r) == 0 {
+		t.Error("length of MPIdata is zero.")
+	}
 	if r[0] != data1[2] {
 		t.Errorf("MPIdata[0] = %v, want %v.", r[0], data1[2])
 	}
@@ -47,7 +51,7 @@ func TestNewMPIandName(t *testing.T) {
 	reader := reader.New(data1)
 	m, err := NewMPI(reader)
 	if err != nil {
-		t.Errorf("NewMPI() = \"%v\", want nil error.", err)
+		t.Errorf("NewMPI() = \"%+v\", want nil error.", err)
 	}
 	i := m.ToItem("name", true)
 	if i.Name != "name" {
@@ -67,35 +71,35 @@ func TestNewMPIandName(t *testing.T) {
 func TestNewMPIErr(t *testing.T) {
 	reader := reader.New(data2)
 	_, err := NewMPI(reader)
-	if err != nil {
-		if errors.Cause(err) != io.ErrUnexpectedEOF {
-			t.Errorf("NewMPI = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
-		}
+	if !errs.Is(err, io.ErrUnexpectedEOF) {
+		t.Errorf("NewMPI = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	} else {
-		t.Errorf("NewMPI = nil error, want \"%v\".", io.ErrUnexpectedEOF)
+		fmt.Printf("Info: %+v\n", err)
 	}
 }
 
 func TestNewMPIErr2(t *testing.T) {
 	reader := reader.New(data3)
 	_, err := NewMPI(reader)
-	if err != nil {
-		if errors.Cause(err) != io.ErrUnexpectedEOF {
-			t.Errorf("NewMPI = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
-		}
+	if !errs.Is(err, io.ErrUnexpectedEOF) {
+		t.Errorf("NewMPI = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	} else {
-		t.Errorf("NewMPI = nil error, want \"%v\".", io.ErrUnexpectedEOF)
+		fmt.Printf("Info: %+v\n", err)
 	}
 }
 
 func TestMPINil(t *testing.T) {
 	mpi := (*MPI)(nil)
+	r := mpi.Rawdata()
+	if len(r) != 0 {
+		t.Error("length of MPIdata is not zero.")
+	}
 	if mpi.ToItem("", true) != nil {
 		t.Error("MPI to Item: not nil, want nil.")
 	}
 }
 
-/* Copyright 2016-2018 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

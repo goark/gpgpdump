@@ -105,13 +105,14 @@ func TestTag05(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		op := &openpgp.OpaquePacket{Tag: tc.tag, Contents: tc.content}
-		cxt := context.NewContext(options.New(
-			options.Set(options.DebugOpt, true),
-			options.Set(options.IntegerOpt, true),
-			options.Set(options.MarkerOpt, true),
-			options.Set(options.LiteralOpt, true),
-			options.Set(options.PrivateOpt, true),
-			options.Set(options.UTCOpt, true),
+		cxt := context.New(options.New(
+			options.Set(options.DEBUG, true),
+			options.Set(options.GDUMP, true),
+			options.Set(options.INTEGER, true),
+			options.Set(options.LITERAL, true),
+			options.Set(options.MARKER, true),
+			options.Set(options.PRIVATE, true),
+			options.Set(options.UTC, true),
 		))
 		if tc.ktm != nil {
 			tm, _ := values.NewDateTime(reader.New(tc.ktm), cxt.UTC())

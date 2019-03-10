@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
@@ -19,19 +19,22 @@ type MPI struct {
 func NewMPI(r *reader.Reader) (*MPI, error) {
 	length, err := r.ReadBytes(2)
 	if err != nil {
-		return nil, errors.Wrap(err, "error in values.NewMPI() function (length)")
+		return nil, errs.Wrap(err, "illegal length of MPI value")
 	}
 	bitLength := binary.BigEndian.Uint16(length)
 	byteLength := (int64(bitLength) + 7) / 8
 	data, err := r.ReadBytes(byteLength)
 	if err != nil {
-		return nil, errors.Wrapf(err, "error in values.NewMPI() function (body:%d)", byteLength)
+		return nil, errs.Wrapf(err, "illegal body of MPI value (length: %d bits, %d bytes)", bitLength, byteLength)
 	}
 	return &MPI{bitLength: bitLength, data: data}, nil
 }
 
 //Rawdata returns MPI raw data
 func (mpi *MPI) Rawdata() []byte {
+	if mpi == nil {
+		return nil
+	}
 	return mpi.data
 }
 
@@ -50,7 +53,7 @@ func (mpi *MPI) ToItem(name string, dumpFlag bool) *info.Item {
 	)
 }
 
-/* Copyright 2016-2018 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

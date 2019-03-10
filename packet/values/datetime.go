@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"time"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
@@ -19,7 +19,7 @@ type DateTime struct {
 func NewDateTime(r *reader.Reader, utcFlag bool) (*DateTime, error) {
 	tm, err := r.ReadBytes(4)
 	if err != nil {
-		return nil, errors.Wrap(err, "error in values.NewDateTime() function")
+		return nil, errs.Wrap(err, "illegal body of DateTime value")
 	}
 	return &DateTime{tm: tm, utcFlag: utcFlag}, nil
 }
@@ -74,7 +74,7 @@ func SigTimeItem(dt *DateTime, dumpFlag bool) *info.Item {
 	return dt.ToItem("Signature creation time", dumpFlag)
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -5,6 +5,7 @@ import (
 
 	openpgp "golang.org/x/crypto/openpgp/packet"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
@@ -26,19 +27,21 @@ func newSubparser(cxt *context.Context, tagID values.TagID, name string, body []
 		info.DumpStr(values.DumpBytes(body, cxt.Debug()).String()),
 	)
 	osps, err := openpgp.OpaqueSubpackets(body)
-	return &subParser{cxt: cxt, tagID: tagID, opaqueSubpacke: osps, item: item}, err
+	return &subParser{cxt: cxt, tagID: tagID, opaqueSubpacke: osps, item: item}, errs.Wrap(err, "illegal subpacket")
 }
 
 //Parse returns sub-packet info.
 func (sp *subParser) Parse() (*info.Item, error) {
+	var lastErr error
 	for _, osp := range sp.opaqueSubpacke {
 		item, err := NewSubs(sp.cxt, osp, sp.tagID).Parse()
 		if err != nil {
+			lastErr = err
 			break
 		}
 		sp.item.Add(item)
 	}
-	return sp.item, nil
+	return sp.item, lastErr
 }
 
 /* Copyright 2016 Spiegel

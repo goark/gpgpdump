@@ -7,7 +7,7 @@ import (
 )
 
 func TestResetSymAlgMode(t *testing.T) {
-	cxt := NewContext(&options.Options{})
+	cxt := New(options.New())
 
 	cxt.ResetAlg()
 	if cxt.AlgMode() != ModeNotSpecified {
@@ -27,7 +27,7 @@ func TestResetSymAlgMode(t *testing.T) {
 }
 
 func TestSetSymAlgModeSymEnc(t *testing.T) {
-	cxt := NewContext(&options.Options{})
+	cxt := New(options.New())
 
 	cxt.SetAlgSymEnc()
 	if cxt.AlgMode().String() != "Sym. Encryption Mode" {
@@ -43,7 +43,7 @@ func TestSetSymAlgModeSymEnc(t *testing.T) {
 }
 
 func TestSSetSymAlgModePubEnc(t *testing.T) {
-	cxt := NewContext(&options.Options{})
+	cxt := New(options.New())
 
 	cxt.SetAlgPubEnc()
 	if cxt.AlgMode().String() != "Pubkey Encryption Mode" {
@@ -58,7 +58,7 @@ func TestSSetSymAlgModePubEnc(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

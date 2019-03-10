@@ -3,6 +3,7 @@ package tags
 import (
 	"fmt"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -25,7 +26,7 @@ func (s *sub27) Parse() (*info.Item, error) {
 	//First octet
 	flag, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal flag in parsing sub packet %d", int(s.subID))
 	}
 	rootInfo.Add(values.Flag2Item(flag&0x01, "This key may be used to certify other keys."))
 	rootInfo.Add(values.Flag2Item(flag&0x02, "This key may be used to sign data."))
@@ -40,7 +41,7 @@ func (s *sub27) Parse() (*info.Item, error) {
 	if s.reader.Rest() > 0 {
 		flag, err := s.reader.ReadByte()
 		if err != nil {
-			return rootInfo, err
+			return rootInfo, errs.Wrapf(err, "illegal flag in parsing sub packet %d", int(s.subID))
 		}
 		rootInfo.Add(values.Flag2Item(flag&0x04, "This key may be used as an additional decryption subkey (ADSK)."))
 		rootInfo.Add(values.Flag2Item(flag&0xfb, fmt.Sprintf("Unknown flag2(%#02x)", flag&0xfb)))

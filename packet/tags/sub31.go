@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -22,12 +23,12 @@ func (s *sub31) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	pubid, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal pubid in parsing sub packet %d", int(s.subID))
 	}
 	rootInfo.Add(values.PubID(pubid).ToItem(s.cxt.Debug()))
 	hashid, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal hashid in parsing sub packet %d", int(s.subID))
 	}
 	rootInfo.Add(values.HashID(hashid).ToItem(s.cxt.Debug()))
 	rootInfo.Add(values.RawData(s.reader, "Hash", true))
