@@ -4,7 +4,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -65,7 +65,7 @@ func TestEccOID(t *testing.T) {
 		reader := reader.New(tc.data)
 		oid, err := NewOID(reader)
 		if err != nil {
-			t.Errorf("OID = \"%v\", want nil.", err.Error())
+			t.Errorf("OID = \"%+v\", want nil.", err)
 		}
 		i := oid.ToItem(true)
 		if i.Name != "ECC Curve OID" {
@@ -90,7 +90,7 @@ func TestEccUnknown(t *testing.T) {
 	reader := reader.New(data)
 	oid, err := NewOID(reader)
 	if err != nil {
-		t.Errorf("OID = \"%v\", want nil.", err.Error())
+		t.Errorf("OID = \"%+v\", want nil.", err)
 	}
 	i := oid.ToItem(true)
 	if i.Name != "ECC Curve OID" {
@@ -112,7 +112,7 @@ func TestEccZero(t *testing.T) {
 	reader := reader.New(data)
 	oid, err := NewOID(reader)
 	if err != nil {
-		t.Errorf("OID = \"%v\", want nil.", err)
+		t.Errorf("OID = \"%+v\", want nil.", err)
 	}
 	if len(oid) > 0 {
 		t.Errorf("OID length = %d, want 0.", len(oid))
@@ -123,8 +123,8 @@ func TestEccErrorLen(t *testing.T) {
 	data := []byte{}
 	reader := reader.New(data)
 	if _, err := NewOID(reader); err != nil {
-		if errors.Cause(err) != io.EOF {
-			t.Errorf("OID = \"%v\", want \"%v\".", err, io.EOF)
+		if !errs.Is(err, io.EOF) {
+			t.Errorf("OID = \"%+v\", want \"%+v\".", err, io.EOF)
 		}
 	}
 }
@@ -132,16 +132,12 @@ func TestEccErrorLen(t *testing.T) {
 func TestEccError(t *testing.T) {
 	data := []byte{0x05, 0x01, 0x02, 0x03, 0x04}
 	reader := reader.New(data)
-	if _, err := NewOID(reader); err != nil {
-		if errors.Cause(err) != io.ErrUnexpectedEOF {
-			t.Errorf("OID = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
-		}
-	} else {
-		t.Errorf("NewMPI = nil error, want \"%v\".", io.ErrUnexpectedEOF)
+	if _, err := NewOID(reader); !errs.Is(err, io.ErrUnexpectedEOF) {
+		t.Errorf("OID = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	}
 }
 
-/* Copyright 2016,2017 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

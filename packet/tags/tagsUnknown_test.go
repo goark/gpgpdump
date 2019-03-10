@@ -11,8 +11,14 @@ import (
 
 func TestTagUnknown(t *testing.T) {
 	op := &openpgp.OpaquePacket{Tag: 99, Contents: []byte{0x01, 0x02, 0x03, 0x04}}
-	cxt := context.NewContext(options.New(
-		options.Set(options.DebugOpt, true),
+	cxt := context.New(options.New(
+		options.Set(options.DEBUG, true),
+		options.Set(options.GDUMP, true),
+		options.Set(options.INTEGER, true),
+		options.Set(options.LITERAL, true),
+		options.Set(options.MARKER, true),
+		options.Set(options.PRIVATE, true),
+		options.Set(options.UTC, true),
 	))
 	itemStr := `Unknown (tag 99) (4 bytes)
 	01 02 03 04

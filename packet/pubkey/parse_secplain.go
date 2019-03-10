@@ -3,7 +3,7 @@ package pubkey
 import (
 	"fmt"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
@@ -38,7 +38,7 @@ func (p *Pubkey) ParseSecPlain(parent *info.Item) error {
 	default:
 		b, err := p.reader.ReadBytes(p.size - 2)
 		if err != nil {
-			return errors.Wrap(err, "error in pubkey.Pubkey.ParseSecPlain() function (data)")
+			return errs.Wrap(err, "error in parsing plain secret-key packet")
 		}
 		parent.Add(info.NewItem(
 			info.Name(fmt.Sprintf("Multi-precision integers of unknown secret key (pub %d)", p.pubID)),
@@ -48,7 +48,7 @@ func (p *Pubkey) ParseSecPlain(parent *info.Item) error {
 	}
 	chk, err := p.reader.ReadBytes(2)
 	if err != nil {
-		return errors.Wrap(err, "error in pubkey.Pubkey.ParseSecPlain() function (Checksum)")
+		return errs.Wrap(err, "illegal checksum value in parsing plain secret-key packet")
 	}
 	parent.Add(info.NewItem(
 		info.Name("Checksum"),
@@ -59,23 +59,23 @@ func (p *Pubkey) ParseSecPlain(parent *info.Item) error {
 
 func (p *Pubkey) rsaSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing plain secret-key packet (RSA)")
 	}
 	item.Add(mpi.ToItem("RSA secret exponent d", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing plain secret-key packet (RSA)")
 	}
 	item.Add(mpi.ToItem("RSA secret prime value p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing plain secret-key packet (RSA)")
 	}
 	item.Add(mpi.ToItem("RSA secret prime value q (p < q)", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing plain secret-key packet (RSA)")
 	}
 	item.Add(mpi.ToItem("RSA u, the multiplicative inverse of p, mod q", p.cxt.Integer()))
 	return nil
@@ -83,8 +83,8 @@ func (p *Pubkey) rsaSec(item *info.Item) error {
 
 func (p *Pubkey) dsaSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing plain secret-key packet (DSA)")
 	}
 	item.Add(mpi.ToItem("DSA secret exponent x", p.cxt.Integer()))
 	return nil
@@ -92,8 +92,8 @@ func (p *Pubkey) dsaSec(item *info.Item) error {
 
 func (p *Pubkey) elgSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing plain secret-key packet (ElGamal)")
 	}
 	item.Add(mpi.ToItem("ElGamal secret exponent x", p.cxt.Integer()))
 	return nil
@@ -101,8 +101,8 @@ func (p *Pubkey) elgSec(item *info.Item) error {
 
 func (p *Pubkey) ecdhSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing plain secret-key packet (ECDH)")
 	}
 	item.Add(mpi.ToItem("ECDH secret key", p.cxt.Integer()))
 	return nil
@@ -110,8 +110,8 @@ func (p *Pubkey) ecdhSec(item *info.Item) error {
 
 func (p *Pubkey) ecdsaSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing plain secret-key packet (ECDSA)")
 	}
 	item.Add(mpi.ToItem("ECDSA secret key", p.cxt.Integer()))
 	return nil
@@ -119,14 +119,14 @@ func (p *Pubkey) ecdsaSec(item *info.Item) error {
 
 func (p *Pubkey) eddsaSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing plain secret-key packet (EdDSA)")
 	}
 	item.Add(mpi.ToItem("EdDSA secret key", p.cxt.Integer()))
 	return nil
 }
 
-/* Copyright 2016-2018 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

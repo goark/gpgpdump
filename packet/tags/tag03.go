@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -25,20 +26,20 @@ func (t *tag03) Parse() (*info.Item, error) {
 	// [00] one-octet version number
 	v, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal version in parsing tag %d", int(t.tag))
 	}
 	version := values.SymSessKeyVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
 	if version.IsCurrent() {
-		_, err2 := t.parseV4(rootInfo)
-		if err2 != nil {
-			return rootInfo, err
+		_, err := t.parseV4(rootInfo)
+		if err != nil {
+			return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
 		}
 	} else if version.IsDraft() {
-		_, err2 := t.parseV5(rootInfo)
-		if err2 != nil {
-			return rootInfo, err
+		_, err := t.parseV5(rootInfo)
+		if err != nil {
+			return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
 		}
 	}
 
@@ -53,13 +54,13 @@ func (t *tag03) parseV4(rootInfo *info.Item) (*info.Item, error) {
 	// [01] one-octet number describing the symmetric algorithm used.
 	symid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrap(err, "illegal symid in parsing V4 Symmetric-Key Encrypted Session Key Packet")
 	}
 	rootInfo.Add(values.SymID(symid).ToItem(t.cxt.Debug()))
 	// [02] string-to-key (S2K) specifier
 	s2k := s2k.New(t.reader)
 	if err := s2k.Parse(rootInfo, t.cxt.Debug()); err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrap(err, "illegal s2k in parsing V4 Symmetric-Key Encrypted Session Key Packet")
 	}
 	return rootInfo, nil
 }

@@ -16,20 +16,6 @@
 
 See [go.mod](https://github.com/spiegel-im-spiegel/gpgpdump/blob/master/go.mod) file. 
 
-### Module Requirement Graph
-
-```
-$ go mod graph
-github.com/spiegel-im-spiegel/gpgpdump github.com/BurntSushi/toml@v0.3.1
-github.com/spiegel-im-spiegel/gpgpdump github.com/inconshreveable/mousetrap@v1.0.0
-github.com/spiegel-im-spiegel/gpgpdump github.com/pkg/errors@v0.8.1
-github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/cobra@v0.0.3
-github.com/spiegel-im-spiegel/gpgpdump github.com/spf13/pflag@v1.0.3
-github.com/spiegel-im-spiegel/gpgpdump github.com/spiegel-im-spiegel/gocli@v0.9.1
-github.com/spiegel-im-spiegel/gpgpdump golang.org/x/crypto@v0.0.0-20190208162236-193df9c0f06f
-github.com/spiegel-im-spiegel/gocli@v0.9.1 github.com/mattn/go-isatty@v0.0.4
-```
-
 ## Usage of [gpgpdump] package
 
 ```go
@@ -51,7 +37,13 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 -----END PGP SIGNATURE-----
 `
 
-info, err := gpgpdump.Parse(strings.NewReader(openpgpStr), options.New())
+info, err := gpgpdump.Parse(
+    strings.NewReader(openpgpStr),
+    options.New(
+        options.Set(options.ARMOR, true),
+        options.Set(options.UTC, true),
+    )
+)
 if err != nil {
 	return
 }

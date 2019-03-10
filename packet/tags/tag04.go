@@ -3,6 +3,7 @@ package tags
 import (
 	"fmt"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -25,38 +26,38 @@ func (t *tag04) Parse() (*info.Item, error) {
 	// [00] one-octet version number
 	v, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal version in parsing tag %d", int(t.tag))
 	}
 	version := values.OneSigVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 	// [01] one-octet signature type
 	sig, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal sigid in parsing tag %d", int(t.tag))
 	}
 	rootInfo.Add(values.SigID(sig).ToItem(t.cxt.Debug()))
 	// [02] one-octet number describing the hash algorithm used.
 	hashid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal hashid in parsing tag %d", int(t.tag))
 	}
 	rootInfo.Add(values.HashID(hashid).ToItem(t.cxt.Debug()))
 	// [03] one-octet number describing the public-key algorithm used.
 	pubid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal pubid in parsing tag %d", int(t.tag))
 	}
 	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
 	// [04] eight-octet number holding the Key ID of the signing key.
 	keyid, err := t.reader.ReadBytes(8)
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal keyid in parsing tag %d", int(t.tag))
 	}
 	rootInfo.Add(values.NewKeyID(keyid).ToItem())
 	// [12] one-octet number holding a flag showing whether the signature.
 	flag, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal flag in parsing tag %d", int(t.tag))
 	}
 	f := "other than one pass signature"
 	if flag == 0 {

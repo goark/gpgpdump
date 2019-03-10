@@ -1,9 +1,11 @@
 package facade
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spiegel-im-spiegel/gocli/exitcode"
@@ -20,6 +22,11 @@ var (
 )
 
 var (
+	usage = []string{ //output message of version
+		Name + " " + Version,
+		"Copyright 2016-2019 Spiegel (based on pgpdump by kazu-yamamoto)",
+		"Licensed under Apache License, Version 2.0",
+	}
 	versionFlag bool //version flag
 	jsonFlag    bool //output with JSON format
 	tomlFlag    bool //output with TOML format
@@ -32,13 +39,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			//parse options
 			if versionFlag {
-				if err := ui.OutputErrln(Name, Version); err != nil {
-					return err
-				}
-				if err := ui.OutputErrln("Copyright 2016-2019 Spiegel (based on pgpdump by kazu-yamamoto)"); err != nil {
-					return err
-				}
-				return ui.OutputErrln("Licensed under Apache License, Version 2.0")
+				return ui.OutputErrln(strings.Join(usage, "\n"))
 			}
 			opts := parseOpt(cmd)
 
@@ -56,6 +57,9 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 			//parse OpenPGP packets
 			info, err := gpgpdump.Parse(reader, opts)
 			if err != nil {
+				if opts.Debug() {
+					_ = ui.OutputErrln(fmt.Sprintf("%+v", err))
+				}
 				return err
 			}
 
@@ -70,6 +74,9 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 				err = nil
 			}
 			if err != nil {
+				if opts.Debug() {
+					_ = ui.OutputErrln(fmt.Sprintf("%+v", err))
+				}
 				return err
 			}
 			return ui.WriteFrom(result)
@@ -78,14 +85,14 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
 	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
 	rootCmd.Flags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
-	rootCmd.Flags().BoolP(options.ArmorOpt, "a", false, "accepts ASCII input only")
-	rootCmd.Flags().BoolP(options.DebugOpt, "", false, "for debug") //not use
-	//rootCmd.Flags().BoolP(options.GDumpOpt, "g", false, "selects alternate (GnuPG type) dump format") //not use
-	rootCmd.Flags().BoolP(options.IntegerOpt, "i", false, "dumps multi-precision integers")
-	rootCmd.Flags().BoolP(options.LiteralOpt, "l", false, "dumps literal packets (tag 11)")
-	rootCmd.Flags().BoolP(options.MarkerOpt, "m", false, "dumps marker packets (tag 10)")
-	rootCmd.Flags().BoolP(options.PrivateOpt, "p", false, "dumps private packets (tag 60-63)")
-	rootCmd.Flags().BoolP(options.UTCOpt, "u", false, "output with UTC time")
+	rootCmd.Flags().BoolP(options.ARMOR.String(), "a", false, "accepts ASCII input only")
+	rootCmd.Flags().BoolP(options.DEBUG.String(), "", false, "for debug") //not use
+	//rootCmd.Flags().BoolP(options.GDUMP.String(), "g", false, "selects alternate (GnuPG type) dump format") //not use
+	rootCmd.Flags().BoolP(options.INTEGER.String(), "i", false, "dumps multi-precision integers")
+	rootCmd.Flags().BoolP(options.LITERAL.String(), "l", false, "dumps literal packets (tag 11)")
+	rootCmd.Flags().BoolP(options.MARKER.String(), "m", false, "dumps marker packets (tag 10)")
+	rootCmd.Flags().BoolP(options.PRIVATE.String(), "p", false, "dumps private packets (tag 60-63)")
+	rootCmd.Flags().BoolP(options.UTC.String(), "u", false, "output with UTC time")
 
 	rootCmd.SetArgs(args)
 	rootCmd.SetOutput(ui.ErrorWriter())
@@ -93,24 +100,25 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	return rootCmd
 }
 
-func getBool(cmd *cobra.Command, name string) bool {
+func getBool(cmd *cobra.Command, code options.OptCode) (options.OptCode, bool) {
+	name := code.String()
 	f, err := cmd.Flags().GetBool(name)
 	if err != nil {
 		panic("invalid option: " + name)
 	}
-	return f
+	return code, f
 }
 
-func parseOpt(cmd *cobra.Command) *options.Options {
+func parseOpt(cmd *cobra.Command) options.Options {
 	return options.New(
-		options.Set(options.ArmorOpt, getBool(cmd, options.ArmorOpt)),
-		options.Set(options.DebugOpt, getBool(cmd, options.DebugOpt)), //for debug
-		//options.Set(options.GDumpOpt, getBool(cmd, options.GDumpOpt)), //not use
-		options.Set(options.IntegerOpt, getBool(cmd, options.IntegerOpt)),
-		options.Set(options.LiteralOpt, getBool(cmd, options.LiteralOpt)),
-		options.Set(options.MarkerOpt, getBool(cmd, options.MarkerOpt)),
-		options.Set(options.PrivateOpt, getBool(cmd, options.PrivateOpt)),
-		options.Set(options.UTCOpt, getBool(cmd, options.UTCOpt)),
+		options.Set(getBool(cmd, options.ARMOR)),
+		options.Set(getBool(cmd, options.DEBUG)), //for debug
+		//options.Set(getBool(cmd, options.GDUMP)), //not use
+		options.Set(getBool(cmd, options.INTEGER)),
+		options.Set(getBool(cmd, options.LITERAL)),
+		options.Set(getBool(cmd, options.MARKER)),
+		options.Set(getBool(cmd, options.PRIVATE)),
+		options.Set(getBool(cmd, options.UTC)),
 	)
 }
 

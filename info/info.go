@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 )
 
 //Info is information class for OpenPGP packets
@@ -27,7 +27,7 @@ func (i *Info) Add(a *Item) {
 	if i == nil {
 		return
 	}
-	if a != nil && i != nil {
+	if a != nil {
 		i.Packets = append(i.Packets, a)
 	}
 }
@@ -41,7 +41,7 @@ func (i *Info) TOML() (io.Reader, error) {
 	encoder := toml.NewEncoder(buf)
 	encoder.Indent = "  "
 	if err := encoder.Encode(i); err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errors.Wrap(err, "error in info.Info.TOML() function")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in marshaling to TOML")
 	}
 	return buf, nil
 }
@@ -55,7 +55,7 @@ func (i *Info) JSON() (io.Reader, error) {
 	encoder := json.NewEncoder(buf)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(i); err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errors.Wrap(err, "error info info.Info.JSON() function")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in marshaling to JSON")
 	}
 	return buf, nil
 }
@@ -162,7 +162,6 @@ func (i *Item) toString(indent string, lvl int, buf *bytes.Buffer) {
 			itm.toString(indent, lvl+1, buf)
 		}
 	}
-	return
 }
 
 func (i *Item) String() string {
@@ -171,7 +170,7 @@ func (i *Item) String() string {
 	return buf.String()
 }
 
-/* Copyright 2016,2017 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -22,7 +23,7 @@ func (s *sub03) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	exp, err := values.NewExpire(s.reader, s.cxt.SigCreationTime)
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal Expiration Timee in parsing sub packet %d", int(s.subID))
 	}
 	s.cxt.SigCreationTime = nil
 	return exp.ToItem(rootInfo.Name, s.cxt.Debug()), nil

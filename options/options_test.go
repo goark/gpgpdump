@@ -24,14 +24,14 @@ func TestNewOptions(t *testing.T) {
 
 func TestSetAllOpt(t *testing.T) {
 	o := New(
-		Set(ArmorOpt, true),
-		Set(DebugOpt, true), //not use
-		Set(GDumpOpt, true), //not use
-		Set(IntegerOpt, true),
-		Set(LiteralOpt, true),
-		Set(MarkerOpt, true),
-		Set(PrivateOpt, true),
-		Set(UTCOpt, true),
+		Set(ARMOR, true),
+		Set(DEBUG, true),
+		Set(GDUMP, true),
+		Set(INTEGER, true),
+		Set(LITERAL, true),
+		Set(MARKER, true),
+		Set(PRIVATE, true),
+		Set(UTC, true),
 	)
 	res := "armor:true,debug:true,gdump:true,int:true,literal:true,marker:true,private:true,utc:true"
 	if o.String() != res {
@@ -40,7 +40,7 @@ func TestSetAllOpt(t *testing.T) {
 }
 
 func TestArmorOpt(t *testing.T) {
-	o := New(Set(ArmorOpt, true))
+	o := New(SetByString("ARMOR", true))
 	res := "armor:true,debug:false,gdump:false,int:false,literal:false,marker:false,private:false,utc:false"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
@@ -48,7 +48,7 @@ func TestArmorOpt(t *testing.T) {
 }
 
 func TestDebugOpt(t *testing.T) {
-	o := New(Set(DebugOpt, true))
+	o := New(SetByString("DEBUG", true))
 	res := "armor:false,debug:true,gdump:true,int:true,literal:true,marker:true,private:true,utc:false"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
@@ -56,7 +56,7 @@ func TestDebugOpt(t *testing.T) {
 }
 
 func TestGDumpOpt(t *testing.T) {
-	o := New(Set(GDumpOpt, true))
+	o := New(SetByString("GDUMP", true))
 	res := "armor:false,debug:false,gdump:true,int:false,literal:false,marker:false,private:false,utc:false"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
@@ -64,7 +64,7 @@ func TestGDumpOpt(t *testing.T) {
 }
 
 func TestIntegerOpt(t *testing.T) {
-	o := New(Set(IntegerOpt, true))
+	o := New(SetByString("INT", true))
 	res := "armor:false,debug:false,gdump:false,int:true,literal:false,marker:false,private:false,utc:false"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
@@ -72,7 +72,7 @@ func TestIntegerOpt(t *testing.T) {
 }
 
 func TestLiteralOpt(t *testing.T) {
-	o := New(Set(LiteralOpt, true))
+	o := New(SetByString("Literal", true))
 	res := "armor:false,debug:false,gdump:false,int:false,literal:true,marker:false,private:false,utc:false"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
@@ -80,7 +80,7 @@ func TestLiteralOpt(t *testing.T) {
 }
 
 func TestMarkerOpt(t *testing.T) {
-	o := New(Set(MarkerOpt, true))
+	o := New(SetByString("Marker", true))
 	res := "armor:false,debug:false,gdump:false,int:false,literal:false,marker:true,private:false,utc:false"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
@@ -88,7 +88,7 @@ func TestMarkerOpt(t *testing.T) {
 }
 
 func TestPrivateOpt(t *testing.T) {
-	o := New(Set(PrivateOpt, true))
+	o := New(SetByString("Private", true))
 	res := "armor:false,debug:false,gdump:false,int:false,literal:false,marker:false,private:true,utc:false"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
@@ -96,22 +96,14 @@ func TestPrivateOpt(t *testing.T) {
 }
 
 func TestUTCOpt(t *testing.T) {
-	o := New(Set(UTCOpt, true))
+	o := New(SetByString("UTC", true))
 	res := "armor:false,debug:false,gdump:false,int:false,literal:false,marker:false,private:false,utc:true"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
 	}
 }
 
-func TestFakeOpt(t *testing.T) {
-	o := New(Set("json", true))
-	res := "armor:false,debug:false,gdump:false,int:false,literal:false,marker:false,private:false,utc:false"
-	if o.String() != res {
-		t.Errorf("Options()  = %v, want %v.", o.String(), res)
-	}
-}
-
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

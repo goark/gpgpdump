@@ -3,6 +3,7 @@ package pubkey
 import (
 	"fmt"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
@@ -46,8 +47,8 @@ func (p *Pubkey) ParseSes(parent *info.Item) error {
 
 func (p *Pubkey) rsaSes(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-Key Encrypted Session Key Packet (RSA)")
 	}
 	item.Add(mpi.ToItem("RSA m^e mod n", p.cxt.Integer()))
 	return nil
@@ -55,13 +56,13 @@ func (p *Pubkey) rsaSes(item *info.Item) error {
 
 func (p *Pubkey) elgSes(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-Key Encrypted Session Key Packet (ElGamal)")
 	}
 	item.Add(mpi.ToItem("ElGamal g^k mod p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-Key Encrypted Session Key Packet (ElGamal)")
 	}
 	item.Add(mpi.ToItem("ElGamal m * y^k mod p", p.cxt.Integer()))
 	return nil
@@ -69,8 +70,8 @@ func (p *Pubkey) elgSes(item *info.Item) error {
 
 func (p *Pubkey) ecdhSes(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
-	if err != nil || mpi == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-Key Encrypted Session Key Packet (ECDH)")
 	}
 	switch (mpi.Rawdata())[0] {
 	case 0x04:
@@ -81,14 +82,14 @@ func (p *Pubkey) ecdhSes(item *info.Item) error {
 		item.Add(mpi.ToItem("ECDH EC point", p.cxt.Integer()))
 	}
 	ep, err := values.NewECParm(p.reader)
-	if err != nil || ep == nil {
-		return err
+	if err != nil {
+		return errs.Wrap(err, "error in parsing Public-Key Encrypted Session Key Packet (ECDH)")
 	}
 	item.Add(ep.ToItem("symmetric key (encoded)", p.cxt.Integer()))
 	return nil
 }
 
-/* Copyright 2016-2018 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

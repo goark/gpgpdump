@@ -67,14 +67,14 @@ func TestPubkeySes(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		parent := info.NewItem()
-		cxt := context.NewContext(options.New(
-			options.Set(options.DebugOpt, true), //not use
-			options.Set(options.GDumpOpt, true), //not use
-			options.Set(options.IntegerOpt, true),
-			options.Set(options.LiteralOpt, true),
-			options.Set(options.MarkerOpt, true),
-			options.Set(options.PrivateOpt, true),
-			options.Set(options.UTCOpt, true),
+		cxt := context.New(options.New(
+			options.Set(options.DEBUG, true),
+			options.Set(options.GDUMP, true),
+			options.Set(options.INTEGER, true),
+			options.Set(options.LITERAL, true),
+			options.Set(options.MARKER, true),
+			options.Set(options.PRIVATE, true),
+			options.Set(options.UTC, true),
 		))
 		New(cxt, values.PubID(tc.content[0]), reader.New(tc.content[1:])).ParseSes(parent)
 		str := parent.String()

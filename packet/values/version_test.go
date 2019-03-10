@@ -95,6 +95,36 @@ func TestVersionDraft(t *testing.T) {
 	}
 }
 
+func TestVersionNoDraft(t *testing.T) {
+	v := NewVersion(5, 4, 0)
+	if v.IsCurrent() {
+		t.Errorf("Version.IsCurrent = %v, want false.", v.IsCurrent())
+	}
+	if v.IsOld() {
+		t.Errorf("Version.IsOld = %v, want false.", v.IsOld())
+	}
+	if v.IsDraft() {
+		t.Errorf("Version.IsUnknown = %v, want false.", v.IsDraft())
+	}
+	if !v.IsUnknown() {
+		t.Errorf("Version.IsUnknown = %v, want true.", v.IsUnknown())
+	}
+
+	i := v.ToItem(true)
+	if i.Name != "Version" {
+		t.Errorf("Version.Name = \"%v\", want \"Version\".", i.Name)
+	}
+	if i.Value != "5" {
+		t.Errorf("Version.Value = \"%v\", want \"5\".", i.Value)
+	}
+	if i.Note != "unknown" {
+		t.Errorf("Version.Note = \"%v\", want \"unknown\"", i.Note)
+	}
+	if i.Dump != "05" {
+		t.Errorf("Version.Dump = \"%v\", want \"05\".", i.Dump)
+	}
+}
+
 func TestVersionUnknown(t *testing.T) {
 	v := NewVersion(6, 4, 5)
 	if v.IsCurrent() {

@@ -2,6 +2,7 @@ package facade
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/spiegel-im-spiegel/gocli/exitcode"
@@ -114,15 +115,17 @@ func TestLoadByNofile(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
-	args := []string{"noexist"}
+	args := []string{"--debug", "noexist"}
 
 	exit := Execute(ui, args)
 	if exit != exitcode.Abnormal {
 		t.Errorf("Execute(nofile) = \"%v\", want \"%v\".", exit, exitcode.Abnormal)
+	} else {
+		fmt.Printf("Info: %+v", outErrBuf.String())
 	}
 }
 
-/* Copyright 2017,2018 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

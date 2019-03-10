@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -25,7 +26,7 @@ func (s *sub20) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	flags, err := s.reader.ReadBytes(8)
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal flags in parsing sub packet %d", int(s.subID))
 	}
 	human := flags[0] & 0x80
 	rootInfo.Add(values.Flag2Item(human, "Human-readable"))
@@ -36,15 +37,15 @@ func (s *sub20) Parse() (*info.Item, error) {
 
 	nameLength, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal length of name in parsing sub packet %d", int(s.subID))
 	}
 	valueLength, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal length of value in parsing sub packet %d", int(s.subID))
 	}
 	name, err := s.reader.ReadBytes(int64(binary.BigEndian.Uint16(nameLength)))
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal name in parsing sub packet %d (length: %d bytes)", int(s.subID), nameLength)
 	}
 	rootInfo.Add(info.NewItem(
 		info.Name("Name"),
@@ -52,7 +53,7 @@ func (s *sub20) Parse() (*info.Item, error) {
 	))
 	value, err := s.reader.ReadBytes(int64(binary.BigEndian.Uint16(valueLength)))
 	if err != nil {
-		return rootInfo, err
+		return rootInfo, errs.Wrapf(err, "illegal value in parsing sub packet %d (length: %d bytes)", int(s.subID), valueLength)
 	}
 	itm := info.NewItem(
 		info.Name("Value"),

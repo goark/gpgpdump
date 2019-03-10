@@ -12,7 +12,7 @@ func TestS2KNil(t *testing.T) {
 	parent := info.NewItem()
 	s2k := (*S2K)(nil)
 	if err := s2k.Parse(parent, true); err != nil {
-		t.Errorf("S2K err = \"%v\", want nil.", err)
+		t.Errorf("S2K err = \"%+v\", want nil.", err)
 	}
 	if parent.Items != nil {
 		t.Error("S2K = not nil, want nil.")
@@ -26,7 +26,7 @@ func TestS2KEmpty(t *testing.T) {
 	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
-		fmt.Println("info:", err)
+		fmt.Printf("info: %+v\n", err)
 	}
 	if parent.Items != nil {
 		t.Error("S2K = not nil, want nil.")
@@ -39,7 +39,7 @@ func TestSimpleS2K(t *testing.T) {
 	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
-		t.Errorf("S2K err = \"%v\", want nil.", err)
+		t.Errorf("S2K err = \"%+v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
 	} else {
@@ -89,7 +89,7 @@ func TestSimpleS2Kerr(t *testing.T) {
 	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
-		fmt.Println("info:", err)
+		fmt.Printf("info: %+v\n", err)
 	}
 	if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -120,7 +120,7 @@ func TestSaltedS2K(t *testing.T) {
 	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
-		t.Errorf("S2K err = \"%v\", want nil.", err)
+		t.Errorf("S2K err = \"%+v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
 	} else {
@@ -184,7 +184,7 @@ func TestSaltedS2Kerr(t *testing.T) {
 	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
-		fmt.Println("info:", err)
+		fmt.Printf("info: %+v\n", err)
 	}
 	if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -226,7 +226,7 @@ func TestIteratedSaltedS2K(t *testing.T) {
 	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
-		t.Errorf("S2K err = \"%v\", want nil.", err)
+		t.Errorf("S2K err = \"%+v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
 	} else {
@@ -304,7 +304,7 @@ func TestIteratedSaltedS2Kerr(t *testing.T) {
 	if err := s2k.Parse(parent, true); err == nil {
 		t.Error("S2K err = nil, not want nil.")
 	} else {
-		fmt.Println("info:", err)
+		fmt.Printf("info: %+v\n", err)
 	}
 	if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
@@ -361,7 +361,7 @@ func TestUnknownS2K(t *testing.T) {
 	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
-		t.Errorf("S2K err = \"%v\", want nil.", err)
+		t.Errorf("S2K err = \"%+v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
 	} else {
@@ -396,7 +396,7 @@ func TestExpS2K(t *testing.T) {
 	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
-		t.Errorf("S2K err = \"%v\", want nil.", err)
+		t.Errorf("S2K err = \"%+v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
 	} else {
@@ -431,7 +431,7 @@ func TestExpS2Kb(t *testing.T) {
 	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
-		t.Errorf("S2K err = \"%v\", want nil.", err)
+		t.Errorf("S2K err = \"%+v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
 	} else {
@@ -466,7 +466,7 @@ func TestExpS2Kgnu1(t *testing.T) {
 	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
-		t.Errorf("S2K err = \"%v\", want nil.", err)
+		t.Errorf("S2K err = \"%+v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
 	} else {
@@ -519,7 +519,7 @@ func TestExpS2Kgnu2(t *testing.T) {
 	reader := reader.New(data)
 	s2k := New(reader)
 	if err := s2k.Parse(parent, true); err != nil {
-		t.Errorf("S2K err = \"%v\", want nil.", err)
+		t.Errorf("S2K err = \"%+v\", want nil.", err)
 	} else if len(parent.Items) != 1 {
 		t.Errorf("S2K.Item count = %d, want 1.", len(parent.Items))
 	} else {
@@ -579,7 +579,7 @@ func TestExpS2Kgnu2(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

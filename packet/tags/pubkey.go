@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"strconv"
 
-	"github.com/pkg/errors"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/pubkey"
@@ -48,14 +48,14 @@ func (p *pubkeyInfo) parseV3(parent *info.Item) error {
 	// [01] four-octet number denoting the time that the key was created.
 	tm, err := values.NewDateTime(p.reader, p.cxt.UTC())
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV3() function (Key Creation Time)")
+		return errs.Wrap(err, "illegal Key Creation Time in parsing Public-key V3 packet")
 	}
 	p.cxt.KeyCreationTime = tm
 	parent.Add(values.PubKeyTimeItem(tm, true))
 	// [05] two-octet number denoting the time in days that this key is valid.
 	days, err := p.reader.ReadBytes(2)
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV3() function (Valid days)")
+		return errs.Wrap(err, "illegal Valid days in parsing Public-key V3 packet")
 	}
 	parent.Add(info.NewItem(
 		info.Name("Valid days"),
@@ -65,7 +65,7 @@ func (p *pubkeyInfo) parseV3(parent *info.Item) error {
 	// [07] one-octet number denoting the public-key algorithm of this key.
 	pubid, err := p.reader.ReadByte()
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV3() function (pub id)")
+		return errs.Wrap(err, "illegal pub ID in parsing Public-key V3 packet")
 	}
 	p.pubID = values.PubID(pubid)
 	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
@@ -78,14 +78,14 @@ func (p *pubkeyInfo) parseV4(parent *info.Item) error {
 	// [01] four-octet number denoting the time that the key was created.
 	tm, err := values.NewDateTime(p.reader, p.cxt.UTC())
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV4() function (Key Creation Time)")
+		return errs.Wrap(err, "illegal Key Creation Time in parsing Public-key V4 packet")
 	}
 	p.cxt.KeyCreationTime = tm
 	parent.Add(values.PubKeyTimeItem(tm, true))
 	// [05] one-octet number denoting the public-key algorithm of this key.
 	pubid, err := p.reader.ReadByte()
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV4() function (pub id)")
+		return errs.Wrap(err, "illegal pub ID in parsing Public-key V4 packet")
 	}
 	p.pubID = values.PubID(pubid)
 	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
@@ -98,25 +98,26 @@ func (p *pubkeyInfo) parseV5(parent *info.Item) error {
 	// [01] four-octet number denoting the time that the key was created.
 	tm, err := values.NewDateTime(p.reader, p.cxt.UTC())
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV5() function (Key Creation Time)")
+		return errs.Wrap(err, "illegal Key Creation Time in parsing Public-key V5 packet")
 	}
 	p.cxt.KeyCreationTime = tm
 	parent.Add(values.PubKeyTimeItem(tm, true))
 	// [05] one-octet number denoting the public-key algorithm of this key.
 	pubid, err := p.reader.ReadByte()
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV5() function (pub id)")
+		return errs.Wrap(err, "illegal pub ID in parsing Public-key V5 packet")
 	}
 	p.pubID = values.PubID(pubid)
 	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
 	// [06] four-octet scalar octet count for the following key material.
 	sz, err := p.reader.ReadBytes(4)
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV5() function (key material data size)")
+		return errs.Wrap(err, "illegal key material data size in parsing Public-key V5 packet")
 	}
-	b, err := p.reader.ReadBytes(int64(binary.BigEndian.Uint32(sz)))
+	sz64 := int64(binary.BigEndian.Uint32(sz))
+	b, err := p.reader.ReadBytes(sz64)
 	if err != nil {
-		return errors.Wrap(err, "error in tags.pubkey,parseV5() function (key material data)")
+		return errs.Wrapf(err, "illegal key material data in parsing Public-key V5 packet (size: %d bytes)", sz64)
 	}
 	// [10] series of multiprecision integers comprising the key material.
 	return pubkey.New(p.cxt, p.pubID, reader.New(b)).ParsePub(parent) //TODO: new logic for key material

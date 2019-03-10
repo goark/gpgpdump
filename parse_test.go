@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 )
 
@@ -27,7 +28,7 @@ var (
 
 func ExampleParse() {
 	info, err := Parse(reader, optionss)
-	if err != nil {
+	if !errs.Is(err, nil) {
 		return
 	}
 	fmt.Println(info.Packets[0].Name)
@@ -37,7 +38,7 @@ func ExampleParse() {
 
 func ExampleParseByte() {
 	info, err := ParseByte(openpgpData, optionss)
-	if err != nil {
+	if !errs.Is(err, nil) {
 		return
 	}
 	fmt.Println(info.Packets[0].Name)
@@ -45,7 +46,7 @@ func ExampleParseByte() {
 	// Signature Packet (tag 2)
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

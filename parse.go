@@ -10,7 +10,7 @@ import (
 )
 
 //Parse returns packet info (from io.Reader stream).
-func Parse(r io.Reader, o *options.Options) (*info.Info, error) {
+func Parse(r io.Reader, o options.Options) (*info.Info, error) {
 	parser, err := packet.NewParser(r, o)
 	if err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func Parse(r io.Reader, o *options.Options) (*info.Info, error) {
 }
 
 //ParseByte returns packet info (from []byte data).
-func ParseByte(data []byte, o *options.Options) (*info.Info, error) {
+func ParseByte(data []byte, o options.Options) (*info.Info, error) {
 	return Parse(bytes.NewReader(data), o)
 }
 
