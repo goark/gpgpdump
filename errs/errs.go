@@ -2,7 +2,7 @@ package errs
 
 import "fmt"
 
-//Num is error number for CVSS
+//Num is error number for gpgpdumo
 type Num int
 
 const (

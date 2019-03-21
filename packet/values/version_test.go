@@ -193,6 +193,14 @@ func TestPubVer5(t *testing.T) {
 	}
 }
 
+func TestSigVer5(t *testing.T) {
+	i := SigVer(5).ToItem(true)
+
+	if i.Note != "draft" {
+		t.Errorf("Version.Note = \"%v\", want \"draft\"", i.Note)
+	}
+}
+
 func TestSigVer4(t *testing.T) {
 	i := SigVer(4).ToItem(true)
 
