@@ -89,7 +89,7 @@ func (p *pubkeyInfo) parseV4(parent *info.Item) error {
 	}
 	p.pubID = values.PubID(pubid)
 	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
-	// [06] series of multiprecision integers comprising the key material.
+	// [06] series of values comprising the key material.
 	return pubkey.New(p.cxt, p.pubID, p.reader).ParsePub(parent)
 }
 

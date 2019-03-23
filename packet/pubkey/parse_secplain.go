@@ -36,24 +36,17 @@ func (p *Pubkey) ParseSecPlain(parent *info.Item) error {
 			return err
 		}
 	default:
-		b, err := p.reader.ReadBytes(p.size - 2)
+		length := p.size - 2 //last 2-octet is checksum value
+		b, err := p.reader.ReadBytes(length)
 		if err != nil {
 			return errs.Wrap(err, "error in parsing plain secret-key packet")
 		}
 		parent.Add(info.NewItem(
 			info.Name(fmt.Sprintf("Multi-precision integers of unknown secret key (pub %d)", p.pubID)),
-			info.Note(fmt.Sprintf("%d bytes", p.size-2)),
+			info.Note(fmt.Sprintf("%d bytes", length)),
 			info.DumpStr(values.DumpBytes(b, p.cxt.Debug()).String()),
 		))
 	}
-	chk, err := p.reader.ReadBytes(2)
-	if err != nil {
-		return errs.Wrap(err, "illegal checksum value in parsing plain secret-key packet")
-	}
-	parent.Add(info.NewItem(
-		info.Name("Checksum"),
-		info.DumpStr(values.DumpBytes(chk, true).String()),
-	))
 	return nil
 }
 

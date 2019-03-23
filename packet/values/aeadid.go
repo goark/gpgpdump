@@ -11,6 +11,16 @@ var aeadIDNames = Msgs{
 	2: "OCB mode <RFC7253>",
 }
 
+var aeadIDIVLen = map[int]int{
+	1: 16, //EAX mode
+	2: 16, //OCB mode
+}
+
+var aeadIDTagLen = map[int]int{
+	1: 16, //EAX mode
+	2: 16, //OCB mode
+}
+
 //AEADID is AEAD Algorithm ID
 type AEADID byte
 
@@ -31,6 +41,22 @@ func (aa AEADID) String() string {
 		name = aeadIDNames.Get(int(aa), Unknown)
 	}
 	return fmt.Sprintf("%s (aead %d)", name, int(aa))
+}
+
+// IVLen returns length of IV
+func (aa AEADID) IVLen() int {
+	if v, ok := aeadIDIVLen[int(aa)]; ok {
+		return v
+	}
+	return 0
+}
+
+// IVLen returns length of authentication tag
+func (aa AEADID) TagLen() int {
+	if v, ok := aeadIDTagLen[int(aa)]; ok {
+		return v
+	}
+	return 0
 }
 
 /* Copyright 2019 Spiegel

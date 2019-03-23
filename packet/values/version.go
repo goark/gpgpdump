@@ -111,6 +111,11 @@ func SymSessKeyVer(ver byte) *Version {
 	return NewVersion(ver, 4, 5)
 }
 
+// AEADPacketVer is AEAD Encrypted Data Packet Version
+func AEADVer(ver byte) *Version {
+	return NewVersion(ver, 1, 0)
+}
+
 /* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

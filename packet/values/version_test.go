@@ -241,6 +241,14 @@ func TestSymSessKeyVer5(t *testing.T) {
 	}
 }
 
+func TestAEADVer1(t *testing.T) {
+	i := AEADVer(1).ToItem(true)
+
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
+	}
+}
+
 /* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
