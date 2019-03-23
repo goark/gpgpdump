@@ -33,13 +33,15 @@ func (i *Info) Add(a *Item) {
 }
 
 //TOML returns TOML formated string
-func (i *Info) TOML() (io.Reader, error) {
+func (i *Info) TOML(indent int) (io.Reader, error) {
 	if i == nil {
 		return ioutil.NopCloser(bytes.NewReader(nil)), nil
 	}
 	buf := new(bytes.Buffer)
 	encoder := toml.NewEncoder(buf)
-	encoder.Indent = "  "
+	if indent > 0 {
+		encoder.Indent = strings.Repeat(" ", indent)
+	}
 	if err := encoder.Encode(i); err != nil {
 		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in marshaling to TOML")
 	}
@@ -47,13 +49,15 @@ func (i *Info) TOML() (io.Reader, error) {
 }
 
 //JSON returns JSON formated string
-func (i *Info) JSON() (io.Reader, error) {
+func (i *Info) JSON(indent int) (io.Reader, error) {
 	if i == nil {
 		return ioutil.NopCloser(bytes.NewReader(nil)), nil
 	}
 	buf := new(bytes.Buffer)
 	encoder := json.NewEncoder(buf)
-	encoder.SetIndent("", "  ")
+	if indent > 0 {
+		encoder.SetIndent("", strings.Repeat(" ", indent))
+	}
 	if err := encoder.Encode(i); err != nil {
 		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in marshaling to JSON")
 	}

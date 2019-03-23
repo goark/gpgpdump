@@ -54,6 +54,12 @@ fmt.Println(info.Packets[0].Name)
 
 ## Command-Line Interface
 
+### Download and Build
+
+```
+$ go get github.com/spiegel-im-spiegel/gpgpdump@latest
+```
+
 ### Binaries
 
 See [latest release](https://github.com/spiegel-im-spiegel/gpgpdump/releases/latest).
@@ -66,17 +72,18 @@ Usage:
   gpgpdump [flags] [OpenPGP file]
 
 Flags:
-  -a, --armor     accepts ASCII input only
-      --debug     for debug
-  -h, --help      help for gpgpdump
-  -i, --int       dumps multi-precision integers
-  -j, --json      output with JSON format
-  -l, --literal   dumps literal packets (tag 11)
-  -m, --marker    dumps marker packets (tag 10)
-  -p, --private   dumps private packets (tag 60-63)
-  -t, --toml      output with TOML format
-  -u, --utc       output with UTC time
-  -v, --version   output version of gpgpdump
+  -a, --armor        accepts ASCII input only
+      --debug        for debug
+  -h, --help         help for gpgpdump
+      --indent int   indent size for output string
+  -i, --int          dumps multi-precision integers
+  -j, --json         output with JSON format
+  -l, --literal      dumps literal packets (tag 11)
+  -m, --marker       dumps marker packets (tag 10)
+  -p, --private      dumps private packets (tag 60-63)
+  -t, --toml         output with TOML format
+  -u, --utc          output with UTC time
+  -v, --version      output version of gpgpdump
 
 $ cat sig
 -----BEGIN PGP SIGNATURE-----
@@ -87,20 +94,20 @@ T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
 =ZOTN
 -----END PGP SIGNATURE-----
 
-$ cat sig | gpgpdump -u
+$ cat sig | gpgpdump -u --indent 2
 Signature Packet (tag 2) (94 bytes)
-    Version: 4 (current)
-    Signiture Type: Signature of a canonical text document (0x01)
-    Public-key Algorithm: ECDSA public key algorithm (pub 19)
-    Hash Algorithm: SHA2-256 (hash 8)
-    Hashed Subpacket (6 bytes)
-        Signature Creation Time (sub 2): 2015-01-24T02:52:15Z
-    Unhashed Subpacket (10 bytes)
-        Issuer (sub 16): 0x31fbfda95fbbfa18
-    Hash left 2 bytes
-        36 1f
-    ECDSA value r (256 bits)
-    ECDSA value s (252 bits)
+  Version: 4 (current)
+  Signiture Type: Signature of a canonical text document (0x01)
+  Public-key Algorithm: ECDSA public key algorithm (pub 19)
+  Hash Algorithm: SHA2-256 (hash 8)
+  Hashed Subpacket (6 bytes)
+    Signature Creation Time (sub 2): 2015-01-24T02:52:15Z
+  Unhashed Subpacket (10 bytes)
+    Issuer (sub 16): 0x31fbfda95fbbfa18
+  Hash left 2 bytes
+    36 1f
+  ECDSA value r (256 bits)
+  ECDSA value s (252 bits)
 
 $ cat sig | gpgpdump -t -u
 [[Packet]]
@@ -152,7 +159,7 @@ $ cat sig | gpgpdump -t -u
     name = "ECDSA value s"
     note = "252 bits"
 
-$ cat sig | gpgpdump -j -u
+$ cat sig | gpgpdump -j -u --indent 2
 {
   "Packet": [
     {

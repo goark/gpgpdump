@@ -21,7 +21,7 @@ func r2s(r io.Reader) string {
 func TestTOMLNull(t *testing.T) {
 	info := (*Info)(nil)
 	info.Add(nil)
-	res, err := info.TOML()
+	res, err := info.TOML(2)
 	if err != nil {
 		t.Errorf("TOML() err = \"%+v\", want nil.", err)
 		return
@@ -34,7 +34,7 @@ func TestTOMLNull(t *testing.T) {
 
 func TestTOMLEmpty(t *testing.T) {
 	info := NewInfo()
-	res, err := info.TOML()
+	res, err := info.TOML(2)
 	if err != nil {
 		t.Errorf("TOML() err = \"%+v\", want nil.", err)
 		return
@@ -76,7 +76,7 @@ func TestTOML(t *testing.T) {
 	item1.Add(nil) //abnormal
 	info.Add(item1)
 	info.Add(nil) //abnormal
-	toml, err := info.TOML()
+	toml, err := info.TOML(2)
 	if err != nil {
 		t.Errorf("TOML() err = \"%+v\", want nil.", err)
 		return
@@ -126,7 +126,7 @@ func ExampleNewInfo() {
 func TestJSONNull(t *testing.T) {
 	info := (*Info)(nil)
 	info.Add(nil)
-	res, err := info.JSON()
+	res, err := info.JSON(2)
 	if err != nil {
 		t.Errorf("JSON() err = \"%+v\", want nil.", err)
 		return
@@ -140,7 +140,7 @@ func TestJSONNull(t *testing.T) {
 func TestJSONEmpty(t *testing.T) {
 	info := NewInfo()
 	output := "{}"
-	res, err := info.JSON()
+	res, err := info.JSON(2)
 	if err != nil {
 		t.Errorf("JSON() err = \"%+v\", want nil.", err)
 		return
@@ -187,7 +187,7 @@ func TestJSON(t *testing.T) {
 	)
 	item1.Add(item2)
 	info.Add(item1)
-	json, err := info.JSON()
+	json, err := info.JSON(2)
 	if err != nil {
 		t.Errorf("JSON() err = \"%+v\", want nil.", err)
 		return

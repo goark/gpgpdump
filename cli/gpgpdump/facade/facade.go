@@ -30,6 +30,7 @@ var (
 	versionFlag bool //version flag
 	jsonFlag    bool //output with JSON format
 	tomlFlag    bool //output with TOML format
+	indentSize  int
 )
 
 //newRootCmd returns cobra.Command instance for root command
@@ -66,9 +67,12 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 			//marshal packet info
 			var result io.Reader
 			if jsonFlag {
-				result, err = info.JSON()
+				result, err = info.JSON(indentSize)
 			} else if tomlFlag {
-				result, err = info.TOML()
+				result, err = info.TOML(indentSize)
+			} else if indentSize > 0 {
+				result = info.ToString(strings.Repeat(" ", indentSize))
+				err = nil
 			} else {
 				result = info.ToString("\t")
 				err = nil
@@ -85,6 +89,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
 	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
 	rootCmd.Flags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
+	rootCmd.Flags().IntVarP(&indentSize, "indent", "", 0, "indent size for output string")
 	rootCmd.Flags().BoolP(options.ARMOR.String(), "a", false, "accepts ASCII input only")
 	rootCmd.Flags().BoolP(options.DEBUG.String(), "", false, "for debug") //not use
 	//rootCmd.Flags().BoolP(options.GDUMP.String(), "g", false, "selects alternate (GnuPG type) dump format") //not use
