@@ -125,11 +125,10 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 			}
 		}
 	}
-
 	return nil
 }
 
-//Parse Secret-key packet
+//getField1 returns reader.Reader for optional fields
 func (p *seckeyInfo) getField1() (*reader.Reader, error) {
 	if p.pubVer.Number() == 5 {
 		l, err := p.reader.ReadByte()
@@ -148,7 +147,7 @@ func (p *seckeyInfo) getField1() (*reader.Reader, error) {
 	return p.reader, nil
 }
 
-//Parse Secret-key packet
+//getField2 returns reader.Reader for secret key material
 func (p *seckeyInfo) getField2() (*reader.Reader, error) {
 	if p.pubVer.Number() == 5 {
 		l, err := p.reader.ReadBytes(4)
@@ -168,6 +167,7 @@ func (p *seckeyInfo) getField2() (*reader.Reader, error) {
 	return p.reader, nil
 }
 
+//iv returns info.Item for Initialization Vector
 func (p *seckeyInfo) iv(symid values.SymID, isAEAD bool) (*info.Item, error) {
 	sz64 := int64(symid.IVLen())
 	iv, err := p.reader.ReadBytes(sz64)
