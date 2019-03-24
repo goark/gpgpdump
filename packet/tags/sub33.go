@@ -35,7 +35,7 @@ func (s *sub33) Parse() (*info.Item, error) {
 	case 4:
 		itm.Note = "need 20 octets length"
 	case 5:
-		itm.Note = "need 25 octets length"
+		itm.Note = "need 32 octets length"
 	default:
 		itm.Note = values.Unknown
 	}

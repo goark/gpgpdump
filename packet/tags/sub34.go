@@ -20,6 +20,9 @@ func newSub34(cxt *context.Context, subID values.SuboacketID, body []byte) Subs 
 // Parse parsing Preferred AEAD Algorithms Sub-packet
 func (s *sub34) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
+	for _, alg := range s.reader.GetBody() {
+		rootInfo.Add(values.AEADID(alg).ToItem(s.cxt.Debug()))
+	}
 	return rootInfo, nil
 }
 

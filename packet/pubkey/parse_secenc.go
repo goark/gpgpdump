@@ -55,7 +55,7 @@ func (p *Pubkey) ParseSecEnc(parent *info.Item) error {
 			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	}
-	if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip
+	if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip to EOF
 		return errs.Wrap(err, "error in parsing encrypted secret-key packet")
 	}
 	return nil

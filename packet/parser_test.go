@@ -370,7 +370,7 @@ func TestParse(t *testing.T) {
 		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
-	json, err := info.JSON()
+	json, err := info.JSON(2)
 	if err != nil {
 		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
@@ -424,7 +424,7 @@ func TestParseClearSignText(t *testing.T) {
 		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
-	json, err := info.JSON()
+	json, err := info.JSON(2)
 	if err != nil {
 		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
@@ -455,7 +455,7 @@ func TestParseBindata(t *testing.T) {
 		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return
 	}
-	json, err := info.JSON()
+	json, err := info.JSON(2)
 	if err != nil {
 		t.Errorf("Parse() = \"%+v\", want nil error.", err)
 		return

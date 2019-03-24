@@ -33,19 +33,23 @@ func (t *tag02) Parse() (*info.Item, error) {
 	version := values.SigVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
-	if version.IsCurrent() {
-		_, err2 := t.parseV4(rootInfo)
-		if err2 != nil {
+	switch true {
+	case version.IsDraft():
+		_, err := t.parseV5(rootInfo)
+		if err != nil {
 			return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
 		}
-	} else if version.IsOld() {
-		switch version.Number() {
-		case 3:
+	case version.IsCurrent():
+		_, err := t.parseV4(rootInfo)
+		if err != nil {
+			return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
+		}
+	case version.IsOld():
+		if version.Number() == 3 {
 			_, err2 := t.parseV3(rootInfo)
 			if err2 != nil {
 				return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
 			}
-		default:
 		}
 	}
 
@@ -125,76 +129,80 @@ func (t *tag02) parseV4(rootInfo *info.Item) (*info.Item, error) {
 	// [01] One-octet signature type.
 	sig, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal sigid in parsing Signiture V4 Packet")
+		return rootInfo, errs.Wrap(err, "illegal sigid in parsing Signiture V4/V5 Packet")
 	}
 	rootInfo.Add(values.SigID(sig).ToItem(t.cxt.Debug()))
 	// [02] One-octet public-key algorithm.
 	pubid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal pubid in parsing Signiture V4 Packet")
+		return rootInfo, errs.Wrap(err, "illegal pubid in parsing Signiture V4/V5 Packet")
 	}
 	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
 	// [03] One-octet hash algorithm.
 	hashid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal hashid in parsing Signiture V4 Packet")
+		return rootInfo, errs.Wrap(err, "illegal hashid in parsing Signiture V4/V5 Packet")
 	}
 	rootInfo.Add(values.HashID(hashid).ToItem(t.cxt.Debug()))
 	// [04] Two-octet scalar octet count for following hashed subpacket data.(= HS)
 	s, err := t.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal length of hashed subpacket in parsing Signiture V4 Packet")
+		return rootInfo, errs.Wrap(err, "illegal length of hashed subpacket in parsing Signiture V4/V5 Packet")
 	}
 	sizeHS := binary.BigEndian.Uint16(s)
 	// [06] Hashed subpacket data set (zero or more subpackets).
 	if sizeHS > 0 {
 		sp, err := t.reader.ReadBytes(int64(sizeHS))
 		if err != nil {
-			return rootInfo, errs.Wrapf(err, "illegal hashed subpacket in parsing Signiture V4 Packet (size: %d bytes)", int64(sizeHS))
+			return rootInfo, errs.Wrapf(err, "illegal hashed subpacket in parsing Signiture V4/V5 Packet (size: %d bytes)", int64(sizeHS))
 		}
 		subpcket, err := newSubparser(t.cxt, t.tag, "Hashed Subpacket", sp)
 		if err != nil {
-			return rootInfo, errs.Wrapf(err, "error in parsing hashed subpacket in Signiture V4 Packet (size: %d bytes)", int64(sizeHS))
+			return rootInfo, errs.Wrapf(err, "error in parsing hashed subpacket in Signiture V4/V5 Packet (size: %d bytes)", int64(sizeHS))
 		}
 		itm, err := subpcket.Parse()
 		if err != nil {
-			return rootInfo, errs.Wrapf(err, "error in parsing hashed subpacket in Signiture V4 Packet (size: %d bytes)", int64(sizeHS))
+			return rootInfo, errs.Wrapf(err, "error in parsing hashed subpacket in Signiture V4/V5 Packet (size: %d bytes)", int64(sizeHS))
 		}
 		rootInfo.Add(itm)
 	}
 	// [06+HS] Two-octet scalar octet count for the following unhashed subpacket data.(= US)
 	s, err = t.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal length of unhashed subpacket in parsing Signiture V4 Packet")
+		return rootInfo, errs.Wrap(err, "illegal length of unhashed subpacket in parsing Signiture V4/V5 Packet")
 	}
 	sizeUS := binary.BigEndian.Uint16(s)
 	// [08+HS] Unhashed subpacket data set (zero or more subpackets).
 	if sizeUS > 0 {
 		sp, err := t.reader.ReadBytes(int64(sizeUS))
 		if err != nil {
-			return rootInfo, errs.Wrapf(err, "illegal unhashed subpacket in parsing Signiture V4 Packet (size: %d bytes)", int64(sizeUS))
+			return rootInfo, errs.Wrapf(err, "illegal unhashed subpacket in parsing Signiture V4/V5 Packet (size: %d bytes)", int64(sizeUS))
 		}
 		subpcket, err := newSubparser(t.cxt, t.tag, "Unhashed Subpacket", sp)
 		if err != nil {
-			return rootInfo, errs.Wrapf(err, "error in parsing unhashed subpacket in Signiture V4 Packet (size: %d bytes)", int64(sizeUS))
+			return rootInfo, errs.Wrapf(err, "error in parsing unhashed subpacket in Signiture V4/V5 Packet (size: %d bytes)", int64(sizeUS))
 		}
 		itm, err := subpcket.Parse()
 		if err != nil {
-			return rootInfo, errs.Wrapf(err, "error in parsing unhashed subpacket in Signiture V4 Packet (size: %d bytes)", int64(sizeUS))
+			return rootInfo, errs.Wrapf(err, "error in parsing unhashed subpacket in Signiture V4/V5 Packet (size: %d bytes)", int64(sizeUS))
 		}
 		rootInfo.Add(itm)
 	}
 	// [08+HS+US] Two-octet field holding the left 16 bits of the signed hash value.
 	hv, err := t.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal hash value in parsing Signiture V4 Packet")
+		return rootInfo, errs.Wrap(err, "illegal hash value in parsing Signiture V4/V5 Packet")
 	}
 	rootInfo.Add(t.hashLeft2(hv))
 	// [10+HS+US] One or more multiprecision integers comprising the signature.
 	if err := pubkey.New(t.cxt, values.PubID(pubid), t.reader).ParseSig(rootInfo); err != nil {
-		return rootInfo, errs.Wrap(err, "error in parsing Signiture V4 Packet")
+		return rootInfo, errs.Wrap(err, "error in parsing Signiture V4/V5 Packet")
 	}
 	return rootInfo, nil
+}
+
+func (t *tag02) parseV5(rootInfo *info.Item) (*info.Item, error) {
+	return t.parseV4(rootInfo)
 }
 
 func (t *tag02) hashLeft2(hv []byte) *info.Item {

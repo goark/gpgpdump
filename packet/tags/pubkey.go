@@ -43,6 +43,7 @@ func (p *pubkeyInfo) Parse(parent *info.Item) error {
 	return nil
 }
 
+//parseV3 parses V3 packet
 func (p *pubkeyInfo) parseV3(parent *info.Item) error {
 	//Structure of Signiture Packet (Ver3)
 	// [01] four-octet number denoting the time that the key was created.
@@ -73,6 +74,7 @@ func (p *pubkeyInfo) parseV3(parent *info.Item) error {
 	return pubkey.New(p.cxt, p.pubID, p.reader).ParsePub(parent)
 }
 
+//parseV4 parses V4 packet
 func (p *pubkeyInfo) parseV4(parent *info.Item) error {
 	//Structure of Signiture Packet (Ver4)
 	// [01] four-octet number denoting the time that the key was created.
@@ -89,10 +91,11 @@ func (p *pubkeyInfo) parseV4(parent *info.Item) error {
 	}
 	p.pubID = values.PubID(pubid)
 	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
-	// [06] series of multiprecision integers comprising the key material.
+	// [06] series of values comprising the key material.
 	return pubkey.New(p.cxt, p.pubID, p.reader).ParsePub(parent)
 }
 
+//parseV5 parses V5 packet
 func (p *pubkeyInfo) parseV5(parent *info.Item) error {
 	//Structure of Signiture Packet (Ver5)
 	// [01] four-octet number denoting the time that the key was created.
@@ -128,7 +131,7 @@ func (p *pubkeyInfo) PubID() values.PubID {
 	return p.pubID
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

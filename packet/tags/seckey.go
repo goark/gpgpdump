@@ -1,8 +1,8 @@
 package tags
 
 import (
+	"encoding/binary"
 	"fmt"
-	"io"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
@@ -28,102 +28,166 @@ func newSeckey(cxt *context.Context, reader *reader.Reader, pubVer *values.Versi
 
 //Parse Secret-key packet
 func (p *seckeyInfo) Parse(parent *info.Item) error {
-	sid, err := p.reader.ReadByte()
+	usage, err := p.reader.ReadByte()
 	if err != nil {
-		return errs.Wrap(err, "illegal sid in parsing Secret-key packet")
+		return errs.Wrap(err, "illegal s2k usage in parsing Secret-key packet")
 	}
-	switch sid {
-	case 0:
-		parent.Note = "the secret-key data is not encrypted."
-		//parent.Add(p.pubVer.ToItem(p.cxt.Debug()))
-		if !p.pubVer.IsUnknown() {
-			if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecPlain(parent); err != nil {
-				return errs.Wrapf(err, "error in parsing Secret-key packet (sid %d)", sid)
+
+	if rOpt, err := p.getField1(); err != nil {
+		return err
+	} else if rOpt != nil {
+		//[Optional] If string-to-key usage octet was 255, 254, or 253, a one-octet symmetric encryption algorithm.
+		var symid values.SymID
+		if usage != 0 { //encrypted secret-key
+			alg, err := rOpt.ReadByte()
+			if err != nil {
+				return errs.Wrapf(err, "illegal symid in parsing Secret-key packet (s2k usage %d)", usage)
 			}
-		} else {
-			parent.Add(p.unknownMPI())
-			if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip
-				return errs.Wrapf(err, "error in parsing Secret-key packet (sid %d)", sid)
+			symid = values.SymID(alg)
+			parent.Add(symid.ToItem(p.cxt.Debug()))
+		}
+		//[Optional] If string-to-key usage octet was 253, a one-octet AEAD algorithm.
+		if usage == 253 {
+			alg, err := rOpt.ReadByte()
+			if err != nil {
+				return errs.Wrapf(err, "illegal aead id in parsing Secret-key packet (s2k usage %d)", usage)
 			}
+			parent.Add(values.AEADID(alg).ToItem(p.cxt.Debug()))
 		}
-	case 254, 255:
-		if sid == 254 {
-			parent.Note = "encrypted SHA1 hash"
-		} else {
-			parent.Note = "encrypted checksum"
+		//[Optional] If string-to-key usage octet was 255, 254, or 253, a string-to-key specifier.
+		hasIV := false
+		switch usage {
+		case 0:
+		case 253, 254, 255:
+			s2k := s2k.New(rOpt)
+			if err := s2k.Parse(parent, p.cxt.Debug()); err != nil {
+				return errs.Wrapf(err, "illegal s2k in parsing Secret-key packet (s2k usage %d)", usage)
+			}
+			hasIV = s2k.HasIV()
+		default:
+			hasIV = true
 		}
-		symid, err := p.reader.ReadByte()
-		if err != nil {
-			return errs.Wrapf(err, "illegal symid in parsing Secret-key packet (sid %d)", sid)
-		}
-		parent.Add(values.SymID(symid).ToItem(p.cxt.Debug()))
-		s2k := s2k.New(p.reader)
-		if err := s2k.Parse(parent, p.cxt.Debug()); err != nil {
-			return errs.Wrapf(err, "illegal s2k in parsing Secret-key packet (sid %d)", sid)
-		}
-		if s2k.HasIV() {
-			iv, err := p.iv(values.SymID(symid))
+		//[Optional] If secret data is encrypted (string-to-key usage octet not zero), an Initial Vector (IV) of the same length as the cipher's block size.
+		if usage != 0 && hasIV {
+			iv, err := p.iv(values.SymID(symid), usage == 253)
 			if err != nil {
 				return err
 			}
 			parent.Add(iv)
 		}
-		if !p.pubVer.IsUnknown() {
-			if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecEnc(parent); err != nil {
-				return errs.Wrapf(err, "illegal pubkey in parsing Secret-key packet (sid %d)", sid)
-			}
-		} else {
-			parent.Add(p.unknownMPI())
-			if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip
-				return errs.Wrapf(err, "error in parsing Secret-key packet (sid %d)", sid)
+
+		if p.pubVer.Number() == 5 {
+			if rOpt.Rest() > 0 {
+				parent.Add(values.RawData(rOpt, "Unknown data", p.cxt.Debug()))
 			}
 		}
-	default:
-		parent.Note = "Simple string-to-key for IDEA (encrypted checksum)."
-		symid, err := p.reader.ReadByte()
-		if err != nil {
-			return errs.Wrapf(err, "illegal symid in parsing Secret-key packet (sid %d)", sid)
-		}
-		parent.Add(values.SymID(symid).ToItem(p.cxt.Debug()))
-		iv, err := p.iv(values.SymID(symid))
-		if err != nil {
-			return errs.Wrapf(err, "illegal iv in parsing Secret-key packet (sid %d)", sid)
-		}
-		parent.Add(iv)
-		if !p.pubVer.IsUnknown() {
-			if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecEnc(parent); err != nil {
-				return err
+	}
+
+	if rOpt, err := p.getField2(); err != nil {
+		return err
+	} else if rOpt != nil {
+		switch usage {
+		case 0:
+			parent.Note = "s2k usage 0; plain secret-key material"
+			//parse plain key material
+			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecPlain(parent); err != nil {
+				return errs.Wrapf(err, "error in parsing Secret-key packet (s2k usage usage %d)", usage)
 			}
-		} else {
-			parent.Add(p.unknownMPI())
-			if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip
-				return errs.Wrapf(err, "error in parsing Secret-key packet (sid %d)", sid)
+			//checksum
+			chk, err := p.reader.ReadBytes(2)
+			if err != nil {
+				return errs.Wrap(err, "illegal checksum value in parsing plain secret-key packet")
+			}
+			parent.Add(info.NewItem(
+				info.Name("2-octet checksum"),
+				info.DumpStr(values.DumpBytes(chk, true).String()),
+			))
+		case 253:
+			parent.Note = "s2k usage 253; encrypted secret-key material and AEAD authentication tag"
+			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecEnc(parent); err != nil {
+				return errs.Wrapf(err, "illegal pubkey in parsing Secret-key packet (s2k usage %d)", usage)
+			}
+		case 254:
+			parent.Note = "s2k usage 254; encrypted secret-key material and 20-octet SHA-1 hash"
+			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecEnc(parent); err != nil {
+				return errs.Wrapf(err, "illegal pubkey in parsing Secret-key packet (s2k usage %d)", usage)
+			}
+		default:
+			parent.Note = fmt.Sprintf("s2k usage %d; encrypted secret-key material and 2-octet checksum", usage)
+			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecEnc(parent); err != nil {
+				return errs.Wrapf(err, "illegal pubkey in parsing Secret-key packet (s2k usage %d)", usage)
+			}
+		}
+
+		if p.pubVer.Number() == 5 {
+			if rOpt.Rest() > 0 {
+				parent.Add(values.RawData(rOpt, "Unknown data", p.cxt.Debug()))
 			}
 		}
 	}
 	return nil
 }
 
-func (p *seckeyInfo) unknownMPI() *info.Item {
-	return info.NewItem(
-		info.Name("Multi-precision integers"),
-		info.Note(fmt.Sprintf("Unknown Version %s, %d bytes", p.pubVer.String(), p.reader.Rest())),
-	)
+//getField1 returns reader.Reader for optional fields
+func (p *seckeyInfo) getField1() (*reader.Reader, error) {
+	if p.pubVer.Number() == 5 {
+		l, err := p.reader.ReadByte()
+		if err != nil {
+			return nil, errs.Wrap(err, "illegal length of option field in parsing Secret-key packet")
+		}
+		if l == 0 {
+			return nil, nil
+		}
+		b, err := p.reader.ReadBytes(int64(l))
+		if err != nil {
+			return nil, errs.Wrap(err, "illegal option field in parsing Secret-key packet")
+		}
+		return reader.New(b), nil
+	}
+	return p.reader, nil
 }
 
-func (p *seckeyInfo) iv(symid values.SymID) (*info.Item, error) {
+//getField2 returns reader.Reader for secret key material
+func (p *seckeyInfo) getField2() (*reader.Reader, error) {
+	if p.pubVer.Number() == 5 {
+		l, err := p.reader.ReadBytes(4)
+		ll := binary.BigEndian.Uint32(l)
+		if err != nil {
+			return nil, errs.Wrap(err, "illegal length of key materia in parsing Secret-key packet")
+		}
+		if ll == 0 {
+			return nil, nil
+		}
+		b, err := p.reader.ReadBytes(int64(ll))
+		if err != nil {
+			return nil, errs.Wrap(err, "illegal key materia in parsing Secret-key packet")
+		}
+		return reader.New(b), nil
+	}
+	return p.reader, nil
+}
+
+//iv returns info.Item for Initialization Vector
+func (p *seckeyInfo) iv(symid values.SymID, isAEAD bool) (*info.Item, error) {
 	sz64 := int64(symid.IVLen())
 	iv, err := p.reader.ReadBytes(sz64)
 	if err != nil {
 		return nil, errs.Wrapf(err, "illegal s2k iv (length: %d bytes)", sz64)
 	}
+	var name string
+	if isAEAD {
+		name = "nonce for the AEAD"
+
+	} else {
+		name = "IV"
+	}
 	return info.NewItem(
-		info.Name("IV"),
+		info.Name(name),
 		info.DumpStr(values.DumpBytes(iv, true).String()),
 	), nil
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

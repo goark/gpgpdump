@@ -65,7 +65,7 @@ func TestJsonOn(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
-	args := []string{"-j"}
+	args := []string{"-j", "--indent", "2"}
 
 	exit := Execute(ui, args)
 	if exit != exitcode.Normal {
