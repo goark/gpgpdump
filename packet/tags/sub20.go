@@ -47,24 +47,21 @@ func (s *sub20) Parse() (*info.Item, error) {
 	if err != nil {
 		return rootInfo, errs.Wrapf(err, "illegal name in parsing sub packet %d (length: %d bytes)", int(s.subID), nameLength)
 	}
-	rootInfo.Add(info.NewItem(
-		info.Name("Name"),
-		info.Value(string(name)),
-	))
+	rootInfo.Add(values.NewText(name, "Name").ToItem(s.cxt.Debug()))
 	value, err := s.reader.ReadBytes(int64(binary.BigEndian.Uint16(valueLength)))
 	if err != nil {
 		return rootInfo, errs.Wrapf(err, "illegal value in parsing sub packet %d (length: %d bytes)", int(s.subID), valueLength)
 	}
-	itm := info.NewItem(
-		info.Name("Value"),
-	)
 	if human != 0x00 {
-		itm.Value = string(value)
+		//human readable data (text)
+		rootInfo.Add(values.NewText(value, "Value").ToItem(s.cxt.Debug()))
 	} else {
-		itm.Dump = values.DumpBytes(value, true).String()
+		//binary data
+		rootInfo.Add(info.NewItem(
+			info.Name("Value"),
+			info.DumpStr(values.DumpBytes(value, true).String()),
+		))
 	}
-	rootInfo.Add(itm)
-
 	return rootInfo, nil
 }
 
