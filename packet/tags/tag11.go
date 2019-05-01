@@ -34,7 +34,7 @@ func (t *tag11) Parse() (*info.Item, error) {
 	if err != nil {
 		return rootInfo, errs.Wrapf(err, "illegal length of file name in parsing tag %d (length: %d bytes)", int(t.tag), int64(flen))
 	}
-	rootInfo.Add(fname.ToItem(t.cxt.Debug()))
+	rootInfo.Add(fname.ToItem(t.cxt.Literal()))
 	ftime, err := values.NewDateTime(t.reader, t.cxt.UTC())
 	if err != nil {
 		return rootInfo, errs.Wrapf(err, "illegal timestump of file in parsing tag %d", int(t.tag))

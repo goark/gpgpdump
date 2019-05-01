@@ -20,12 +20,7 @@ func newTag13(cxt *context.Context, tag values.TagID, body []byte) Tags {
 // Parse parsing User ID Packet
 func (t *tag13) Parse() (*info.Item, error) {
 	rootInfo := t.ToItem()
-	body := t.reader.GetBody()
-	rootInfo.Add(info.NewItem(
-		info.Name("User ID"),
-		info.Value(string(body)),
-		info.DumpStr(values.DumpBytes(body, t.cxt.Debug()).String()),
-	))
+	rootInfo.Add(values.NewText(t.reader.GetBody(), "User ID").ToItem(t.cxt.Debug()))
 	return rootInfo, nil
 }
 

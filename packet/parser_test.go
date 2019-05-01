@@ -285,7 +285,7 @@ const (
 		Literal Data Packet (tag 11) (19 bytes)
 			62 00 5a 19 0d e4 48 65 6c 6c 6f 20 77 6f 72 6c 64 0d 0a
 			Literal data format: b (binary)
-			File name: <null>
+			File name (0 byte)
 			Modification time of a file: 2017-11-25T06:29:56Z
 				5a 19 0d e4
 			Literal data (13 bytes)

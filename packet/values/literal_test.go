@@ -45,36 +45,42 @@ func TestLiteralFname(t *testing.T) {
 	testCases := []struct {
 		data  []byte
 		value string
+		note  string
 		dump  string
 	}{
 		{
 			data:  []byte("hoge"),
 			value: "hoge",
+			note:  "",
 			dump:  "68 6f 67 65",
 		},
 		{
 			data:  []byte("\nhoge"),
 			value: "(U+000A)hoge",
+			note:  "",
 			dump:  "0a 68 6f 67 65",
 		},
 		{
 			data:  []byte{0xff, 0xfe, 0xfd},
-			value: "<invalid text string>",
+			value: "",
+			note:  "invalid text string",
 			dump:  "ff fe fd",
 		},
 		{
 			data:  []byte{},
-			value: "<null>",
+			value: "",
+			note:  "0 byte",
 			dump:  "",
 		},
 		{
 			data:  nil,
-			value: "<null>",
+			value: "",
+			note:  "0 byte",
 			dump:  "",
 		},
 	}
 	for _, tc := range testCases {
-		var l *LiteralFname
+		var l *Text
 		var err error
 		if tc.data == nil {
 			l, err = NewLiteralFname(nil, 0)
@@ -92,8 +98,8 @@ func TestLiteralFname(t *testing.T) {
 		if i.Value != tc.value {
 			t.Errorf("LiteralFname.Value = \"%v\", want \"%v\".", i.Value, tc.value)
 		}
-		if i.Note != "" {
-			t.Errorf("LiteralFname.Note = \"%s\", want \"\"", i.Note)
+		if i.Note != tc.note {
+			t.Errorf("LiteralFname.Note = \"%s\", want \"%v\"", i.Note, tc.note)
 		}
 		if i.Dump != tc.dump {
 			t.Errorf("LiteralFname.Dump = \"%v\", want \"%v\".", i.Dump, tc.dump)

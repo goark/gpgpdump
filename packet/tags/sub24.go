@@ -19,9 +19,7 @@ func newSub24(cxt *context.Context, subID values.SuboacketID, body []byte) Subs 
 
 // Parse parsing Preferred Key Server Sub-packet
 func (s *sub24) Parse() (*info.Item, error) {
-	rootInfo := s.ToItem()
-	rootInfo.Value = string(s.reader.GetBody())
-	return rootInfo, nil
+	return values.NewText(s.reader.GetBody(), s.ToItem().Name).ToItem(s.cxt.Debug()), nil
 }
 
 /* Copyright 2016-2019 Spiegel

@@ -34,59 +34,54 @@ func (l LiteralFormat) String() string {
 	return string(l)
 }
 
-//LiteralFname is file name of literal data
-type LiteralFname struct {
-	name []byte
+//Text is literal text
+type Text struct {
+	name string
+	body []byte
 }
 
-//NewLiteralFname returns new LiteralFname instance
-func NewLiteralFname(r *reader.Reader, l int64) (*LiteralFname, error) {
+//NewText returns new Text instance
+func NewText(body []byte, name string) *Text {
+	return &Text{name: name, body: body}
+}
+
+//NewLiteralFname returns new Text instance for file name of literal data
+func NewLiteralFname(r *reader.Reader, l int64) (*Text, error) {
+	name := "File name"
 	if r == nil {
-		return &LiteralFname{name: nil}, nil
+		return NewText(nil, name), nil
 	}
 	if l < 1 {
-		return &LiteralFname{name: nil}, nil
+		return NewText(nil, name), nil
 	}
 	data, err := r.ReadBytes(l)
 	if err != nil {
 		return nil, errs.Wrapf(err, "illegal file name of literal packet (length: %d bytes)", l)
 	}
-	return &LiteralFname{name: data}, err
+	return NewText(data, name), nil
 }
 
-//ToItem returns Item instance
-func (l *LiteralFname) ToItem(dumpFlag bool) *info.Item {
-	if l == nil {
-		return nil
-	}
-	name := "File name"
-	if l.name == nil {
+func (t *Text) ToItem(dumpFlag bool) *info.Item {
+	if t == nil {
 		return info.NewItem(
-			info.Name(name),
-			info.Value("<null>"),
+			info.Note("null"),
 		)
 	}
-	fname := stripString(l.name)
-	if len(fname) == 0 {
+	if t.body == nil || len(t.body) == 0 {
 		return info.NewItem(
-			info.Name(name),
-			info.Value("<invalid text string>"),
-			info.DumpStr(DumpBytes(l.name, dumpFlag).String()),
+			info.Name(t.name),
+			info.Note("0 byte"),
 		)
 	}
-	return info.NewItem(
-		info.Name(name),
-		info.Value(fname),
-		info.DumpStr(DumpBytes(l.name, dumpFlag).String()),
-	)
-}
-
-func stripString(b []byte) string {
-	if !utf8.Valid(b) {
-		return ""
+	if !utf8.Valid(t.body) {
+		return info.NewItem(
+			info.Name(t.name),
+			info.Note("invalid text string"),
+			info.DumpStr(DumpBytes(t.body, true).String()),
+		)
 	}
 	rs := []rune{}
-	for _, r := range string(b) {
+	for _, r := range string(t.body) {
 		if unicode.IsControl(r) {
 			c := fmt.Sprintf("(%U)", r)
 			rs = append(rs, []rune(c)...)
@@ -94,7 +89,11 @@ func stripString(b []byte) string {
 			rs = append(rs, r)
 		}
 	}
-	return string(rs)
+	return info.NewItem(
+		info.Name(t.name),
+		info.Value(string(rs)),
+		info.DumpStr(DumpBytes(t.body, dumpFlag).String()),
+	)
 }
 
 //RawData returns info.Item instance for raw data
