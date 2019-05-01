@@ -1,8 +1,10 @@
 package values
 
 import (
+	"io"
 	"testing"
 
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -40,34 +42,69 @@ func TestLiteralFormat(t *testing.T) {
 }
 
 func TestLiteralFname(t *testing.T) {
-	i := LiteralFname("hoge").ToItem(true)
-	if i.Name != "File name" {
-		t.Errorf("LiteralFname.Name = \"%s\", want \"File name\".", i.Name)
+	testCases := []struct {
+		data  []byte
+		value string
+		dump  string
+	}{
+		{
+			data:  []byte("hoge"),
+			value: "hoge",
+			dump:  "68 6f 67 65",
+		},
+		{
+			data:  []byte("\nhoge"),
+			value: "(U+000A)hoge",
+			dump:  "0a 68 6f 67 65",
+		},
+		{
+			data:  []byte{0xff, 0xfe, 0xfd},
+			value: "<invalid text string>",
+			dump:  "ff fe fd",
+		},
+		{
+			data:  []byte{},
+			value: "<null>",
+			dump:  "",
+		},
+		{
+			data:  nil,
+			value: "<null>",
+			dump:  "",
+		},
 	}
-	if i.Value != "hoge" {
-		t.Errorf("LiteralFname.Value = \"%s\", want \"hoge\".", i.Value)
-	}
-	if i.Note != "" {
-		t.Errorf("LiteralFname.Note = \"%s\", want \"\"", i.Note)
-	}
-	if i.Dump != "68 6f 67 65" {
-		t.Errorf("LiteralFname.Dump = \"%s\", want \"68 6f 67 65\".", i.Dump)
+	for _, tc := range testCases {
+		var l *LiteralFname
+		var err error
+		if tc.data == nil {
+			l, err = NewLiteralFname(nil, 0)
+		} else {
+			l, err = NewLiteralFname(reader.New(tc.data), int64(len(tc.data)))
+		}
+		if err != nil {
+			t.Errorf("NewLiteralFname() = \"%+v\", want nil error.", err)
+			continue
+		}
+		i := l.ToItem(true)
+		if i.Name != "File name" {
+			t.Errorf("LiteralFname.Name = \"%s\", want \"File name\".", i.Name)
+		}
+		if i.Value != tc.value {
+			t.Errorf("LiteralFname.Value = \"%v\", want \"%v\".", i.Value, tc.value)
+		}
+		if i.Note != "" {
+			t.Errorf("LiteralFname.Note = \"%s\", want \"\"", i.Note)
+		}
+		if i.Dump != tc.dump {
+			t.Errorf("LiteralFname.Dump = \"%v\", want \"%v\".", i.Dump, tc.dump)
+		}
 	}
 }
 
-func TestLiteralFnameNil(t *testing.T) {
-	i := LiteralFname("").ToItem(true)
-	if i.Name != "File name" {
-		t.Errorf("LiteralFname.Name = \"%s\", want \"File name\".", i.Name)
-	}
-	if i.Value != "<null>" {
-		t.Errorf("LiteralFname.Value = \"%s\", want \"<null>\".", i.Value)
-	}
-	if i.Note != "" {
-		t.Errorf("LiteralFname.Note = \"%s\", want \"\"", i.Note)
-	}
-	if i.Dump != "" {
-		t.Errorf("LiteralFname.Dump = \"%s\", want \"\".", i.Dump)
+func TestLiteralFnameErr(t *testing.T) {
+	_, err := NewLiteralFname(reader.New([]byte("hoge")), 10)
+	if !errs.Is(err, io.ErrUnexpectedEOF) {
+		t.Errorf("NewLiteralFname() = \"%+v\", want \"%v\".", err, io.ErrUnexpectedEOF)
 	}
 }
 
@@ -90,7 +127,7 @@ func TestRawData(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
