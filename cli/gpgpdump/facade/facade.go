@@ -11,6 +11,8 @@ import (
 	"github.com/spiegel-im-spiegel/gocli/exitcode"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gpgpdump"
+	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 )
 
@@ -30,13 +32,15 @@ var (
 	versionFlag bool //version flag
 	jsonFlag    bool //output with JSON format
 	tomlFlag    bool //output with TOML format
+	debugFlag   bool //debug flag
 	indentSize  int
+	filePath    string
 )
 
 //newRootCmd returns cobra.Command instance for root command
 func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use: Name + " [flags] [OpenPGP file]",
+		Use: Name,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			//parse options
 			if versionFlag {
@@ -46,63 +50,70 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 
 			//open PGP file
 			reader := ui.Reader()
-			if len(args) > 0 {
-				file, err := os.Open(args[0]) //args[0] is maybe file path
+			if len(filePath) > 0 {
+				file, err := os.Open(filePath)
 				if err != nil {
-					return err
+					return debugPrint(ui, err)
 				}
 				defer file.Close()
 				reader = file
 			}
 
 			//parse OpenPGP packets
-			info, err := gpgpdump.Parse(reader, opts)
+			r, err := marshalPacketInfo(gpgpdump.Parse(reader, opts))
 			if err != nil {
-				if opts.Debug() {
-					_ = ui.OutputErrln(fmt.Sprintf("%+v", err))
-				}
-				return err
+				return debugPrint(ui, err)
 			}
-
-			//marshal packet info
-			var result io.Reader
-			if jsonFlag {
-				result, err = info.JSON(indentSize)
-			} else if tomlFlag {
-				result, err = info.TOML(indentSize)
-			} else if indentSize > 0 {
-				result = info.ToString(strings.Repeat(" ", indentSize))
-				err = nil
-			} else {
-				result = info.ToString("\t")
-				err = nil
-			}
-			if err != nil {
-				if opts.Debug() {
-					_ = ui.OutputErrln(fmt.Sprintf("%+v", err))
-				}
-				return err
-			}
-			return ui.WriteFrom(result)
+			return debugPrint(ui, ui.WriteFrom(r))
 		},
 	}
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
-	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
-	rootCmd.Flags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
-	rootCmd.Flags().IntVarP(&indentSize, "indent", "", 0, "indent size for output string")
-	rootCmd.Flags().BoolP(options.ARMOR.String(), "a", false, "accepts ASCII input only")
-	rootCmd.Flags().BoolP(options.DEBUG.String(), "", false, "for debug") //not use
-	//rootCmd.Flags().BoolP(options.GDUMP.String(), "g", false, "selects alternate (GnuPG type) dump format") //not use
-	rootCmd.Flags().BoolP(options.INTEGER.String(), "i", false, "dumps multi-precision integers")
-	rootCmd.Flags().BoolP(options.LITERAL.String(), "l", false, "dumps literal packets (tag 11)")
-	rootCmd.Flags().BoolP(options.MARKER.String(), "m", false, "dumps marker packets (tag 10)")
-	rootCmd.Flags().BoolP(options.PRIVATE.String(), "p", false, "dumps private packets (tag 60-63)")
-	rootCmd.Flags().BoolP(options.UTC.String(), "u", false, "output with UTC time")
+	rootCmd.Flags().StringVarP(&filePath, "file", "f", "", "path of OpenPGP file")
+	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
+	rootCmd.PersistentFlags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
+	rootCmd.PersistentFlags().IntVarP(&indentSize, "indent", "", 0, "indent size for output string")
+	rootCmd.PersistentFlags().BoolP(options.ARMOR.String(), "a", false, "accepts ASCII input only")
+	rootCmd.PersistentFlags().BoolP(options.DEBUG.String(), "", false, "for debug") //not use
+	//rootCmd.PersistentFlags().BoolP(options.GDUMP.String(), "g", false, "selects alternate (GnuPG type) dump format") //not use
+	rootCmd.PersistentFlags().BoolP(options.INTEGER.String(), "i", false, "dumps multi-precision integers")
+	rootCmd.PersistentFlags().BoolP(options.LITERAL.String(), "l", false, "dumps literal packets (tag 11)")
+	rootCmd.PersistentFlags().BoolP(options.MARKER.String(), "m", false, "dumps marker packets (tag 10)")
+	rootCmd.PersistentFlags().BoolP(options.PRIVATE.String(), "p", false, "dumps private packets (tag 60-63)")
+	rootCmd.PersistentFlags().BoolP(options.UTC.String(), "u", false, "output with UTC time")
 
 	rootCmd.SetArgs(args)
 	rootCmd.SetOutput(ui.ErrorWriter())
+	rootCmd.AddCommand(newVersionCmd(ui))
+	rootCmd.AddCommand(newHkpCmd(ui))
 
 	return rootCmd
+}
+
+func debugPrint(ui *rwi.RWI, err error) error {
+	if debugFlag && err != nil {
+		fmt.Fprintf(ui.ErrorWriter(), "error: %+v\n", err)
+		return nil
+	}
+	return errs.Cause(err)
+}
+
+func marshalPacketInfo(i *info.Info, e error) (r io.Reader, err error) {
+	if e != nil {
+		err = e
+		return
+	}
+	if jsonFlag {
+		r, err = i.JSON(indentSize)
+	} else if tomlFlag {
+		r, err = i.TOML(indentSize)
+	} else if indentSize > 0 {
+		r = i.ToString(strings.Repeat(" ", indentSize))
+		err = nil
+	} else {
+		r = i.ToString("\t")
+		err = nil
+	}
+	return
 }
 
 func getBool(cmd *cobra.Command, code options.OptCode) (options.OptCode, bool) {
@@ -115,7 +126,7 @@ func getBool(cmd *cobra.Command, code options.OptCode) (options.OptCode, bool) {
 }
 
 func parseOpt(cmd *cobra.Command) options.Options {
-	return options.New(
+	opts := options.New(
 		options.Set(getBool(cmd, options.ARMOR)),
 		options.Set(getBool(cmd, options.DEBUG)), //for debug
 		//options.Set(getBool(cmd, options.GDUMP)), //not use
@@ -125,6 +136,8 @@ func parseOpt(cmd *cobra.Command) options.Options {
 		options.Set(getBool(cmd, options.PRIVATE)),
 		options.Set(getBool(cmd, options.UTC)),
 	)
+	debugFlag = opts.Debug()
+	return opts
 }
 
 //Execute is called from main function

@@ -16,7 +16,10 @@ func TestNumError(t *testing.T) {
 		{err: ErrArmorText, str: "Cannot find OpenPGP armor boundary"},
 		{err: ErrInvalidWhence, str: "Invalid whence"},
 		{err: ErrInvalidOffset, str: "Invalid offset"},
-		{err: Num(6), str: "Unknown error (6)"},
+		{err: ErrUserID, str: "No user id"},
+		{err: ErrEmptyKeyServer, str: "Empty name of key serve"},
+		{err: ErrHTTPStatus, str: "Bad HTTP(S) status"},
+		{err: Num(9), str: "Unknown error (9)"},
 	}
 
 	for _, tc := range testCases {

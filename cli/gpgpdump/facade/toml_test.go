@@ -96,7 +96,7 @@ func TestTOMLLoadByFile(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
-	args := []string{"-t", "testdata/bindata1"}
+	args := []string{"-t", "-f", "testdata/bindata1"}
 
 	exit := Execute(ui, args)
 	if exit != exitcode.Normal {
