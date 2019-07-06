@@ -69,21 +69,30 @@ See [latest release](https://github.com/spiegel-im-spiegel/gpgpdump/releases/lat
 ```
 $ gpgpdump -h
 Usage:
-  gpgpdump [flags] [OpenPGP file]
+  gpgpdump [flags]
+  gpgpdump [command]
+
+Available Commands:
+  help        Help about any command
+  hkp         Dumps from OpenPGP key server
+  version     Print the version number
 
 Flags:
-  -a, --armor        accepts ASCII input only
-      --debug        for debug
-  -h, --help         help for gpgpdump
-      --indent int   indent size for output string
-  -i, --int          dumps multi-precision integers
-  -j, --json         output with JSON format
-  -l, --literal      dumps literal packets (tag 11)
-  -m, --marker       dumps marker packets (tag 10)
-  -p, --private      dumps private packets (tag 60-63)
-  -t, --toml         output with TOML format
-  -u, --utc          output with UTC time
-  -v, --version      output version of gpgpdump
+  -a, --armor         accepts ASCII input only
+      --debug         for debug
+  -f, --file string   path of OpenPGP file
+  -h, --help          help for gpgpdump
+      --indent int    indent size for output string
+  -i, --int           dumps multi-precision integers
+  -j, --json          output with JSON format
+  -l, --literal       dumps literal packets (tag 11)
+  -m, --marker        dumps marker packets (tag 10)
+  -p, --private       dumps private packets (tag 60-63)
+  -t, --toml          output with TOML format
+  -u, --utc           output with UTC time
+  -v, --version       output version of gpgpdump
+
+Use "gpgpdump [command] --help" for more information about a command.
 
 $ cat sig
 -----BEGIN PGP SIGNATURE-----
@@ -219,6 +228,104 @@ $ cat sig | gpgpdump -j -u --indent 2
     }
   ]
 }
+```
+
+### HKP Access Mode
+
+```
+$ gpgpdump hkp -h
+Dumps from OpenPGP key server
+
+Usage:
+  gpgpdump hkp [flags] <user id>
+
+Flags:
+  -h, --help               help for hkp
+      --keyserver string   OpenPGP key server (default "keys.gnupg.net")
+      --port int           port number of OpenPGP key server (default 11371)
+      --proxy string       URL of proxy server
+      --raw                output raw text from OpenPGP key server
+      --secure             enable HKP over HTTPS
+
+Global Flags:
+  -a, --armor        accepts ASCII input only
+      --debug        for debug
+      --indent int   indent size for output string
+  -i, --int          dumps multi-precision integers
+  -j, --json         output with JSON format
+  -l, --literal      dumps literal packets (tag 11)
+  -m, --marker       dumps marker packets (tag 10)
+  -p, --private      dumps private packets (tag 60-63)
+  -t, --toml         output with TOML format
+  -u, --utc          output with UTC time
+
+$ gpgpdump hkp -u --indent 2 0x44ce6900e2b307a4
+Public-Key Packet (tag 6) (269 bytes)
+  Version: 4 (current)
+  Public key creation time: 2009-11-08T15:20:55Z
+    4a f6 e1 d7
+  Public-key Algorithm: RSA (Encrypt or Sign) (pub 1)
+  RSA public modulus n (2048 bits)
+  RSA public encryption exponent e (17 bits)
+User ID Packet (tag 13) (25 bytes)
+  User ID: Alice <alice@example.com>
+Signature Packet (tag 2) (312 bytes)
+  Version: 4 (current)
+  Signiture Type: Positive certification of a User ID and Public-Key packet (0x13)
+  Public-key Algorithm: RSA (Encrypt or Sign) (pub 1)
+  Hash Algorithm: SHA-1 (hash 2)
+  Hashed Subpacket (34 bytes)
+    Signature Creation Time (sub 2): 2009-11-08T15:20:55Z
+    Key Flags (sub 27) (1 bytes)
+      Flag: This key may be used to certify other keys.
+      Flag: This key may be used to sign data.
+    Preferred Symmetric Algorithms (sub 11) (5 bytes)
+      Symmetric Algorithm: AES with 256-bit key (sym 9)
+      Symmetric Algorithm: AES with 192-bit key (sym 8)
+      Symmetric Algorithm: AES with 128-bit key (sym 7)
+      Symmetric Algorithm: CAST5 (128 bit key, as per) (sym 3)
+      Symmetric Algorithm: TripleDES (168 bit key derived from 192) (sym 2)
+    Preferred Hash Algorithms (sub 21) (5 bytes)
+      Hash Algorithm: SHA2-256 (hash 8)
+      Hash Algorithm: SHA-1 (hash 2)
+      Hash Algorithm: SHA2-384 (hash 9)
+      Hash Algorithm: SHA2-512 (hash 10)
+      Hash Algorithm: SHA2-224 (hash 11)
+    Preferred Compression Algorithms (sub 22) (3 bytes)
+      Compression Algorithm: ZLIB <RFC1950> (comp 2)
+      Compression Algorithm: BZip2 (comp 3)
+      Compression Algorithm: ZIP <RFC1951> (comp 1)
+    Features (sub 30) (1 bytes)
+      Flag: Modification Detection (packets 18 and 19)
+    Key Server Preferences (sub 23) (1 bytes)
+      Flag: No-modify
+  Unhashed Subpacket (10 bytes)
+    Issuer (sub 16): 0x44ce6900e2b307a4
+  Hash left 2 bytes
+    93 62
+  RSA signature value m^d mod n (2045 bits)
+Public-Subkey Packet (tag 14) (269 bytes)
+  Version: 4 (current)
+  Public key creation time: 2009-11-08T15:20:55Z
+    4a f6 e1 d7
+  Public-key Algorithm: RSA (Encrypt or Sign) (pub 1)
+  RSA public modulus n (2048 bits)
+  RSA public encryption exponent e (17 bits)
+Signature Packet (tag 2) (287 bytes)
+  Version: 4 (current)
+  Signiture Type: Subkey Binding Signature (0x18)
+  Public-key Algorithm: RSA (Encrypt or Sign) (pub 1)
+  Hash Algorithm: SHA-1 (hash 2)
+  Hashed Subpacket (9 bytes)
+    Signature Creation Time (sub 2): 2009-11-08T15:20:55Z
+    Key Flags (sub 27) (1 bytes)
+      Flag: This key may be used to encrypt communications.
+      Flag: This key may be used to encrypt storage.
+  Unhashed Subpacket (10 bytes)
+    Issuer (sub 16): 0x44ce6900e2b307a4
+  Hash left 2 bytes
+    66 f3
+  RSA signature value m^d mod n (2048 bits)
 ```
 
 [gpgpdump]: https://github.com/spiegel-im-spiegel/gpgpdump "spiegel-im-spiegel/gpgpdump: gpgpdump - OpenPGP packet visualizer"

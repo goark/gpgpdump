@@ -11,14 +11,20 @@ const (
 	ErrArmorText
 	ErrInvalidWhence
 	ErrInvalidOffset
+	ErrUserID
+	ErrHTTPStatus
+	ErrEmptyKeyServer
 )
 
 var errMessage = map[Num]string{
-	ErrNullPointer:   "Null reference instance",
-	ErrInvalidOption: "Invalid option",
-	ErrArmorText:     "Cannot find OpenPGP armor boundary",
-	ErrInvalidWhence: "Invalid whence",
-	ErrInvalidOffset: "Invalid offset",
+	ErrNullPointer:    "Null reference instance",
+	ErrInvalidOption:  "Invalid option",
+	ErrArmorText:      "Cannot find OpenPGP armor boundary",
+	ErrInvalidWhence:  "Invalid whence",
+	ErrInvalidOffset:  "Invalid offset",
+	ErrUserID:         "No user id",
+	ErrEmptyKeyServer: "Empty name of key serve",
+	ErrHTTPStatus:     "Bad HTTP(S) status",
 }
 
 func (n Num) Error() string {

@@ -35,14 +35,27 @@ func TestArmorErr(t *testing.T) {
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
 	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
-	args := []string{"-a", "--debug"}
+	args := []string{"-a"}
 
 	exit := Execute(ui, args)
 	if exit != exitcode.Abnormal {
 		t.Errorf("Execute(armor) = \"%v\", want \"%v\".", exit, exitcode.Abnormal)
-	} else {
-		fmt.Printf("Info: %+v", outErrBuf.String())
 	}
+	fmt.Printf("Info: %+v", outErrBuf.String())
+}
+
+func TestArmorErrDebug(t *testing.T) {
+	inData := bytes.NewReader(bindata1)
+	outBuf := new(bytes.Buffer)
+	outErrBuf := new(bytes.Buffer)
+	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
+	args := []string{"-a", "--debug"}
+
+	exit := Execute(ui, args)
+	if exit != exitcode.Normal {
+		t.Errorf("Execute(armor) = \"%v\", want \"%v\".", exit, exitcode.Normal)
+	}
+	fmt.Printf("Info: %+v", outErrBuf.String())
 }
 
 /* Copyright 2017-2019 Spiegel
