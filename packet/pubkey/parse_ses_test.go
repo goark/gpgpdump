@@ -32,14 +32,14 @@ const (
 		02 03 04
 `
 	pubkeySesResult18a = `
-	ECDH EC point (04 || X || Y) (515 bits)
+	ECDH EC point (uncompressed format) (515 bits)
 		04 c3 e7 d7 2b af 25 2a 19 f6 27 80 ea 7c 4f 6d ca 61 22 5a e3 ad 0c fb d9 a2 d5 a4 30 9a f3 ee 34 54 ae a8 f6 46 ac 8a ae 38 a6 4f f3 f2 ee 30 40 62 5b 07 e7 2b ee 9a 90 d4 6f 1e d7 c3 26 21 ab
 	symmetric key (encoded) (48 bytes)
 		4a fe 88 a2 9f 0e ab f3 be 7a 89 27 32 38 b8 06 75 fc ac 3c d4 ba 0f 49 64 15 aa 48 9a db c1 8a 7b 11 76 fb 2f ef ef b0 29 a9 24 75 6d 69 12 4d
 `
 	pubkeySesResult18b = "\n"
 	pubkeySesResult18c = `
-	ECDH EC point (04 || X || Y) (515 bits)
+	ECDH EC point (uncompressed format) (515 bits)
 		04 c3 e7 d7 2b af 25 2a 19 f6 27 80 ea 7c 4f 6d ca 61 22 5a e3 ad 0c fb d9 a2 d5 a4 30 9a f3 ee 34 54 ae a8 f6 46 ac 8a ae 38 a6 4f f3 f2 ee 30 40 62 5b 07 e7 2b ee 9a 90 d4 6f 1e d7 c3 26 21 ab
 `
 	pubkeySesResult19 = `

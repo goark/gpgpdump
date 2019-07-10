@@ -73,14 +73,12 @@ func (p *Pubkey) ecdhSes(item *info.Item) error {
 	if err != nil {
 		return errs.Wrap(err, "error in parsing Public-Key Encrypted Session Key Packet (ECDH)")
 	}
-	switch (mpi.Rawdata())[0] {
-	case 0x04:
-		item.Add(mpi.ToItem("ECDH EC point (04 || X || Y)", p.cxt.Integer()))
-	case 0x40:
-		item.Add(mpi.ToItem("ECDH EC point (40 || X)", p.cxt.Integer()))
-	default:
-		item.Add(mpi.ToItem("ECDH EC point", p.cxt.Integer()))
+	flag := values.ECCPointCompFlag(0xff)
+	if body := mpi.Rawdata(); len(body) > 0 {
+		flag = values.ECCPointCompFlag(body[0])
 	}
+	item.Add(mpi.ToItem(flag.Name("ECDH"), p.cxt.Integer()))
+
 	ep, err := values.NewECParm(p.reader)
 	if err != nil {
 		return errs.Wrap(err, "error in parsing Public-Key Encrypted Session Key Packet (ECDH)")
