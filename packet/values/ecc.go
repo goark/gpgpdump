@@ -87,6 +87,24 @@ func (ep ECParm) ToItem(name string, dumpFlag bool) *info.Item {
 	)
 }
 
+var eccPointCompFlagNames = Msgs{
+	0x04: "uncompressed format",
+	0x40: "Native point format of the curve follows",
+	0x41: "Only X coordinate follows",
+	0x42: "Only Y coordinate follows",
+}
+
+//PubID is Public-Key Algorithm ID
+type ECCPointCompFlag byte
+
+func (f ECCPointCompFlag) Name(algName string) string {
+	return fmt.Sprintf("%v EC point (%v)", algName, f)
+}
+
+func (f ECCPointCompFlag) String() string {
+	return eccPointCompFlagNames.Get(int(f), Unknown)
+}
+
 /* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

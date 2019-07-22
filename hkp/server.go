@@ -1,6 +1,9 @@
 package hkp
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 //Protocol is kind of HKP protocols
 type Protocol int
@@ -24,17 +27,16 @@ func (p Protocol) String() string {
 
 //Server is informations of OpenPGP key server
 type Server struct {
-	prt      Protocol //HKP protocol
-	host     string   //OpenPGP key server host name
-	port     int      //port number of OpenPGP key server
-	proxyURL string   //URL of proxy server
+	prt  Protocol //HKP protocol
+	host string   //OpenPGP key server host name
+	port int      //port number of OpenPGP key server
 }
 
 //ServerOptFunc is self-referential function for functional options pattern
 type ServerOptFunc func(*Server)
 
 // NewServer returns a new RWI instance
-func NewServer(host string, opts ...ServerOptFunc) *Server {
+func New(host string, opts ...ServerOptFunc) *Server {
 	s := &Server{prt: HKP, host: host, port: 11371}
 	for _, opt := range opts {
 		opt(s)
@@ -56,19 +58,15 @@ func WithPort(port int) ServerOptFunc {
 	}
 }
 
-//WithProtocol returns function for setting Reader
-func WithProxy(url string) ServerOptFunc {
-	return func(s *Server) {
-		s.proxyURL = url
+func (s *Server) Client() *Client {
+	return &Client{
+		server: s,
+		client: &http.Client{},
 	}
 }
 
 func (s *Server) String() string {
 	return fmt.Sprintf("%v://%v:%v", s.prt, s.host, s.port)
-}
-
-func (s *Server) GetProxyURL() string {
-	return s.proxyURL
 }
 
 /* Copyright 2019 Spiegel

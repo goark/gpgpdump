@@ -20,13 +20,13 @@ const (
 	pubkeyPubResult19 = `
 	ECC Curve OID: nistp256 (256bits key size)
 		2a 86 48 ce 3d 03 01 07
-	ECDSA EC point (04 || X || Y) (515 bits)
+	ECDSA EC point (uncompressed format) (515 bits)
 		04 a5 d5 bc 76 07 db b8 8f b2 21 19 11 b0 d0 5a 7e e9 34 df a3 8d 8e f9 b9 7e b6 d8 63 0a ee 92 ee 0d 74 c7 c0 48 f3 b8 d5 aa a8 73 bd e7 19 b5 da d8 f6 68 05 03 15 7d 9a 84 43 61 ca ee df d6 0e
 `
 	pubkeyPubResult22 = `
 	ECC Curve OID: ed25519 (256bits key size)
 		2b 06 01 04 01 da 47 0f 01
-	EdDSA EC point (40 || compressd format) (263 bits)
+	EdDSA EC point (Native point format of the curve follows) (263 bits)
 		40 c6 ae d8 56 62 34 73 e7 f1 86 ff 5f 09 dd d2 c2 b5 48 bd 78 94 90 a8 d2 fd 9c fc c6 69 15 fb 86
 `
 	pubkeyPubResultUnknown = `

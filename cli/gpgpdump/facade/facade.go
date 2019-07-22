@@ -11,7 +11,6 @@ import (
 	"github.com/spiegel-im-spiegel/gocli/exitcode"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gpgpdump"
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 )
@@ -81,6 +80,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd.PersistentFlags().BoolP(options.PRIVATE.String(), "p", false, "dumps private packets (tag 60-63)")
 	rootCmd.PersistentFlags().BoolP(options.UTC.String(), "u", false, "output with UTC time")
 
+	rootCmd.SilenceUsage = true
 	rootCmd.SetArgs(args)
 	rootCmd.SetOutput(ui.ErrorWriter())
 	rootCmd.AddCommand(newVersionCmd(ui))
@@ -94,7 +94,8 @@ func debugPrint(ui *rwi.RWI, err error) error {
 		fmt.Fprintf(ui.ErrorWriter(), "error: %+v\n", err)
 		return nil
 	}
-	return errs.Cause(err)
+	//return errs.Cause(err)
+	return err
 }
 
 func marshalPacketInfo(i *info.Info, e error) (r io.Reader, err error) {

@@ -13,7 +13,7 @@ import (
 //newHkpCmd returns cobra.Command instance for show sub-command
 func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 	hkpCmd := &cobra.Command{
-		Use:   "hkp [flags] <user id>",
+		Use:   "hkp [flags] <user ID or key ID>",
 		Short: "Dumps from OpenPGP key server",
 		Long:  "Dumps from OpenPGP key server",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -25,10 +25,6 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 			userID := args[0]
 
 			//options
-			proxy, err := cmd.Flags().GetString("proxy")
-			if err != nil {
-				return debugPrint(ui, errs.Wrap(err, "error in --proxy option"))
-			}
 			sks, err := cmd.Flags().GetString("keyserver")
 			if err != nil {
 				return debugPrint(ui, errs.Wrap(err, "error in --keyserver option"))
@@ -52,9 +48,15 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 			if secFlag {
 				prt = hkp.HKPS
 			}
-			client := hkp.NewClient(hkp.NewServer(sks, hkp.WithProtocol(prt), hkp.WithPort(port), hkp.WithProxy(proxy)))
-			resp, err := client.Get(userID)
+			resp, err := hkp.New(
+				sks,
+				hkp.WithProtocol(prt),
+				hkp.WithPort(port),
+			).Client().Get(userID)
 			if err != nil {
+				if errs.Is(err, errs.ErrArmorText) {
+					return debugPrint(ui, ui.WriteFrom(bytes.NewReader(resp)))
+				}
 				return debugPrint(ui, err)
 			}
 			if rawFlag {
@@ -70,7 +72,6 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 		},
 	}
 	hkpCmd.Flags().StringP("keyserver", "", "keys.gnupg.net", "OpenPGP key server")
-	hkpCmd.Flags().StringP("proxy", "", "", "URL of proxy server")
 	hkpCmd.Flags().IntP("port", "", 11371, "port number of OpenPGP key server")
 	hkpCmd.Flags().BoolP("secure", "", false, "enable HKP over HTTPS")
 	hkpCmd.Flags().BoolP("raw", "", false, "output raw text from OpenPGP key server")

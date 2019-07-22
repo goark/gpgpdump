@@ -11,39 +11,30 @@ func TestServer(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		svr := NewServer(tc.host)
+		svr := New(tc.host)
 		str := svr.String()
 		if str != tc.url {
 			t.Errorf("Server(\"%v\") is %v, want %v", tc.host, str, tc.url)
-		}
-		proxy := svr.GetProxyURL()
-		if proxy != "" {
-			t.Errorf("Proxy URL is %v, want empty string", proxy)
 		}
 	}
 }
 
 func TestServer2(t *testing.T) {
 	testCases := []struct {
-		host  string
-		port  int
-		prt   Protocol
-		proxy string
-		url   string
+		host string
+		port int
+		prt  Protocol
+		url  string
 	}{
-		{host: "test.server", port: 80, prt: HKPS, proxy: "http://localhost:8080", url: "https://test.server:80"},
+		{host: "test.server", port: 80, prt: HKPS, url: "https://test.server:80"},
 		{host: "test.server", port: 80, prt: Protocol(0), url: "http://test.server:80"},
 	}
 
 	for _, tc := range testCases {
-		svr := NewServer(tc.host, WithPort(tc.port), WithProtocol(tc.prt), WithProxy(tc.proxy))
+		svr := New(tc.host, WithPort(tc.port), WithProtocol(tc.prt))
 		str := svr.String()
 		if str != tc.url {
 			t.Errorf("Server(\"%v\") is %v, want %v", tc.host, str, tc.url)
-		}
-		proxy := svr.GetProxyURL()
-		if proxy != tc.proxy {
-			t.Errorf("Proxy URL is \"%v\", want \"%v\"", proxy, tc.proxy)
 		}
 	}
 }

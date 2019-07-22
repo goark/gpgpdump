@@ -28,7 +28,7 @@ const (
 			12
 		ECC Curve OID: cv25519 (256bits key size)
 			2b 06 01 04 01 97 55 01 05 01
-		ECDH EC point (40 || X) (263 bits)
+		ECDH EC point (Native point format of the curve follows) (263 bits)
 			40 4a fb 95 cb 33 b2 d9 d5 76 19 13 39 81 9f 64 9b 98 43 39 c6 a5 fc f6 fc 9c 9d ba 0d cc 9a 7d 7d
 		KDF parameters (3 bytes)
 			01 0a 09
@@ -53,7 +53,7 @@ const (
 			12
 		ECC Curve OID: cv25519 (256bits key size)
 			2b 06 01 04 01 97 55 01 05 01
-		ECDH EC point (40 || X) (263 bits)
+		ECDH EC point (Native point format of the curve follows) (263 bits)
 			40 fa 7c ac af 39 a5 d9 40 b0 78 0a ad a4 3b a7 71 23 e5 be b7 01 58 a5 34 c9 f5 34 62 f6 16 58 0a
 		KDF parameters (3 bytes)
 			01 08 07
