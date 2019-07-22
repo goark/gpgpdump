@@ -17,15 +17,6 @@ type Client struct {
 	server *Server
 }
 
-func NewClient(s *Server) *Client {
-	if len(s.proxyURL) > 0 {
-		if proxyUrl, err := url.Parse(s.proxyURL); err == nil {
-			return &Client{server: s, client: &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}}
-		}
-	}
-	return &Client{server: s, client: &http.Client{}}
-}
-
 func (c *Client) Get(userID string) ([]byte, error) {
 	values := url.Values{
 		"search": {userID},

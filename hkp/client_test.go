@@ -19,7 +19,7 @@ func TestClient(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		resp, err := NewClient(NewServer(tc.host)).Get(tc.uid)
+		resp, err := New(tc.host).Client().Get(tc.uid)
 		if err != nil {
 			t.Errorf("Client.Get(\"%v\") is \"%v\", want nil", tc.uid, errs.Cause(err))
 			fmt.Printf("Info: %+v\n", err)
@@ -38,7 +38,7 @@ func TestClientErr2(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		_, err := NewClient(NewServer(tc.host)).Get(tc.uid)
+		_, err := New(tc.host).Client().Get(tc.uid)
 		if errs.Cause(err) == nil {
 			t.Errorf("Client.Get(\"%v\") is nil, not want nil", tc.uid)
 		}

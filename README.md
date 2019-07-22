@@ -237,13 +237,12 @@ $ gpgpdump hkp -h
 Dumps from OpenPGP key server
 
 Usage:
-  gpgpdump hkp [flags] <user id>
+  gpgpdump hkp [flags] <user ID or key ID>
 
 Flags:
   -h, --help               help for hkp
       --keyserver string   OpenPGP key server (default "keys.gnupg.net")
       --port int           port number of OpenPGP key server (default 11371)
-      --proxy string       URL of proxy server
       --raw                output raw text from OpenPGP key server
       --secure             enable HKP over HTTPS
 
