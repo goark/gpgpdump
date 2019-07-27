@@ -12,12 +12,13 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 )
 
-//MyJVNClient is http.Client for MyJVN RESTful API
+//Client is http.Client for HKP
 type Client struct {
 	client *http.Client
 	server *Server
 }
 
+//Get returns result of HKP get command
 func (c *Client) Get(userID string) ([]byte, error) {
 	values := url.Values{
 		"search": {userID},
