@@ -4,9 +4,10 @@ import (
 	"bytes"
 
 	"github.com/spf13/cobra"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gpgpdump"
-	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 	"github.com/spiegel-im-spiegel/gpgpdump/hkp"
 )
 
