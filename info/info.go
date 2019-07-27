@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 )
 
 //Info is information class for OpenPGP packets

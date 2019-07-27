@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 )
 
 func TestClient(t *testing.T) {

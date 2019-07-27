@@ -8,7 +8,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 )
 
 //MyJVNClient is http.Client for MyJVN RESTful API
@@ -30,7 +31,7 @@ func (c *Client) Get(userID string) ([]byte, error) {
 	defer resp.Body.Close()
 
 	if !(resp.StatusCode != 0 && resp.StatusCode < http.StatusBadRequest) {
-		return nil, errs.Wrapf(errs.ErrHTTPStatus, "%v (in %v)", resp.Status, url)
+		return nil, errs.Wrapf(ecode.ErrHTTPStatus, "%v (in %v)", resp.Status, url)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -54,7 +55,7 @@ func hasASCIIArmorText(body []byte) error {
 		return err
 	}
 	if !armorFlag {
-		return errs.ErrArmorText
+		return ecode.ErrArmorText
 	}
 	return nil
 }

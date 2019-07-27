@@ -5,7 +5,8 @@ import (
 	"io"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 )
 
 var buffer = []byte{0x01, 0x02, 0x03, 0x04}
@@ -134,8 +135,8 @@ func TestSeekFromEnd(t *testing.T) {
 func TestSeekErr(t *testing.T) {
 	reader := New(buffer)
 	_, err := reader.Seek(0, 3)
-	if !errs.Is(err, errs.ErrInvalidWhence) {
-		t.Errorf("ReadByte() = \"%v\", want \"%v\".", err, errs.ErrInvalidWhence)
+	if !errs.Is(err, ecode.ErrInvalidWhence) {
+		t.Errorf("ReadByte() = \"%v\", want \"%v\".", err, ecode.ErrInvalidWhence)
 	}
 }
 

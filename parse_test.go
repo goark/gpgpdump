@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 )
 

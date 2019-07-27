@@ -9,7 +9,8 @@ import (
 
 	openpgp "golang.org/x/crypto/openpgp/packet"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
@@ -27,7 +28,7 @@ type Parser struct {
 //NewParser returns Parser for parsing packet
 func NewParser(reader io.Reader, o options.Options) (*Parser, error) {
 	if reader == nil {
-		return nil, errs.Wrap(errs.ErrNullPointer, "no data for parsing packet")
+		return nil, errs.Wrap(ecode.ErrNullPointer, "no data for parsing packet")
 	}
 	var r io.Reader
 	var err error
@@ -51,7 +52,7 @@ func newParser(cxt *context.Context, op *openpgp.OpaqueReader, info *info.Info) 
 func newParserArmor(r io.Reader) (io.Reader, error) {
 	buf := getASCIIArmorText(r)
 	if buf == nil {
-		return nil, errs.Wrap(errs.ErrArmorText, "error in parsing armor text")
+		return nil, errs.Wrap(ecode.ErrArmorText, "error in parsing armor text")
 	}
 	block, err := armor.Decode(buf)
 	if err != nil {

@@ -3,7 +3,7 @@ package pubkey
 import (
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )

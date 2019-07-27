@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 )
 
 func r2s(r io.Reader) string {

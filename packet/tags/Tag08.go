@@ -8,7 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"

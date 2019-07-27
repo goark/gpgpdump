@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 )
 
 //Reader class as reading stream for []byte buffer
@@ -69,11 +70,11 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 	case io.SeekEnd:
 		origin = rl
 	default: //error ?
-		return r.offset, errs.Wrap(errs.ErrInvalidWhence, "error in Seeking")
+		return r.offset, errs.Wrap(ecode.ErrInvalidWhence, "error in Seeking")
 	}
 	origin += offset
 	if origin < 0 || origin > rl {
-		return r.offset, errs.Wrap(errs.ErrInvalidOffset, "error in Seeking")
+		return r.offset, errs.Wrap(ecode.ErrInvalidOffset, "error in Seeking")
 	}
 	r.offset = origin
 	return origin, nil

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
