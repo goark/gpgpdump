@@ -14,6 +14,7 @@ var sigIDNames = Msgs{
 	0x11: "Persona certification of a User ID and Public-Key packet",
 	0x12: "Casual certification of a User ID and Public-Key packet",
 	0x13: "Positive certification of a User ID and Public-Key packet",
+	0x16: "Attestion Key Signature",
 	0x18: "Subkey Binding Signature",
 	0x19: "Primary Key Binding Signature",
 	0x1f: "Signature directly on a key",
