@@ -43,7 +43,10 @@ var testSubpacketNames = []string{
 	"Embedded Signature (sub 32)",                     //32
 	"Issuer Fingerprint (sub 33)",                     //33
 	"Preferred AEAD Algorithms (sub 34)",              //34
-	"Unknown (sub 35)",                                //35
+	"Intended Recipient Fingerprint (sub 35)",         //35
+	"Reserved (sub 36)",                               //36
+	"Attested Certifications (sub 37)",                //37
+	"Unknown (sub 38)",                                //38
 }
 
 func TestSubpacketID(t *testing.T) {
@@ -105,7 +108,10 @@ var testSubpacketNamesCritical = []string{
 	"Embedded Signature <critical> (sub 32)",                     //32
 	"Issuer Fingerprint <critical> (sub 33)",                     //33
 	"Preferred AEAD Algorithms <critical> (sub 34)",              //34
-	"Unknown <critical> (sub 35)",                                //35
+	"Intended Recipient Fingerprint <critical> (sub 35)",         //35
+	"Reserved <critical> (sub 36)",                               //36
+	"Attested Certifications <critical> (sub 37)",                //37
+	"Unknown <critical> (sub 38)",                                //38
 }
 
 func TestSubpacketIDCritical(t *testing.T) {

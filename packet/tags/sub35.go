@@ -1,6 +1,8 @@
 package tags
 
 import (
+	"strconv"
+
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
@@ -8,34 +10,41 @@ import (
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
 
-//sub31 class for Signature Target Sub-packet
-type sub31 struct {
+//sub35 class for Intended Recipient Fingerprint Sub-packet
+type sub35 struct {
 	subInfo
 }
 
-//newSub31 return sub31 instance
-func newSub31(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub31{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
+//newSub35 return sub35 instance
+func newSub35(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
+	return &sub35{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
-// Parse parsing Signature Target Sub-packet
-func (s *sub31) Parse() (*info.Item, error) {
+// Parse parsing Intended Recipient Fingerprint Sub-packet
+func (s *sub35) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
-	pubid, err := s.reader.ReadByte()
+	ver, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal pubid")
+		return rootInfo, errs.Wrap(err, "illegal version")
 	}
-	rootInfo.Add(values.PubID(pubid).ToItem(s.cxt.Debug()))
-	hashid, err := s.reader.ReadByte()
-	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal hashid")
+	itm := info.NewItem(
+		info.Name("Version"),
+		info.Value(strconv.Itoa(int(ver))),
+	)
+	switch ver {
+	case 4:
+		itm.Note = "need 20 octets length"
+	case 5:
+		itm.Note = "need 32 octets length"
+	default:
+		itm.Note = values.Unknown
 	}
-	rootInfo.Add(values.HashID(hashid).ToItem(s.cxt.Debug()))
-	rootInfo.Add(values.RawData(s.reader, "Hash", true))
+	rootInfo.Add(itm)
+	rootInfo.Add(values.RawData(s.reader, "Fingerprint", true))
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2017-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

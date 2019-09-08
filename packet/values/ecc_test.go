@@ -1,10 +1,10 @@
 package values
 
 import (
+	"errors"
 	"io"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -123,7 +123,7 @@ func TestEccErrorLen(t *testing.T) {
 	data := []byte{}
 	reader := reader.New(data)
 	if _, err := NewOID(reader); err != nil {
-		if !errs.Is(err, io.EOF) {
+		if !errors.Is(err, io.EOF) {
 			t.Errorf("OID = \"%+v\", want \"%+v\".", err, io.EOF)
 		}
 	}
@@ -132,7 +132,7 @@ func TestEccErrorLen(t *testing.T) {
 func TestEccError(t *testing.T) {
 	data := []byte{0x05, 0x01, 0x02, 0x03, 0x04}
 	reader := reader.New(data)
-	if _, err := NewOID(reader); !errs.Is(err, io.ErrUnexpectedEOF) {
+	if _, err := NewOID(reader); !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("OID = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	}
 }

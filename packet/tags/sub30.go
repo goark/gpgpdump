@@ -3,7 +3,7 @@ package tags
 import (
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -25,7 +25,7 @@ func (s *sub30) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	flag, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal flag in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal flag")
 	}
 	rootInfo.Add(values.Flag2Item(flag&0x01, "Modification Detection (packets 18 and 19)"))
 	rootInfo.Add(values.Flag2Item(flag&0xfe, fmt.Sprintf("Unknown flag1(%#02x)", flag&0xfe)))

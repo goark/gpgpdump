@@ -2,10 +2,11 @@ package reader
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 )
 
 var buffer = []byte{0x01, 0x02, 0x03, 0x04}
@@ -33,7 +34,7 @@ func TestReadBytes0(t *testing.T) {
 
 func TestReadBytesErr(t *testing.T) {
 	_, err := New(buffer).ReadBytes(5)
-	if !errs.Is(err, io.ErrUnexpectedEOF) {
+	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("ReadBytes() = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
 	}
 }
@@ -55,7 +56,7 @@ func TestRead(t *testing.T) {
 
 func TestReadErr(t *testing.T) {
 	buf := make([]byte, 5)
-	if _, err := New(buffer).Read(buf); !errs.Is(err, io.ErrUnexpectedEOF) {
+	if _, err := New(buffer).Read(buf); !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("Read() = \"%v\", want \"%v\".", err, io.ErrUnexpectedEOF)
 	}
 }
@@ -74,7 +75,7 @@ func TestReadAt(t *testing.T) {
 	if buf[0] != res[0] || buf[1] != res[1] {
 		t.Errorf("ReadAt() = %v, want %v.", buf, res)
 	}
-	if _, err = reader.ReadAt(buf, 4); !errs.Is(err, io.EOF) {
+	if _, err = reader.ReadAt(buf, 4); !errors.Is(err, io.EOF) {
 		t.Errorf("ReadAt() = \"%v\", want \"%v\".", err, io.EOF)
 	}
 	off, err := reader.Seek(-2, io.SeekCurrent)
@@ -134,8 +135,8 @@ func TestSeekFromEnd(t *testing.T) {
 func TestSeekErr(t *testing.T) {
 	reader := New(buffer)
 	_, err := reader.Seek(0, 3)
-	if !errs.Is(err, errs.ErrInvalidWhence) {
-		t.Errorf("ReadByte() = \"%v\", want \"%v\".", err, errs.ErrInvalidWhence)
+	if !errors.Is(err, ecode.ErrInvalidWhence) {
+		t.Errorf("ReadByte() = \"%v\", want \"%v\".", err, ecode.ErrInvalidWhence)
 	}
 }
 
@@ -149,7 +150,7 @@ func TestRead2EOF(t *testing.T) {
 	if !bytes.Equal(res, v) {
 		t.Errorf("Read2EOF() = %v, want %v.", v, res)
 	}
-	if _, err := reader.Read2EOF(); !errs.Is(err, io.EOF) {
+	if _, err := reader.Read2EOF(); !errors.Is(err, io.EOF) {
 		t.Errorf("Read2EOF() = \"%v\", want \"%v\".", err, io.EOF)
 	}
 }
@@ -166,7 +167,7 @@ func TestReadByte(t *testing.T) {
 			t.Errorf("ReadByte() = %v, want %v.", b, res[i])
 		}
 	}
-	if _, err := reader.ReadByte(); !errs.Is(err, io.EOF) {
+	if _, err := reader.ReadByte(); !errors.Is(err, io.EOF) {
 		t.Errorf("ReadByte() = \"%v\", want \"%v\".", err, io.EOF)
 	}
 }

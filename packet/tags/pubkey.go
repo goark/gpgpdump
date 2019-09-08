@@ -2,9 +2,10 @@ package tags
 
 import (
 	"encoding/binary"
+	"fmt"
 	"strconv"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/pubkey"
@@ -49,14 +50,14 @@ func (p *pubkeyInfo) parseV3(parent *info.Item) error {
 	// [01] four-octet number denoting the time that the key was created.
 	tm, err := values.NewDateTime(p.reader, p.cxt.UTC())
 	if err != nil {
-		return errs.Wrap(err, "illegal Key Creation Time in parsing Public-key V3 packet")
+		return errs.Wrap(err, "illegal Key Creation Time")
 	}
 	p.cxt.KeyCreationTime = tm
 	parent.Add(values.PubKeyTimeItem(tm, true))
 	// [05] two-octet number denoting the time in days that this key is valid.
 	days, err := p.reader.ReadBytes(2)
 	if err != nil {
-		return errs.Wrap(err, "illegal Valid days in parsing Public-key V3 packet")
+		return errs.Wrap(err, "illegal Valid days")
 	}
 	parent.Add(info.NewItem(
 		info.Name("Valid days"),
@@ -66,7 +67,7 @@ func (p *pubkeyInfo) parseV3(parent *info.Item) error {
 	// [07] one-octet number denoting the public-key algorithm of this key.
 	pubid, err := p.reader.ReadByte()
 	if err != nil {
-		return errs.Wrap(err, "illegal pub ID in parsing Public-key V3 packet")
+		return errs.Wrap(err, "illegal pub ID")
 	}
 	p.pubID = values.PubID(pubid)
 	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
@@ -80,14 +81,14 @@ func (p *pubkeyInfo) parseV4(parent *info.Item) error {
 	// [01] four-octet number denoting the time that the key was created.
 	tm, err := values.NewDateTime(p.reader, p.cxt.UTC())
 	if err != nil {
-		return errs.Wrap(err, "illegal Key Creation Time in parsing Public-key V4 packet")
+		return errs.Wrap(err, "illegal Key Creation Time")
 	}
 	p.cxt.KeyCreationTime = tm
 	parent.Add(values.PubKeyTimeItem(tm, true))
 	// [05] one-octet number denoting the public-key algorithm of this key.
 	pubid, err := p.reader.ReadByte()
 	if err != nil {
-		return errs.Wrap(err, "illegal pub ID in parsing Public-key V4 packet")
+		return errs.Wrap(err, "illegal pub ID")
 	}
 	p.pubID = values.PubID(pubid)
 	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
@@ -101,26 +102,29 @@ func (p *pubkeyInfo) parseV5(parent *info.Item) error {
 	// [01] four-octet number denoting the time that the key was created.
 	tm, err := values.NewDateTime(p.reader, p.cxt.UTC())
 	if err != nil {
-		return errs.Wrap(err, "illegal Key Creation Time in parsing Public-key V5 packet")
+		return errs.Wrap(err, "illegal Key Creation Time")
 	}
 	p.cxt.KeyCreationTime = tm
 	parent.Add(values.PubKeyTimeItem(tm, true))
 	// [05] one-octet number denoting the public-key algorithm of this key.
 	pubid, err := p.reader.ReadByte()
 	if err != nil {
-		return errs.Wrap(err, "illegal pub ID in parsing Public-key V5 packet")
+		return errs.Wrap(err, "illegal pub ID")
 	}
 	p.pubID = values.PubID(pubid)
 	parent.Add(p.pubID.ToItem(p.cxt.Debug()))
 	// [06] four-octet scalar octet count for the following key material.
 	sz, err := p.reader.ReadBytes(4)
 	if err != nil {
-		return errs.Wrap(err, "illegal key material data size in parsing Public-key V5 packet")
+		return errs.Wrap(err, "illegal key material data size")
 	}
 	sz64 := int64(binary.BigEndian.Uint32(sz))
 	b, err := p.reader.ReadBytes(sz64)
 	if err != nil {
-		return errs.Wrapf(err, "illegal key material data in parsing Public-key V5 packet (size: %d bytes)", sz64)
+		return errs.Wrap(
+			err,
+			fmt.Sprintf("illegal key material data (size: %d bytes)", sz64),
+		)
 	}
 	// [10] series of multiprecision integers comprising the key material.
 	return pubkey.New(p.cxt, p.pubID, reader.New(b)).ParsePub(parent) //TODO: new logic for key material

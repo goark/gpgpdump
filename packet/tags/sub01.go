@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -27,12 +27,12 @@ func (s *sub01) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	l, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "error in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "")
 	}
 	length := binary.BigEndian.Uint16(l)
 	ver, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal version in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal version")
 	}
 	itm := info.NewItem(
 		info.Name("Version"),
@@ -47,7 +47,7 @@ func (s *sub01) Parse() (*info.Item, error) {
 		rootInfo.Add(itm)
 		enc, err := s.reader.ReadByte()
 		if err != nil {
-			return rootInfo, errs.Wrapf(err, "illegal image encoding code in parsing sub packet %d", int(s.subID))
+			return rootInfo, errs.Wrap(err, "illegal image encoding code")
 		}
 		itm = info.NewItem(
 			info.Name("Encoding"),

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
@@ -28,14 +28,17 @@ var oidList = map[string][]byte{
 func NewOID(r *reader.Reader) (OID, error) {
 	length, err := r.ReadByte()
 	if err != nil {
-		return nil, errs.Wrap(err, "illegal length of OID value")
+		return nil, errs.Wrap(err, "")
 	}
 	if length == 0 {
 		return nil, nil
 	}
 	oid, err := r.ReadBytes(int64(length))
 	if err != nil {
-		return nil, errs.Wrapf(err, "illegal body of MPI value (length: %d bytes)", length)
+		return nil, errs.Wrap(
+			err,
+			fmt.Sprintf("length of ECC OID: %v", length),
+		)
 	}
 	return oid, err
 }
@@ -73,7 +76,10 @@ func NewECParm(r *reader.Reader) (ECParm, error) {
 	}
 	buf, err := r.ReadBytes(int64(length))
 	if err != nil {
-		return nil, errs.Wrapf(err, "illegal ECParm body (length: %d bytes)", length)
+		return nil, errs.Wrap(
+			err,
+			fmt.Sprintf("length of ECParm body: %v", length),
+		)
 	}
 	return buf, nil
 }

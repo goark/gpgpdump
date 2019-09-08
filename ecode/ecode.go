@@ -1,12 +1,12 @@
-package errs
+package ecode
 
 import "fmt"
 
-//Num is error number for gpgpdumo
-type Num int
+//ECode is error codes for gpgpdump
+type ECode int
 
 const (
-	ErrNullPointer Num = iota + 1
+	ErrNullPointer ECode = iota + 1
 	ErrInvalidOption
 	ErrArmorText
 	ErrInvalidWhence
@@ -16,7 +16,7 @@ const (
 	ErrEmptyKeyServer
 )
 
-var errMessage = map[Num]string{
+var errMessage = map[ECode]string{
 	ErrNullPointer:    "Null reference instance",
 	ErrInvalidOption:  "Invalid option",
 	ErrArmorText:      "Cannot find OpenPGP armor boundary",
@@ -27,11 +27,11 @@ var errMessage = map[Num]string{
 	ErrHTTPStatus:     "Bad HTTP(S) status",
 }
 
-func (n Num) Error() string {
-	if s, ok := errMessage[n]; ok {
+func (e ECode) Error() string {
+	if s, ok := errMessage[e]; ok {
 		return s
 	}
-	return fmt.Sprintf("Unknown error (%d)", int(n))
+	return fmt.Sprintf("Unknown error (%d)", int(e))
 }
 
 /* Copyright 2019 Spiegel

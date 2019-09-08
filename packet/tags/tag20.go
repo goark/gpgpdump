@@ -1,9 +1,10 @@
 package tags
 
 import (
+	"fmt"
 	"strconv"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -26,28 +27,28 @@ func (t *tag20) Parse() (*info.Item, error) {
 	//A one-octet version number.  The only currently defined value is 1.
 	v, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal version in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal version")
 	}
 	version := values.AEADVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 	//A one-octet cipher algorithm.
 	alg, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal symid in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal symid")
 	}
 	symid := values.SymID(alg)
 	rootInfo.Add(symid.ToItem(t.cxt.Debug()))
 	//A one-octet AEAD algorithm.
 	alg, err = t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal aeadid in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal aeadid")
 	}
 	aeadid := values.AEADID(alg)
 	rootInfo.Add(aeadid.ToItem(t.cxt.Debug()))
 	//A one-octet chunk size.
 	c, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal chunk size in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal chunk size")
 	}
 	chunkSize := uint64(1) << (c + 6)
 	rootInfo.Add(info.NewItem(
@@ -72,7 +73,10 @@ func (t *tag20) iv(aeadid values.AEADID) (*info.Item, error) {
 	sz64 := int64(aeadid.IVLen())
 	iv, err := t.reader.ReadBytes(sz64)
 	if err != nil {
-		return nil, errs.Wrapf(err, "illegal initialization vector (length: %d bytes)", sz64)
+		return nil, errs.Wrap(
+			err,
+			fmt.Sprintf("illegal initialization vector (length: %d bytes)", sz64),
+		)
 	}
 	return info.NewItem(
 		info.Name("IV"),

@@ -1,7 +1,9 @@
 package tags
 
 import (
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"fmt"
+
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -23,21 +25,24 @@ func (t *tag11) Parse() (*info.Item, error) {
 	rootInfo := t.ToItem()
 	f, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal format in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal format")
 	}
 	rootInfo.Add(values.LiteralFormat(f).ToItem())
 	flen, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal length of file name in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal length of file name")
 	}
 	fname, err := values.NewLiteralFname(t.reader, int64(flen))
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal length of file name in parsing tag %d (length: %d bytes)", int(t.tag), int64(flen))
+		return rootInfo, errs.Wrap(
+			err,
+			fmt.Sprintf("illegal file name (length: %d bytes)", int64(flen)),
+		)
 	}
 	rootInfo.Add(fname.ToItem(t.cxt.Literal()))
 	ftime, err := values.NewDateTime(t.reader, t.cxt.UTC())
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal timestump of file in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal timestump of file")
 	}
 	rootInfo.Add(values.FileTimeItem(ftime, t.cxt.Debug()))
 	rootInfo.Add(values.RawData(t.reader, "Literal data", t.cxt.Literal()))

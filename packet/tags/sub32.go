@@ -1,7 +1,7 @@
 package tags
 
 import (
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -23,7 +23,7 @@ func (s *sub32) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	itm, err := newTag02(s.cxt, values.TagID(2), s.reader.GetBody()).Parse()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal Embedded Signature packet in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal Embedded Signature packet")
 	}
 	rootInfo.Add(itm)
 	return rootInfo, nil

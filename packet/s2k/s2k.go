@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
@@ -41,7 +41,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 		//0x03: Iterated and Salted S2K
 		hashid, err := s.reader.ReadByte()
 		if err != nil {
-			return errs.Wrap(err, "invalid hash ID in parsing s2k")
+			return errs.Wrap(err, "invalid hash ID")
 		}
 		itm.Add(values.HashID(hashid).ToItem(dumpFlag))
 		if s2kID != 0x00 {
@@ -49,7 +49,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 			//0x03: Iterated and Salted S2K
 			salt, err := s.reader.ReadBytes(8)
 			if err != nil {
-				return errs.Wrap(err, "invalid salt ID in parsing s2k")
+				return errs.Wrap(err, "invalid salt ID")
 			}
 			itm.Add(values.Salt(salt).ToItem(true))
 		}
@@ -57,7 +57,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 			//0x03: Iterated and Salted S2K
 			ct, err := s.reader.ReadByte()
 			if err != nil {
-				return errs.Wrap(err, "invalid stretch count ID in parsing s2k")
+				return errs.Wrap(err, "invalid stretch count ID")
 			}
 			itm.Add(values.Stretch(ct).ToItem())
 		}
@@ -70,13 +70,13 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 		}
 		mrk, err := s.reader.ReadBytes(3)
 		if err != nil {
-			return errs.Wrap(err, "invalid gnu-div in parsing s2k")
+			return errs.Wrap(err, "invalid gnu-div")
 		}
 		if bytes.Equal(mrk, []byte("GNU")) {
 			s.hasIV = false
 			n, err := s.reader.ReadByte()
 			if err != nil {
-				return errs.Wrap(err, "invalid gnu-div num in parsing s2k")
+				return errs.Wrap(err, "invalid gnu-div num")
 			}
 			enum := 1000 + int(n)
 			gnu := info.NewItem(
@@ -86,11 +86,11 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 			if enum == 1002 {
 				l, err := s.reader.ReadByte()
 				if err != nil {
-					return errs.Wrap(err, "invalid gnu-div s/n size in parsing s2k")
+					return errs.Wrap(err, "invalid gnu-div s/n size")
 				}
 				ser, err := s.reader.ReadBytes(int64(l))
 				if err != nil {
-					return errs.Wrap(err, "invalid gnu-div s/n in parsing s2k")
+					return errs.Wrap(err, "invalid gnu-div s/n")
 				}
 				gnu.Add(info.NewItem(
 					info.Name("Serial Number"),
@@ -99,7 +99,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 			}
 			itm.Add(gnu)
 		} else if _, err := s.reader.Seek(-3, io.SeekCurrent); err != nil { //roll back
-			return errs.Wrap(err, "error in parsing s2k (roll back)")
+			return errs.Wrap(err, "roll back error")
 		}
 	}
 	return nil

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/values"
 )
@@ -56,7 +56,7 @@ func (p *Pubkey) ParseSecEnc(parent *info.Item) error {
 		))
 	}
 	if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip to EOF
-		return errs.Wrap(err, "error in parsing encrypted secret-key packet")
+		return errs.Wrap(err, "")
 	}
 	return nil
 }

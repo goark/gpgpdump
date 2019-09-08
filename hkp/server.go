@@ -1,8 +1,10 @@
 package hkp
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 //Protocol is kind of HKP protocols
@@ -25,7 +27,7 @@ func (p Protocol) String() string {
 	return protocolMap[HKP]
 }
 
-//Server is informations of OpenPGP key server
+//Server is information of OpenPGP key server
 type Server struct {
 	prt  Protocol //HKP protocol
 	host string   //OpenPGP key server host name
@@ -35,7 +37,7 @@ type Server struct {
 //ServerOptFunc is self-referential function for functional options pattern
 type ServerOptFunc func(*Server)
 
-// NewServer returns a new RWI instance
+// New returns a new Server instance
 func New(host string, opts ...ServerOptFunc) *Server {
 	s := &Server{prt: HKP, host: host, port: 11371}
 	for _, opt := range opts {
@@ -51,22 +53,42 @@ func WithProtocol(p Protocol) ServerOptFunc {
 	}
 }
 
-//WithProtocol returns function for setting Reader
+//WithPort returns function for setting Reader
 func WithPort(port int) ServerOptFunc {
 	return func(s *Server) {
 		s.port = port
 	}
 }
 
-func (s *Server) Client() *Client {
-	return &Client{
-		server: s,
-		client: &http.Client{},
+func (s *Server) String() string {
+	u := s.URL()
+	if u == nil {
+		return ""
 	}
+	return u.String()
 }
 
-func (s *Server) String() string {
-	return fmt.Sprintf("%v://%v:%v", s.prt, s.host, s.port)
+//URL returns url.URL instance
+func (s *Server) URL() *url.URL {
+	if s == nil {
+		s = nil
+	}
+	return &url.URL{Scheme: s.prt.String(), Host: fmt.Sprintf("%s:%d", s.host, s.port)}
+}
+
+//Client returns new Client instance for HKP client
+func (s *Server) Client(ctx context.Context, client *http.Client) *Client {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if client == nil {
+		client = &http.Client{}
+	}
+	return &Client{
+		server: s,
+		client: client,
+		ctx:    ctx,
+	}
 }
 
 /* Copyright 2019 Spiegel

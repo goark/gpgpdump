@@ -5,7 +5,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
@@ -56,7 +56,10 @@ func NewLiteralFname(r *reader.Reader, l int64) (*Text, error) {
 	}
 	data, err := r.ReadBytes(l)
 	if err != nil {
-		return nil, errs.Wrapf(err, "illegal file name of literal packet (length: %d bytes)", l)
+		return nil, errs.Wrap(
+			err,
+			fmt.Sprintf("illegal file name of literal packet (length: %d bytes)", l),
+		)
 	}
 	return NewText(data, name), nil
 }

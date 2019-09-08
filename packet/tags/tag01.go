@@ -1,7 +1,7 @@
 package tags
 
 import (
-	"github.com/spiegel-im-spiegel/gpgpdump/errs"
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/pubkey"
@@ -27,24 +27,24 @@ func (t *tag01) Parse() (*info.Item, error) {
 	// [00] one-octet number giving the version number of the packet type.
 	ver, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal version in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal version")
 	}
 	rootInfo.Add(values.PubSessKeyVer(ver).ToItem(t.cxt.Debug()))
 	// [01] eight-octet number that gives the Key ID of the public key to which the session key is encrypted.
 	keyid, err := t.reader.ReadBytes(8)
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal keyid in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal keyid")
 	}
 	rootInfo.Add(values.NewKeyID(keyid).ToItem())
 	// [09] one-octet number giving the public-key algorithm used.
 	pubid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal pubid in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal pubid")
 	}
 	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
 	// [10] string of octets that is the encrypted session key.
 	if err := pubkey.New(t.cxt, values.PubID(pubid), t.reader).ParseSes(rootInfo); err != nil {
-		return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "")
 	}
 
 	if t.reader.Rest() > 0 {
