@@ -24,13 +24,13 @@ func (t *tag06) Parse() (*info.Item, error) {
 	// [00] One-octet version number.
 	v, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal version in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal version")
 	}
 	version := values.PubVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
 	if err := newPubkey(t.cxt, t.reader, version).Parse(rootInfo); err != nil {
-		return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "")
 	}
 
 	if t.reader.Rest() > 0 {

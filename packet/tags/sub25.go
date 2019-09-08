@@ -23,7 +23,7 @@ func (s *sub25) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	b, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal uid in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal uid")
 	}
 	if b == 0x00 {
 		rootInfo.Value = "Not primary"

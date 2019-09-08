@@ -6,13 +6,11 @@ import (
 	"io"
 	"strings"
 	"testing"
-
-	"github.com/spiegel-im-spiegel/errs"
 )
 
 func r2s(r io.Reader) string {
 	buf := new(bytes.Buffer)
-	if _, err := io.Copy(buf, r); !errs.Is(err, nil) {
+	if _, err := io.Copy(buf, r); err != nil {
 		return ""
 	}
 	return buf.String()

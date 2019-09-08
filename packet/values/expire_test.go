@@ -1,11 +1,11 @@
 package values
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -22,7 +22,7 @@ func TestExpireErr(t *testing.T) {
 	//dump := "00 09 3a 80"
 	dayErr := []byte{0x00}
 	_, err := NewExpire(reader.New(dayErr), dt)
-	if !errs.Is(err, io.ErrUnexpectedEOF) {
+	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("NewExpire() = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	} else {
 		fmt.Printf("Info: %+v\n", err)

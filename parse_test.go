@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 )
 
@@ -28,7 +27,7 @@ var (
 
 func ExampleParse() {
 	info, err := Parse(reader, optionss)
-	if !errs.Is(err, nil) {
+	if err != nil {
 		return
 	}
 	fmt.Println(info.Packets[0].Name)
@@ -38,7 +37,7 @@ func ExampleParse() {
 
 func ExampleParseByte() {
 	info, err := ParseByte(openpgpData, optionss)
-	if !errs.Is(err, nil) {
+	if err != nil {
 		return
 	}
 	fmt.Println(info.Packets[0].Name)

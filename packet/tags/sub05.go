@@ -25,7 +25,7 @@ func (s *sub05) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	b, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal Level in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal Level")
 	}
 	rootInfo.Add(info.NewItem(
 		info.Name("Level"),
@@ -33,7 +33,7 @@ func (s *sub05) Parse() (*info.Item, error) {
 	))
 	b, err = s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal Trust amount in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal Trust amount")
 	}
 	rootInfo.Add(info.NewItem(
 		info.Name("Trust amount"),

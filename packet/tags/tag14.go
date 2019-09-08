@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
@@ -19,7 +20,8 @@ func newTag14(cxt *context.Context, tag values.TagID, body []byte) Tags {
 
 // Parse parsing Public-Subkey Packet
 func (t *tag14) Parse() (*info.Item, error) {
-	return newTag06(t.cxt, t.tag, t.reader.GetBody()).Parse() //redirect to Tag06
+	item, err := newTag06(t.cxt, t.tag, t.reader.GetBody()).Parse() //redirect to Tag06
+	return item, errs.Wrap(err, "")
 }
 
 /* Copyright 2016,2019 Spiegel

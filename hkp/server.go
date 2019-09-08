@@ -1,8 +1,10 @@
 package hkp
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 //Protocol is kind of HKP protocols
@@ -58,16 +60,35 @@ func WithPort(port int) ServerOptFunc {
 	}
 }
 
-//Client returns new Client instance for HKP client
-func (s *Server) Client() *Client {
-	return &Client{
-		server: s,
-		client: &http.Client{},
+func (s *Server) String() string {
+	u := s.URL()
+	if u == nil {
+		return ""
 	}
+	return u.String()
 }
 
-func (s *Server) String() string {
-	return fmt.Sprintf("%v://%v:%v", s.prt, s.host, s.port)
+//URL returns url.URL instance
+func (s *Server) URL() *url.URL {
+	if s == nil {
+		s = nil
+	}
+	return &url.URL{Scheme: s.prt.String(), Host: fmt.Sprintf("%s:%d", s.host, s.port)}
+}
+
+//Client returns new Client instance for HKP client
+func (s *Server) Client(ctx context.Context, client *http.Client) *Client {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if client == nil {
+		client = &http.Client{}
+	}
+	return &Client{
+		server: s,
+		client: client,
+		ctx:    ctx,
+	}
 }
 
 /* Copyright 2019 Spiegel

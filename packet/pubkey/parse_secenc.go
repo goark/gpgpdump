@@ -56,7 +56,7 @@ func (p *Pubkey) ParseSecEnc(parent *info.Item) error {
 		))
 	}
 	if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip to EOF
-		return errs.Wrap(err, "error in parsing encrypted secret-key packet")
+		return errs.Wrap(err, "")
 	}
 	return nil
 }

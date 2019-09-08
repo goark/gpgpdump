@@ -23,7 +23,7 @@ func (s *sub16) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	keyid, err := s.reader.ReadBytes(8)
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal keyid in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal keyid")
 	}
 	issuer := values.NewKeyID(keyid).ToItem()
 	issuer.Name = rootInfo.Name

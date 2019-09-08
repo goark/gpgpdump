@@ -56,7 +56,10 @@ func NewLiteralFname(r *reader.Reader, l int64) (*Text, error) {
 	}
 	data, err := r.ReadBytes(l)
 	if err != nil {
-		return nil, errs.Wrapf(err, "illegal file name of literal packet (length: %d bytes)", l)
+		return nil, errs.Wrap(
+			err,
+			fmt.Sprintf("illegal file name of literal packet (length: %d bytes)", l),
+		)
 	}
 	return NewText(data, name), nil
 }

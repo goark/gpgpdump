@@ -13,33 +13,33 @@ func (p *Pubkey) ParseSecPlain(parent *info.Item) error {
 	switch true {
 	case p.pubID.IsRSA():
 		if err := p.rsaSec(parent); err != nil {
-			return err
+			return errs.Wrap(err, "")
 		}
 	case p.pubID.IsDSA():
 		if err := p.dsaSec(parent); err != nil {
-			return err
+			return errs.Wrap(err, "")
 		}
 	case p.pubID.IsElgamal():
 		if err := p.elgSec(parent); err != nil {
-			return err
+			return errs.Wrap(err, "")
 		}
 	case p.pubID.IsECDH():
 		if err := p.ecdhSec(parent); err != nil {
-			return err
+			return errs.Wrap(err, "")
 		}
 	case p.pubID.IsECDSA():
 		if err := p.ecdsaSec(parent); err != nil {
-			return err
+			return errs.Wrap(err, "")
 		}
 	case p.pubID.IsEdDSA():
 		if err := p.eddsaSec(parent); err != nil {
-			return err
+			return errs.Wrap(err, "")
 		}
 	default:
 		length := p.size - 2 //last 2-octet is checksum value
 		b, err := p.reader.ReadBytes(length)
 		if err != nil {
-			return errs.Wrap(err, "error in parsing plain secret-key packet")
+			return errs.Wrap(err, "")
 		}
 		parent.Add(info.NewItem(
 			info.Name(fmt.Sprintf("Multi-precision integers of unknown secret key (pub %d)", p.pubID)),
@@ -53,22 +53,22 @@ func (p *Pubkey) ParseSecPlain(parent *info.Item) error {
 func (p *Pubkey) rsaSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "error in parsing plain secret-key packet (RSA)")
+		return errs.Wrap(err, "")
 	}
 	item.Add(mpi.ToItem("RSA secret exponent d", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "error in parsing plain secret-key packet (RSA)")
+		return errs.Wrap(err, "")
 	}
 	item.Add(mpi.ToItem("RSA secret prime value p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "error in parsing plain secret-key packet (RSA)")
+		return errs.Wrap(err, "")
 	}
 	item.Add(mpi.ToItem("RSA secret prime value q (p < q)", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "error in parsing plain secret-key packet (RSA)")
+		return errs.Wrap(err, "")
 	}
 	item.Add(mpi.ToItem("RSA u, the multiplicative inverse of p, mod q", p.cxt.Integer()))
 	return nil
@@ -77,7 +77,7 @@ func (p *Pubkey) rsaSec(item *info.Item) error {
 func (p *Pubkey) dsaSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "error in parsing plain secret-key packet (DSA)")
+		return errs.Wrap(err, "")
 	}
 	item.Add(mpi.ToItem("DSA secret exponent x", p.cxt.Integer()))
 	return nil
@@ -86,7 +86,7 @@ func (p *Pubkey) dsaSec(item *info.Item) error {
 func (p *Pubkey) elgSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "error in parsing plain secret-key packet (ElGamal)")
+		return errs.Wrap(err, "")
 	}
 	item.Add(mpi.ToItem("ElGamal secret exponent x", p.cxt.Integer()))
 	return nil
@@ -95,7 +95,7 @@ func (p *Pubkey) elgSec(item *info.Item) error {
 func (p *Pubkey) ecdhSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "error in parsing plain secret-key packet (ECDH)")
+		return errs.Wrap(err, "")
 	}
 	item.Add(mpi.ToItem("ECDH secret key", p.cxt.Integer()))
 	return nil
@@ -104,7 +104,7 @@ func (p *Pubkey) ecdhSec(item *info.Item) error {
 func (p *Pubkey) ecdsaSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "error in parsing plain secret-key packet (ECDSA)")
+		return errs.Wrap(err, "")
 	}
 	item.Add(mpi.ToItem("ECDSA secret key", p.cxt.Integer()))
 	return nil
@@ -113,7 +113,7 @@ func (p *Pubkey) ecdsaSec(item *info.Item) error {
 func (p *Pubkey) eddsaSec(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "error in parsing plain secret-key packet (EdDSA)")
+		return errs.Wrap(err, "")
 	}
 	item.Add(mpi.ToItem("EdDSA secret key", p.cxt.Integer()))
 	return nil

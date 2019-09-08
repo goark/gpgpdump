@@ -31,7 +31,7 @@ func (t *Tag08) Parse() (*info.Item, error) {
 	rootInfo := t.ToItem()
 	compID, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal compID in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "illegal compID")
 	}
 	cid := values.CompID(compID)
 	rootInfo.Add(cid.ToItem(t.cxt.Debug()))
@@ -44,7 +44,7 @@ func (t *Tag08) Parse() (*info.Item, error) {
 			var zd []byte
 			zd, err = t.reader.Read2EOF()
 			if err != nil {
-				return rootInfo, errs.Wrapf(err, "illegal compressed data in parsing tag %d", int(t.tag))
+				return rootInfo, errs.Wrap(err, "illegal compressed data")
 			}
 			t.data = bytes.NewReader(zd)
 		case 1: //zip <RFC1951>
@@ -55,7 +55,7 @@ func (t *Tag08) Parse() (*info.Item, error) {
 			t.data, err = t.extractBzip2()
 		default:
 		}
-		return rootInfo, errs.Wrapf(err, "error in parsing tag %d", int(t.tag))
+		return rootInfo, errs.Wrap(err, "")
 	}
 	return rootInfo, nil
 }
@@ -68,22 +68,22 @@ func (t *Tag08) Reader() io.Reader {
 func (t *Tag08) extractZip() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in extract data (zip)")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
 	}
 	zr := flate.NewReader(bytes.NewReader(zd))
 	buf := new(bytes.Buffer)
 	_, err = io.Copy(buf, zr)
-	return buf, errs.Wrap(err, "error in extract data (zip)")
+	return buf, errs.Wrap(err, "")
 }
 
 func (t *Tag08) extractZLib() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in extract data (zlib)")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
 	}
 	zr, err := zlib.NewReader(bytes.NewReader(zd))
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in extract data (zlib)")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
 	}
 	buf := new(bytes.Buffer)
 	_, err = io.Copy(buf, zr)
@@ -93,12 +93,12 @@ func (t *Tag08) extractZLib() (io.Reader, error) {
 func (t *Tag08) extractBzip2() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in extract data (bzip2)")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
 	}
 	zr := bzip2.NewReader(bytes.NewReader(zd))
 	buf := new(bytes.Buffer)
 	_, err = io.Copy(buf, zr)
-	return buf, errs.Wrap(err, "error in extract data (bzip2)")
+	return buf, errs.Wrap(err, "")
 }
 
 /* Copyright 2016-2019 Spiegel

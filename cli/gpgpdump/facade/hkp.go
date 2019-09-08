@@ -2,10 +2,15 @@ package facade
 
 import (
 	"bytes"
+	"context"
+	"errors"
+	"net/http"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
+	"github.com/spiegel-im-spiegel/gocli/signal"
 	"github.com/spiegel-im-spiegel/gpgpdump"
 	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 	"github.com/spiegel-im-spiegel/gpgpdump/hkp"
@@ -24,6 +29,9 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 				return debugPrint(ui, ecode.ErrUserID)
 			}
 			userID := args[0]
+
+			//Create context
+			ctx := signal.Context(context.Background(), os.Interrupt)
 
 			//options
 			sks, err := cmd.Flags().GetString("keyserver")
@@ -53,9 +61,9 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 				sks,
 				hkp.WithProtocol(prt),
 				hkp.WithPort(port),
-			).Client().Get(userID)
+			).Client(ctx, &http.Client{}).Get(userID)
 			if err != nil {
-				if errs.Is(err, ecode.ErrArmorText) {
+				if errors.Is(err, ecode.ErrArmorText) {
 					return debugPrint(ui, ui.WriteFrom(bytes.NewReader(resp)))
 				}
 				return debugPrint(ui, err)

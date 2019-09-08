@@ -34,7 +34,7 @@ func (s *sub29) Parse() (*info.Item, error) {
 	code, err := s.reader.ReadByte()
 	var name string
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal Reason code in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal Reason code")
 	}
 	if 100 <= code && code <= 110 {
 		name = "(Private Use)"

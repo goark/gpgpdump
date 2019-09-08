@@ -25,7 +25,7 @@ func (s *sub33) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	ver, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal version in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal version")
 	}
 	itm := info.NewItem(
 		info.Name("Version"),

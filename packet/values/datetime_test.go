@@ -1,10 +1,10 @@
 package values
 
 import (
+	"errors"
 	"io"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -27,7 +27,7 @@ func TestRFC3339(t *testing.T) {
 func TestRFC3339Err(t *testing.T) {
 	ut2 := []byte{0x36}
 	_, err := NewDateTime(reader.New(ut2), true) //UTC
-	if !errs.Is(err, io.ErrUnexpectedEOF) {
+	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("NewDateTime() = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	}
 }

@@ -23,12 +23,12 @@ func (s *sub31) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	pubid, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal pubid in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal pubid")
 	}
 	rootInfo.Add(values.PubID(pubid).ToItem(s.cxt.Debug()))
 	hashid, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal hashid in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal hashid")
 	}
 	rootInfo.Add(values.HashID(hashid).ToItem(s.cxt.Debug()))
 	rootInfo.Add(values.RawData(s.reader, "Hash", true))

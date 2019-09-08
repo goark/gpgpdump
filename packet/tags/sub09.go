@@ -23,7 +23,7 @@ func (s *sub09) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	exp, err := values.NewExpire(s.reader, s.cxt.KeyCreationTime)
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal Key Expiration Time in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal Key Expiration Time")
 	}
 	s.cxt.KeyCreationTime = nil
 	return exp.ToItem(rootInfo.Name, s.cxt.Debug()), nil

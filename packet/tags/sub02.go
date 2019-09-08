@@ -23,7 +23,7 @@ func (s *sub02) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	tm, err := values.NewDateTime(s.reader, s.cxt.UTC())
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal Signature Creation Time in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal Signature Creation Time")
 	}
 	sigTime := values.SigTimeItem(tm, s.cxt.Debug())
 	sigTime.Name = rootInfo.Name

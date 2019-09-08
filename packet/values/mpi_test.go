@@ -1,11 +1,11 @@
 package values
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -71,7 +71,7 @@ func TestNewMPIandName(t *testing.T) {
 func TestNewMPIErr(t *testing.T) {
 	reader := reader.New(data2)
 	_, err := NewMPI(reader)
-	if !errs.Is(err, io.ErrUnexpectedEOF) {
+	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("NewMPI = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	} else {
 		fmt.Printf("Info: %+v\n", err)
@@ -81,7 +81,7 @@ func TestNewMPIErr(t *testing.T) {
 func TestNewMPIErr2(t *testing.T) {
 	reader := reader.New(data3)
 	_, err := NewMPI(reader)
-	if !errs.Is(err, io.ErrUnexpectedEOF) {
+	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("NewMPI = \"%+v\", want \"%+v\".", err, io.ErrUnexpectedEOF)
 	} else {
 		fmt.Printf("Info: %+v\n", err)

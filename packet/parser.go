@@ -3,6 +3,7 @@ package packet
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -28,7 +29,7 @@ type Parser struct {
 //NewParser returns Parser for parsing packet
 func NewParser(reader io.Reader, o options.Options) (*Parser, error) {
 	if reader == nil {
-		return nil, errs.Wrap(ecode.ErrNullPointer, "no data for parsing packet")
+		return nil, errs.Wrap(ecode.ErrNullPointer, "")
 	}
 	var r io.Reader
 	var err error
@@ -52,11 +53,11 @@ func newParser(cxt *context.Context, op *openpgp.OpaqueReader, info *info.Info) 
 func newParserArmor(r io.Reader) (io.Reader, error) {
 	buf := getASCIIArmorText(r)
 	if buf == nil {
-		return nil, errs.Wrap(ecode.ErrArmorText, "error in parsing armor text")
+		return nil, errs.Wrap(ecode.ErrArmorText, "")
 	}
 	block, err := armor.Decode(buf)
 	if err != nil {
-		return nil, errs.Wrap(err, "error in parsing armor text")
+		return nil, errs.Wrap(err, "")
 	}
 	return block.Body, nil
 }
@@ -98,7 +99,7 @@ func (r *Parser) Parse() (*info.Info, error) {
 	for {
 		op, err := r.next()
 		if err != nil {
-			return r.info, err
+			return r.info, errs.Wrap(err, "")
 		}
 		if op == nil {
 			break
@@ -106,7 +107,7 @@ func (r *Parser) Parse() (*info.Info, error) {
 		tag := tags.NewTag(op, r.cxt)
 		item, err := tag.Parse()
 		if err != nil {
-			return r.info, errs.Wrapf(err, "error in parsing packet")
+			return r.info, errs.Wrap(err, "")
 		}
 		r.info.Add(item)
 		switch t := tag.(type) {
@@ -115,7 +116,7 @@ func (r *Parser) Parse() (*info.Info, error) {
 				parser := newParser(r.cxt, openpgp.NewOpaqueReader(t.Reader()), info.NewInfo())
 				info, err := parser.Parse()
 				if err != nil {
-					return r.info, errs.Wrapf(err, "error in parsing body of tag(8) packet")
+					return r.info, errs.Wrap(err, "")
 				}
 				if len(item.Items) > 0 {
 					item = item.Items[len(item.Items)-1]
@@ -132,8 +133,8 @@ func (r *Parser) Parse() (*info.Info, error) {
 func (r *Parser) next() (*openpgp.OpaquePacket, error) {
 	op, err := r.opaqueReader.Next()
 	if err != nil {
-		if !errs.Is(err, io.EOF) { //EOF is not error
-			return nil, errs.Wrap(err, "error in parsing OpaquePacket")
+		if !errors.Is(err, io.EOF) { //EOF is not error
+			return nil, errs.Wrap(err, "")
 		}
 		return nil, nil
 	}

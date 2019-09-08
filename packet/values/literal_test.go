@@ -1,10 +1,10 @@
 package values
 
 import (
+	"errors"
 	"io"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet/reader"
 )
 
@@ -109,7 +109,7 @@ func TestLiteralFname(t *testing.T) {
 
 func TestLiteralFnameErr(t *testing.T) {
 	_, err := NewLiteralFname(reader.New([]byte("hoge")), 10)
-	if !errs.Is(err, io.ErrUnexpectedEOF) {
+	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("NewLiteralFname() = \"%+v\", want \"%v\".", err, io.ErrUnexpectedEOF)
 	}
 }

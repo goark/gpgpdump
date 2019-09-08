@@ -25,7 +25,10 @@ func NewMPI(r *reader.Reader) (*MPI, error) {
 	byteLength := (int64(bitLength) + 7) / 8
 	data, err := r.ReadBytes(byteLength)
 	if err != nil {
-		return nil, errs.Wrapf(err, "illegal body of MPI value (length: %d bits, %d bytes)", bitLength, byteLength)
+		return nil, errs.Wrap(
+			err,
+			fmt.Sprintf("illegal body of MPI value (length: %d bits, %d bytes)", bitLength, byteLength),
+		)
 	}
 	return &MPI{bitLength: bitLength, data: data}, nil
 }

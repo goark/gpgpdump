@@ -43,7 +43,7 @@ func (i *Info) TOML(indent int) (io.Reader, error) {
 		encoder.Indent = strings.Repeat(" ", indent)
 	}
 	if err := encoder.Encode(i); err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in marshaling to TOML")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
 	}
 	return buf, nil
 }
@@ -59,7 +59,7 @@ func (i *Info) JSON(indent int) (io.Reader, error) {
 		encoder.SetIndent("", strings.Repeat(" ", indent))
 	}
 	if err := encoder.Encode(i); err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "error in marshaling to JSON")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
 	}
 	return buf, nil
 }

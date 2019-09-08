@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
 	"github.com/spiegel-im-spiegel/gpgpdump/options"
 	"github.com/spiegel-im-spiegel/gpgpdump/packet"
@@ -13,7 +14,7 @@ import (
 func Parse(r io.Reader, o options.Options) (*info.Info, error) {
 	parser, err := packet.NewParser(r, o)
 	if err != nil {
-		return nil, err
+		return nil, errs.Wrap(err, "")
 	}
 	return parser.Parse()
 }

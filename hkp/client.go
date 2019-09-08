@@ -3,6 +3,7 @@ package hkp
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -16,6 +17,7 @@ import (
 type Client struct {
 	client *http.Client
 	server *Server
+	ctx    context.Context
 }
 
 //Get returns result of HKP get command
@@ -24,22 +26,28 @@ func (c *Client) Get(userID string) ([]byte, error) {
 		"search": {userID},
 		"op":     {"get"},
 	}
-	url := c.server.String() + "/pks/lookup?" + values.Encode()
-	resp, err := c.client.Get(url)
+	u := c.server.URL()
+	u.Path = "/pks/lookup"
+	u.RawQuery = values.Encode()
+	req, err := http.NewRequestWithContext(c.ctx, "GET", u.String(), nil)
 	if err != nil {
-		return nil, errs.Wrapf(err, "error in hkp.Client.Get(\"%v\")", url)
+		return nil, errs.Wrap(err, "", errs.WithParam("url", u.String()))
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, errs.Wrap(err, "", errs.WithParam("url", u.String()))
 	}
 	defer resp.Body.Close()
 
 	if !(resp.StatusCode != 0 && resp.StatusCode < http.StatusBadRequest) {
-		return nil, errs.Wrapf(ecode.ErrHTTPStatus, "%v (in %v)", resp.Status, url)
+		return nil, errs.Wrap(ecode.ErrHTTPStatus, "", errs.WithParam("url", u.String()), errs.WithParam("status", resp.Status))
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, errs.Wrapf(err, "error in hkp.Client.Get(\"%v\")", url)
+		return nil, errs.Wrap(err, "", errs.WithParam("url", u.String()))
 	}
-	return body, errs.Wrapf(hasASCIIArmorText(body), "error in hkp.Client.Get(\"%v\")", url)
+	return body, errs.Wrap(hasASCIIArmorText(body), "", errs.WithParam("url", u.String()))
 }
 
 func hasASCIIArmorText(body []byte) error {

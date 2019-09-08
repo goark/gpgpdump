@@ -26,7 +26,7 @@ func (s *sub20) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	flags, err := s.reader.ReadBytes(8)
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal flags in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal flags")
 	}
 	human := flags[0] & 0x80
 	rootInfo.Add(values.Flag2Item(human, "Human-readable"))
@@ -37,20 +37,26 @@ func (s *sub20) Parse() (*info.Item, error) {
 
 	nameLength, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal length of name in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal length of name")
 	}
 	valueLength, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal length of value in parsing sub packet %d", int(s.subID))
+		return rootInfo, errs.Wrap(err, "illegal length of value")
 	}
 	name, err := s.reader.ReadBytes(int64(binary.BigEndian.Uint16(nameLength)))
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal name in parsing sub packet %d (length: %d bytes)", int(s.subID), nameLength)
+		return rootInfo, errs.Wrap(
+			err,
+			fmt.Sprintf("illegal name (length: %d bytes)", nameLength),
+		)
 	}
 	rootInfo.Add(values.NewText(name, "Name").ToItem(s.cxt.Debug()))
 	value, err := s.reader.ReadBytes(int64(binary.BigEndian.Uint16(valueLength)))
 	if err != nil {
-		return rootInfo, errs.Wrapf(err, "illegal value in parsing sub packet %d (length: %d bytes)", int(s.subID), valueLength)
+		return rootInfo, errs.Wrap(
+			err,
+			fmt.Sprintf("illegal value (length: %d bytes)", valueLength),
+		)
 	}
 	if human != 0x00 {
 		//human readable data (text)
