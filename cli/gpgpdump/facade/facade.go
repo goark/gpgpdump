@@ -91,10 +91,9 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 
 func debugPrint(ui *rwi.RWI, err error) error {
 	if debugFlag && err != nil {
-		fmt.Fprintf(ui.ErrorWriter(), "error: %+v\n", err)
+		fmt.Fprintf(ui.ErrorWriter(), "%+v\n", err)
 		return nil
 	}
-	//return errs.Cause(err)
 	return err
 }
 
