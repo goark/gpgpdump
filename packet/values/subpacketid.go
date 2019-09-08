@@ -75,7 +75,7 @@ func (s SuboacketID) String() string {
 	return fmt.Sprintf("%s (sub %d)", name+c, s)
 }
 
-/* Copyright 2016,2017 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
