@@ -18,13 +18,14 @@ builds:
   - "386"
   - arm
   - arm64
-  goarm:
-  - "6"
   main: ./cli/gpgpdump/
+  flags:
+  - -trimpath
   ldflags: -s -w -X github.com/spiegel-im-spiegel/gpgpdump/cli/gpgpdump/facade.Version=v{{ .Version }}
   binary: gpgpdump
 
-archive:
+archives:
+-
   format: tar.gz
   format_overrides:
     - goos: windows

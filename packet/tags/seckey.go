@@ -3,7 +3,6 @@ package tags
 import (
 	"encoding/binary"
 	"fmt"
-	"strconv"
 
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
@@ -45,7 +44,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 				return errs.Wrap(
 					err,
 					"illegal symid",
-					errs.WithParam("s2k_usage", strconv.Itoa(int(usage))),
+					errs.WithContext("s2k_usage", usage),
 				)
 			}
 			symid = values.SymID(alg)
@@ -58,7 +57,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 				return errs.Wrap(
 					err,
 					"illegal AEAD",
-					errs.WithParam("s2k_usage", strconv.Itoa(int(usage))),
+					errs.WithContext("s2k_usage", usage),
 				)
 			}
 			parent.Add(values.AEADID(alg).ToItem(p.cxt.Debug()))
@@ -73,7 +72,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 				return errs.Wrap(
 					err,
 					"illegal s2k",
-					errs.WithParam("s2k_usage", strconv.Itoa(int(usage))),
+					errs.WithContext("s2k_usage", usage),
 				)
 			}
 			hasIV = s2k.HasIV()
@@ -107,7 +106,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 				return errs.Wrap(
 					err,
 					"",
-					errs.WithParam("s2k_usage", strconv.Itoa(int(usage))),
+					errs.WithContext("s2k_usage", usage),
 				)
 			}
 			//checksum
@@ -125,7 +124,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 				return errs.Wrap(
 					err,
 					"illegal pubkey",
-					errs.WithParam("s2k_usage", strconv.Itoa(int(usage))),
+					errs.WithContext("s2k_usage", usage),
 				)
 			}
 		case 254:
@@ -134,7 +133,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 				return errs.Wrap(
 					err,
 					"illegal pubkey",
-					errs.WithParam("s2k_usage", strconv.Itoa(int(usage))),
+					errs.WithContext("s2k_usage", usage),
 				)
 			}
 		default:
@@ -143,7 +142,7 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 				return errs.Wrap(
 					err,
 					"illegal pubkey",
-					errs.WithParam("s2k_usage", strconv.Itoa(int(usage))),
+					errs.WithContext("s2k_usage", usage),
 				)
 			}
 		}

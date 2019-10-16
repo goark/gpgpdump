@@ -28,7 +28,7 @@ func (r *Reader) Read(p []byte) (int, error) {
 		return 0, errs.Wrap(
 			err,
 			"",
-			errs.WithParam("length", fmt.Sprint(pl)),
+			errs.WithContext("length", pl),
 		)
 	}
 	copy(p, b)
@@ -41,14 +41,14 @@ func (r *Reader) ReadAt(p []byte, off int64) (int, error) {
 		return 0, errs.Wrap(
 			err,
 			"",
-			errs.WithParam("off", fmt.Sprint(off)),
+			errs.WithContext("off", off),
 		)
 	}
 	pl, err := r.Read(p)
 	return pl, errs.Wrap(
 		err,
 		"",
-		errs.WithParam("off", fmt.Sprint(off)),
+		errs.WithContext("off", off),
 	)
 }
 
@@ -85,8 +85,8 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 		return r.offset, errs.Wrap(
 			ecode.ErrInvalidWhence,
 			"",
-			errs.WithParam("offset", fmt.Sprint(offset)),
-			errs.WithParam("whence", fmt.Sprint(whence)),
+			errs.WithContext("offset", offset),
+			errs.WithContext("whence", whence),
 		)
 	}
 	origin += offset
@@ -94,8 +94,8 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 		return r.offset, errs.Wrap(
 			ecode.ErrInvalidOffset,
 			"",
-			errs.WithParam("offset", fmt.Sprint(offset)),
-			errs.WithParam("whence", fmt.Sprint(whence)),
+			errs.WithContext("offset", offset),
+			errs.WithContext("whence", whence),
 		)
 	}
 	r.offset = origin
@@ -127,14 +127,14 @@ func (r *Reader) ReadBytes(size int64) ([]byte, error) {
 		return nil, errs.Wrap(
 			io.EOF,
 			"",
-			errs.WithParam("size", fmt.Sprint(size)),
+			errs.WithContext("size", size),
 		)
 	}
 	if r.offset+size > rl {
 		return nil, errs.Wrap(
 			io.ErrUnexpectedEOF,
 			"",
-			errs.WithParam("size", fmt.Sprint(size)),
+			errs.WithContext("size", size),
 		)
 	}
 	b := r.buffer[r.offset : r.offset+size]

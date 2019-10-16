@@ -60,7 +60,7 @@ func TestSigIS(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apiche License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

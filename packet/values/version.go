@@ -88,7 +88,7 @@ func (v *Version) String() string {
 
 // PubVer is Public-Key Packet Version
 func PubVer(ver byte) *Version {
-	return NewVersion(ver, 4., 5)
+	return NewVersion(ver, 4, 5)
 }
 
 // SigVer is Signiture Packet Version
