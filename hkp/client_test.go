@@ -15,7 +15,7 @@ func TestClient(t *testing.T) {
 		host string
 		uid  string
 	}{
-		{host: "keys.gnupg.net", uid: "0x44ce6900e2b307a4"},
+		{host: "keys.gnupg.net", uid: "0x69ECE048"},
 	}
 
 	for _, tc := range testCases {
@@ -29,12 +29,12 @@ func TestClient(t *testing.T) {
 	}
 }
 
-func TestClientErr2(t *testing.T) {
+func TestClientErr(t *testing.T) {
 	testCases := []struct {
 		host string
 		uid  string
 	}{
-		{host: "test.server", uid: "0x44ce6900e2b307a4"},
+		{host: "test.server", uid: "0x69ECE048"},
 	}
 
 	for _, tc := range testCases {
