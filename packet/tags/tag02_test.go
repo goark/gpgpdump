@@ -281,7 +281,8 @@ const (
 		Features (sub 30) (1 bytes)
 			07
 			Flag: Modification Detection (packets 18 and 19)
-			Flag: Unknown flag1(0x06)
+			Flag: AEAD Encrypted Data Packet (packet 20) and version 5 Symmetric-Key Encrypted Session Key Packets (packet 3)
+			Flag: Version 5 Public-Key Packet format and corresponding new fingerprint format
 		Key Server Preferences (sub 23) (1 bytes)
 			80
 			Flag: No-modify
