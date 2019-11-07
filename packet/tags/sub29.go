@@ -42,6 +42,11 @@ func (s *sub29) Parse() (*info.Item, error) {
 		name = reasonNames.Get(int(code), "Unknown reason")
 	}
 	rootInfo.Value = fmt.Sprintf("%s (%d)", name, code)
+
+	if s.reader.Rest() > 0 {
+		b, _ := s.reader.Read2EOF()
+		rootInfo.Add(values.NewText(b, "Additional information").ToItem(s.cxt.Debug()))
+	}
 	return rootInfo, nil
 }
 
