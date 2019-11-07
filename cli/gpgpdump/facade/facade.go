@@ -78,6 +78,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd.PersistentFlags().BoolP(options.LITERAL.String(), "l", false, "dumps literal packets (tag 11)")
 	rootCmd.PersistentFlags().BoolP(options.MARKER.String(), "m", false, "dumps marker packets (tag 10)")
 	rootCmd.PersistentFlags().BoolP(options.PRIVATE.String(), "p", false, "dumps private packets (tag 60-63)")
+	rootCmd.PersistentFlags().BoolP(options.CERT.String(), "c", false, "dumps attested certification in signature packets (tag 2)")
 	rootCmd.PersistentFlags().BoolP(options.UTC.String(), "u", false, "output with UTC time")
 
 	rootCmd.SilenceUsage = true

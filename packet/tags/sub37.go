@@ -17,10 +17,10 @@ func newSub37(cxt *context.Context, subID values.SuboacketID, body []byte) Subs 
 	return &sub37{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
-// Parse parsing Intended Recipient Fingerprint Sub-packet
+// Parse parsing Attested Certifications Sub-packet
 func (s *sub37) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
-	rootInfo.Add(values.RawData(s.reader, "certification digests", true))
+	rootInfo.Add(values.RawData(s.reader, "certification digests", s.cxt.Cert()))
 	return rootInfo, nil
 }
 
