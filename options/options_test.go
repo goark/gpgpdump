@@ -58,7 +58,7 @@ func TestCertOpt(t *testing.T) {
 
 func TestDebugOpt(t *testing.T) {
 	o := New(SetByString("DEBUG", true))
-	res := "armor:false,cert:false,debug:true,gdump:true,int:true,literal:true,marker:true,private:true,utc:false"
+	res := "armor:false,cert:true,debug:true,gdump:true,int:true,literal:true,marker:true,private:true,utc:false"
 	if o.String() != res {
 		t.Errorf("Options()  = %v, want %v.", o.String(), res)
 	}

@@ -98,7 +98,7 @@ func (o Options) Get(code OptCode) bool {
 func (o Options) Armor() bool { return o.Get(ARMOR) }
 
 //Cert return flag value of certFlag
-func (o Options) Cert() bool { return o.Get(CERT) }
+func (o Options) Cert() bool { return o.Get(CERT) || o.Get(DEBUG) }
 
 //Debug return flag value of debugFlag
 func (o Options) Debug() bool { return o.Get(DEBUG) }
