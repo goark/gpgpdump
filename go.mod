@@ -7,5 +7,5 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spiegel-im-spiegel/errs v0.3.2
 	github.com/spiegel-im-spiegel/gocli v0.10.1
-	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
+	golang.org/x/crypto v0.0.0-20191106202628-ed6320f186d4
 )

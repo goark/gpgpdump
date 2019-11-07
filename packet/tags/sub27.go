@@ -44,7 +44,8 @@ func (s *sub27) Parse() (*info.Item, error) {
 			return rootInfo, errs.Wrap(err, "illegal flag")
 		}
 		rootInfo.Add(values.Flag2Item(flag&0x04, "This key may be used as an additional decryption subkey (ADSK)."))
-		rootInfo.Add(values.Flag2Item(flag&0xfb, fmt.Sprintf("Unknown flag2(%#02x)", flag&0xfb)))
+		rootInfo.Add(values.Flag2Item(flag&0x08, "This key may be used for timestamping."))
+		rootInfo.Add(values.Flag2Item(flag&0xf3, fmt.Sprintf("Unknown flag2(%#02x)", flag&0xf3)))
 	}
 
 	//other flags

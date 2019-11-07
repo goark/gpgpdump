@@ -28,7 +28,9 @@ func (s *sub30) Parse() (*info.Item, error) {
 		return rootInfo, errs.Wrap(err, "illegal flag")
 	}
 	rootInfo.Add(values.Flag2Item(flag&0x01, "Modification Detection (packets 18 and 19)"))
-	rootInfo.Add(values.Flag2Item(flag&0xfe, fmt.Sprintf("Unknown flag1(%#02x)", flag&0xfe)))
+	rootInfo.Add(values.Flag2Item(flag&0x02, "AEAD Encrypted Data Packet (packet 20) and version 5 Symmetric-Key Encrypted Session Key Packets (packet 3)"))
+	rootInfo.Add(values.Flag2Item(flag&0x04, "Version 5 Public-Key Packet format and corresponding new fingerprint format"))
+	rootInfo.Add(values.Flag2Item(flag&0xf8, fmt.Sprintf("Unknown flag1(%#02x)", flag&0xf8)))
 	if s.reader.Rest() > 0 {
 		flags, _ := s.reader.Read2EOF()
 		for i, flag := range flags {
