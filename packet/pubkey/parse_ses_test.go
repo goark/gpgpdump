@@ -1,6 +1,9 @@
 package pubkey
 
 import (
+	"errors"
+	"fmt"
+	"io"
 	"testing"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/info"
@@ -37,11 +40,11 @@ const (
 	symmetric key (encoded) (48 bytes)
 		4a fe 88 a2 9f 0e ab f3 be 7a 89 27 32 38 b8 06 75 fc ac 3c d4 ba 0f 49 64 15 aa 48 9a db c1 8a 7b 11 76 fb 2f ef ef b0 29 a9 24 75 6d 69 12 4d
 `
-	pubkeySesResult18b = "\n"
-	pubkeySesResult18c = `
-	ECDH EC point (uncompressed format) (515 bits)
-		04 c3 e7 d7 2b af 25 2a 19 f6 27 80 ea 7c 4f 6d ca 61 22 5a e3 ad 0c fb d9 a2 d5 a4 30 9a f3 ee 34 54 ae a8 f6 46 ac 8a ae 38 a6 4f f3 f2 ee 30 40 62 5b 07 e7 2b ee 9a 90 d4 6f 1e d7 c3 26 21 ab
-`
+	// 	pubkeySesResult18b = "\n"
+	// 	pubkeySesResult18c = `
+	// 	ECDH EC point (uncompressed format) (515 bits)
+	// 		04 c3 e7 d7 2b af 25 2a 19 f6 27 80 ea 7c 4f 6d ca 61 22 5a e3 ad 0c fb d9 a2 d5 a4 30 9a f3 ee 34 54 ae a8 f6 46 ac 8a ae 38 a6 4f f3 f2 ee 30 40 62 5b 07 e7 2b ee 9a 90 d4 6f 1e d7 c3 26 21 ab
+	// `
 	pubkeySesResult19 = `
 	Multi-precision integers of ECDSA (3 bytes)
 		02 03 04
@@ -56,14 +59,15 @@ func TestPubkeySes(t *testing.T) {
 	testCases := []struct {
 		content []byte
 		res     string
+		err     error
 	}{
-		{content: pubkeySes16, res: pubkeySesResult16},
-		{content: pubkeySes17, res: pubkeySesResult17},
-		{content: pubkeySes18a, res: pubkeySesResult18a},
-		{content: pubkeySes18b, res: pubkeySesResult18b},
-		{content: pubkeySes18c, res: pubkeySesResult18c},
-		{content: pubkeySes19, res: pubkeySesResult19},
-		{content: pubkeySesUn, res: pubkeySesResultUnknown},
+		{content: pubkeySes16, res: pubkeySesResult16, err: nil},
+		{content: pubkeySes17, res: pubkeySesResult17, err: nil},
+		{content: pubkeySes18a, res: pubkeySesResult18a, err: nil},
+		{content: pubkeySes18b, res: "", err: io.ErrUnexpectedEOF},
+		{content: pubkeySes18c, res: "", err: io.ErrUnexpectedEOF},
+		{content: pubkeySes19, res: pubkeySesResult19, err: nil},
+		{content: pubkeySesUn, res: pubkeySesResultUnknown, err: nil},
 	}
 	for _, tc := range testCases {
 		parent := info.NewItem()
@@ -76,15 +80,20 @@ func TestPubkeySes(t *testing.T) {
 			options.Set(options.PRIVATE, true),
 			options.Set(options.UTC, true),
 		))
-		New(cxt, values.PubID(tc.content[0]), reader.New(tc.content[1:])).ParseSes(parent)
-		str := parent.String()
-		if str != tc.res {
-			t.Errorf("Parse() = \"%v\", want \"%v\".", str, tc.res)
+		if err := New(cxt, values.PubID(tc.content[0]), reader.New(tc.content[1:])).ParseSes(parent); !errors.Is(err, tc.err) {
+			t.Errorf("Parse() = \"%v\", want \"%v\".", err, tc.err)
+		} else if err != nil {
+			fmt.Printf("Info: %+v\n", err)
+		} else {
+			str := parent.String()
+			if str != tc.res {
+				t.Errorf("Parse() = \"%v\", want \"%v\".", str, tc.res)
+			}
 		}
 	}
 }
 
-/* Copyright 2016-2018 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

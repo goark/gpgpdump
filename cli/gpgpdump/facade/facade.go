@@ -72,6 +72,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd.PersistentFlags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
 	rootCmd.PersistentFlags().IntVarP(&indentSize, "indent", "", 0, "indent size for output string")
 	rootCmd.PersistentFlags().BoolP(options.ARMOR.String(), "a", false, "accepts ASCII input only")
+	rootCmd.PersistentFlags().BoolP(options.CERT.String(), "c", false, "dumps attested certification in signature packets (tag 2)")
 	rootCmd.PersistentFlags().BoolP(options.DEBUG.String(), "", false, "for debug") //not use
 	//rootCmd.PersistentFlags().BoolP(options.GDUMP.String(), "g", false, "selects alternate (GnuPG type) dump format") //not use
 	rootCmd.PersistentFlags().BoolP(options.INTEGER.String(), "i", false, "dumps multi-precision integers")
@@ -128,6 +129,7 @@ func getBool(cmd *cobra.Command, code options.OptCode) (options.OptCode, bool) {
 func parseOpt(cmd *cobra.Command) options.Options {
 	opts := options.New(
 		options.Set(getBool(cmd, options.ARMOR)),
+		options.Set(getBool(cmd, options.CERT)),
 		options.Set(getBool(cmd, options.DEBUG)), //for debug
 		//options.Set(getBool(cmd, options.GDUMP)), //not use
 		options.Set(getBool(cmd, options.INTEGER)),

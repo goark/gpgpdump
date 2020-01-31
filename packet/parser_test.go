@@ -286,7 +286,7 @@ const (
 			62 00 5a 19 0d e4 48 65 6c 6c 6f 20 77 6f 72 6c 64 0d 0a
 			Literal data format: b (binary)
 			File name (0 byte)
-			Modification time of a file: 2017-11-25T06:29:56Z
+			Creation time: 2017-11-25T06:29:56Z
 				5a 19 0d e4
 			Literal data (13 bytes)
 				48 65 6c 6c 6f 20 77 6f 72 6c 64 0d 0a
@@ -483,7 +483,7 @@ func TestNilParser(t *testing.T) {
 	}
 }
 
-/* Copyright 2017-2019 Spiegel
+/* Copyright 2017-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

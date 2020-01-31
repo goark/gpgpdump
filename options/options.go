@@ -9,7 +9,9 @@ import (
 type OptCode int
 
 const (
-	ARMOR   OptCode = iota //accepts ASCII input only
+	UNKNOWN OptCode = iota //unknown option
+	ARMOR                  //accepts ASCII input only
+	CERT                   //dumps attested certification in signature packets (tag 2)
 	DEBUG                  //for debug
 	GDUMP                  //selects alternate (GnuPG type) dump format (not used)
 	INTEGER                //dumps multi-precision integers
@@ -21,6 +23,7 @@ const (
 
 var optcodeMap = map[OptCode]string{
 	ARMOR:   "armor",
+	CERT:    "cert",
 	DEBUG:   "debug",
 	GDUMP:   "gdump",
 	INTEGER: "int",
@@ -37,7 +40,7 @@ func GetOptCode(s string) OptCode {
 			return k
 		}
 	}
-	return OptCode(-1)
+	return UNKNOWN
 }
 
 func (oc OptCode) String() string {
@@ -78,7 +81,7 @@ func SetByString(name string, f bool) OptFunc {
 
 //Set sets option to Options.
 func (o Options) Set(code OptCode, f bool) {
-	if code.integer() >= 0 {
+	if code.integer() > 0 {
 		o[code] = f
 	}
 }
@@ -93,6 +96,9 @@ func (o Options) Get(code OptCode) bool {
 
 //Armor return flag value of armorFlag
 func (o Options) Armor() bool { return o.Get(ARMOR) }
+
+//Cert return flag value of certFlag
+func (o Options) Cert() bool { return o.Get(CERT) || o.Get(DEBUG) }
 
 //Debug return flag value of debugFlag
 func (o Options) Debug() bool { return o.Get(DEBUG) }
@@ -118,11 +124,13 @@ func (o Options) UTC() bool { return o.Get(UTC) }
 //Stringer
 func (o Options) String() string {
 	strs := []string{}
-	for c := 0; c < len(optcodeMap); c++ {
+	for c := 1; c <= len(optcodeMap); c++ {
 		flag := false
 		switch OptCode(c) {
 		case ARMOR:
 			flag = o.Armor()
+		case CERT:
+			flag = o.Cert()
 		case DEBUG:
 			flag = o.Debug()
 		case GDUMP:

@@ -79,6 +79,7 @@ Available Commands:
 
 Flags:
   -a, --armor         accepts ASCII input only
+  -c, --cert          dumps attested certification in signiture packets (tag 2)
       --debug         for debug
   -f, --file string   path of OpenPGP file
   -h, --help          help for gpgpdump
@@ -248,6 +249,7 @@ Flags:
 
 Global Flags:
   -a, --armor        accepts ASCII input only
+  -c, --cert         dumps attested certification in signature packets (tag 2)
       --debug        for debug
       --indent int   indent size for output string
   -i, --int          dumps multi-precision integers
