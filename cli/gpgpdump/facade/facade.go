@@ -25,7 +25,7 @@ var (
 var (
 	usage = []string{ //output message of version
 		Name + " " + Version,
-		"Copyright 2016-2019 Spiegel (based on pgpdump by kazu-yamamoto)",
+		"Copyright 2016-2020 Spiegel (based on pgpdump by kazu-yamamoto)",
 		"Licensed under Apache License, Version 2.0",
 	}
 	versionFlag bool //version flag

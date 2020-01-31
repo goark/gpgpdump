@@ -10,6 +10,7 @@ import (
 
 var (
 	ut      = []byte{0x36, 0x5e, 0x72, 0x6e}
+	ut0     = []byte{0, 0, 0, 0}
 	rfc3339 = "1998-11-27T09:35:42Z"
 )
 
@@ -66,6 +67,21 @@ func TestFileTimeItem(t *testing.T) {
 	}
 	if itm.Value != rfc3339 {
 		t.Errorf("FileTimeItem() = \"%v\", want \"%v\".", itm.Value, rfc3339)
+	}
+}
+
+func TestFileTimeItemZero(t *testing.T) {
+	name := "Creation time"
+	dt, err := NewDateTime(reader.New(ut0), true) //UTC
+	if err != nil {
+		t.Errorf("NewDateTime() = \"%+v\", want nil error.", err)
+	}
+	itm := FileTimeItem(dt, true)
+	if itm.Name != name {
+		t.Errorf("FileTimeItem() = \"%v\", want \"%v\".", itm.Name, name)
+	}
+	if itm.Value != "null" {
+		t.Errorf("FileTimeItem() = \"%v\", want \"%v\".", itm.Value, "null")
 	}
 }
 

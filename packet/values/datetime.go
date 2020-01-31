@@ -69,7 +69,15 @@ func unixtime2RFC3339(ut uint32, utcFlag bool) string {
 
 //FileTimeItem returns UNIXTime instance for Modification time of a file
 func FileTimeItem(dt *DateTime, dumpFlag bool) *info.Item {
-	return dt.ToItem("Creation time", dumpFlag)
+	name := "Creation time"
+	if dt.IsZero() {
+		return info.NewItem(
+			info.Name(name),
+			info.Value("null"),
+			info.DumpStr(DumpBytes(dt.tm, dumpFlag).String()),
+		)
+	}
+	return dt.ToItem(name, dumpFlag)
 }
 
 //PubKeyTimeItem returns UNIXTime instance for Public key creation time
