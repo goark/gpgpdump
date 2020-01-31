@@ -9,7 +9,7 @@ import (
 )
 
 func TestVersionMin(t *testing.T) {
-	result := "gpgpdump dev-version\nCopyright 2016-2019 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n"
+	result := "gpgpdump dev-version\nCopyright 2016-2020 Spiegel (based on pgpdump by kazu-yamamoto)\nLicensed under Apache License, Version 2.0\n"
 
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)
