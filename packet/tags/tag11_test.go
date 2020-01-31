@@ -21,7 +21,7 @@ const (
 	62 00 5a 19 0d e4 48 65 6c 6c 6f 20 77 6f 72 6c 64 0d 0a
 	Literal data format: b (binary)
 	File name (0 byte)
-	Modification time of a file: 2017-11-25T06:29:56Z
+	Creation time: 2017-11-25T06:29:56Z
 		5a 19 0d e4
 	Literal data (13 bytes)
 		48 65 6c 6c 6f 20 77 6f 72 6c 64 0d 0a
@@ -31,7 +31,7 @@ const (
 	Literal data format: b (binary)
 	File name: hoge
 		68 6f 67 65
-	Modification time of a file: 1975-04-26T19:41:04Z
+	Creation time: 1975-04-26T19:41:04Z
 		0a 00 04 50
 	Literal data (35 bytes)
 		1b 24 42 3b 33 4b 5c 4f 42 49 27 24 47 24 39 21 23 1b 28 42 0a 1b 24 42 24 3d 24 6c 21 23 1b 28 42 0a 0a
@@ -79,7 +79,7 @@ func TestTag11(t *testing.T) {
 	}
 }
 
-/* Copyright 2017-2019 Spiegel
+/* Copyright 2017-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

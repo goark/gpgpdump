@@ -44,6 +44,14 @@ func (dt *DateTime) UnixTime() uint32 {
 	return binary.BigEndian.Uint32(dt.tm)
 }
 
+//IsZero returns true if UNIX time is zero value
+func (dt *DateTime) IsZero() bool {
+	if dt == nil {
+		return true
+	}
+	return dt.UnixTime() == 0
+}
+
 //RFC3339 returns string with RFC3339 format
 func (dt *DateTime) RFC3339() string {
 	if dt == nil {
@@ -61,7 +69,7 @@ func unixtime2RFC3339(ut uint32, utcFlag bool) string {
 
 //FileTimeItem returns UNIXTime instance for Modification time of a file
 func FileTimeItem(dt *DateTime, dumpFlag bool) *info.Item {
-	return dt.ToItem("Modification time of a file", dumpFlag)
+	return dt.ToItem("Creation time", dumpFlag)
 }
 
 //PubKeyTimeItem returns UNIXTime instance for Public key creation time
@@ -74,7 +82,7 @@ func SigTimeItem(dt *DateTime, dumpFlag bool) *info.Item {
 	return dt.ToItem("Signature creation time", dumpFlag)
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -40,10 +40,10 @@ func TestRFC3339NIl1(t *testing.T) {
 	}
 }
 
-func TestDateTimeNIl1(t *testing.T) {
+func TestDateTimeZero(t *testing.T) {
 	dt := (*DateTime)(nil)
-	if dt.UnixTime() != 0 {
-		t.Errorf("UnixTime() = %v, want 0.", dt.UnixTime())
+	if !dt.IsZero() {
+		t.Errorf("IsZero() = %v, want true.", dt.IsZero())
 	}
 }
 
@@ -55,7 +55,7 @@ func TestToItemNIl1(t *testing.T) {
 }
 
 func TestFileTimeItem(t *testing.T) {
-	name := "Modification time of a file"
+	name := "Creation time"
 	dt, err := NewDateTime(reader.New(ut), true) //UTC
 	if err != nil {
 		t.Errorf("NewDateTime() = \"%+v\", want nil error.", err)
@@ -99,7 +99,7 @@ func TestSigTimeItem(t *testing.T) {
 	}
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
