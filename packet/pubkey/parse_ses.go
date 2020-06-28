@@ -50,7 +50,7 @@ func (p *Pubkey) rsaSes(item *info.Item) error {
 	if err != nil {
 		return errs.Wrap(err, "")
 	}
-	item.Add(mpi.ToItem("RSA m^e mod n", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA m^e mod n; m = sym alg(1 byte) + checksum(2 bytes) + PKCS#1 block encoding EME-PKCS1-v1_5", p.cxt.Integer()))
 	return nil
 }
 
@@ -64,7 +64,7 @@ func (p *Pubkey) elgSes(item *info.Item) error {
 	if err != nil {
 		return errs.Wrap(err, "")
 	}
-	item.Add(mpi.ToItem("ElGamal m * y^k mod p", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ElGamal m * y^k mod p; m = sym alg(1 byte) + checksum(2 bytes) + PKCS#1 block encoding EME-PKCS1-v1_5", p.cxt.Integer()))
 	return nil
 }
 

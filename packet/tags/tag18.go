@@ -23,9 +23,9 @@ func (t *tag18) Parse() (*info.Item, error) {
 	itm := values.RawData(t.reader, "Encrypted data", t.cxt.Debug())
 	switch true {
 	case t.cxt.IsSymEnc():
-		itm.Value = "sym alg is specified in sym-key encrypted session key; plain text + MDC SHA1(20 bytes)"
+		itm.Note = "plain text + MDC SHA1(20 bytes); sym alg is specified in sym-key encrypted session key"
 	case t.cxt.IsPubEnc():
-		itm.Value = "sym alg is specified in pub-key encrypted session key"
+		itm.Note = "plain text + MDC SHA1(20 bytes); sym alg is specified in pub-key encrypted session key"
 	default:
 	}
 	rootInfo.Add(itm)
