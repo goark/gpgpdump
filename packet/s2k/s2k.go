@@ -29,7 +29,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 	}
 	ss, err := s.reader.ReadByte()
 	if err != nil {
-		return errs.Wrap(err, "invalid s2k ID")
+		return errs.New("invalid s2k ID", errs.WithCause(err))
 	}
 	s2kID := values.S2KID(ss)
 	itm := s2kID.ToItem(dumpFlag)
@@ -41,7 +41,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 		//0x03: Iterated and Salted S2K
 		hashid, err := s.reader.ReadByte()
 		if err != nil {
-			return errs.Wrap(err, "invalid hash ID")
+			return errs.New("invalid hash ID", errs.WithCause(err))
 		}
 		itm.Add(values.HashID(hashid).ToItem(dumpFlag))
 		if s2kID != 0x00 {
@@ -49,7 +49,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 			//0x03: Iterated and Salted S2K
 			salt, err := s.reader.ReadBytes(8)
 			if err != nil {
-				return errs.Wrap(err, "invalid salt ID")
+				return errs.New("invalid salt ID", errs.WithCause(err))
 			}
 			itm.Add(values.Salt(salt).ToItem(true))
 		}
@@ -57,7 +57,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 			//0x03: Iterated and Salted S2K
 			ct, err := s.reader.ReadByte()
 			if err != nil {
-				return errs.Wrap(err, "invalid stretch count ID")
+				return errs.New("invalid stretch count ID", errs.WithCause(err))
 			}
 			itm.Add(values.Stretch(ct).ToItem())
 		}
@@ -70,13 +70,13 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 		}
 		mrk, err := s.reader.ReadBytes(3)
 		if err != nil {
-			return errs.Wrap(err, "invalid gnu-div")
+			return errs.New("invalid gnu-div", errs.WithCause(err))
 		}
 		if bytes.Equal(mrk, []byte("GNU")) {
 			s.hasIV = false
 			n, err := s.reader.ReadByte()
 			if err != nil {
-				return errs.Wrap(err, "invalid gnu-div num")
+				return errs.New("invalid gnu-div num", errs.WithCause(err))
 			}
 			enum := 1000 + int(n)
 			gnu := info.NewItem(
@@ -86,11 +86,11 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 			if enum == 1002 {
 				l, err := s.reader.ReadByte()
 				if err != nil {
-					return errs.Wrap(err, "invalid gnu-div s/n size")
+					return errs.New("invalid gnu-div s/n size", errs.WithCause(err))
 				}
 				ser, err := s.reader.ReadBytes(int64(l))
 				if err != nil {
-					return errs.Wrap(err, "invalid gnu-div s/n")
+					return errs.New("invalid gnu-div s/n", errs.WithCause(err))
 				}
 				gnu.Add(info.NewItem(
 					info.Name("Serial Number"),
@@ -99,7 +99,7 @@ func (s *S2K) Parse(parent *info.Item, dumpFlag bool) error {
 			}
 			itm.Add(gnu)
 		} else if _, err := s.reader.Seek(-3, io.SeekCurrent); err != nil { //roll back
-			return errs.Wrap(err, "roll back error")
+			return errs.New("roll back error", errs.WithCause(err))
 		}
 	}
 	return nil
@@ -110,7 +110,7 @@ func (s *S2K) HasIV() bool {
 	return s.hasIV
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -26,7 +26,7 @@ func (s *sub27) Parse() (*info.Item, error) {
 	//First octet
 	flag, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal flag")
+		return rootInfo, errs.New("illegal flag", errs.WithCause(err))
 	}
 	rootInfo.Add(values.Flag2Item(flag&0x01, "This key may be used to certify other keys."))
 	rootInfo.Add(values.Flag2Item(flag&0x02, "This key may be used to sign data."))
@@ -41,7 +41,7 @@ func (s *sub27) Parse() (*info.Item, error) {
 	if s.reader.Rest() > 0 {
 		flag, err := s.reader.ReadByte()
 		if err != nil {
-			return rootInfo, errs.Wrap(err, "illegal flag")
+			return rootInfo, errs.New("illegal flag", errs.WithCause(err))
 		}
 		rootInfo.Add(values.Flag2Item(flag&0x04, "This key may be used as an additional decryption subkey (ADSK)."))
 		rootInfo.Add(values.Flag2Item(flag&0x08, "This key may be used for timestamping."))
@@ -58,7 +58,7 @@ func (s *sub27) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

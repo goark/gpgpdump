@@ -19,7 +19,7 @@ type Expire struct {
 func NewExpire(r *reader.Reader, start *DateTime) (*Expire, error) {
 	day, err := r.ReadBytes(4)
 	if err != nil {
-		return nil, errs.Wrap(err, "illegal body of Expire value")
+		return nil, errs.New("illegal body of Expire value", errs.WithCause(err))
 	}
 	return &Expire{start: start, day: day}, nil
 }
@@ -53,7 +53,7 @@ func KeyExpireItem(exp *Expire, dumpFlag bool) *info.Item {
 	return exp.ToItem("Key Expiration Time", dumpFlag)
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -27,12 +27,12 @@ func (s *sub01) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	l, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "")
+		return rootInfo, errs.Wrap(err)
 	}
 	length := binary.BigEndian.Uint16(l)
 	ver, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal version")
+		return rootInfo, errs.New("illegal version", errs.WithCause(err))
 	}
 	itm := info.NewItem(
 		info.Name("Version"),
@@ -47,7 +47,7 @@ func (s *sub01) Parse() (*info.Item, error) {
 		rootInfo.Add(itm)
 		enc, err := s.reader.ReadByte()
 		if err != nil {
-			return rootInfo, errs.Wrap(err, "illegal image encoding code")
+			return rootInfo, errs.New("illegal image encoding code", errs.WithCause(err))
 		}
 		itm = info.NewItem(
 			info.Name("Encoding"),
@@ -71,7 +71,7 @@ func (s *sub01) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

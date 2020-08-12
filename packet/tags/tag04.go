@@ -26,38 +26,38 @@ func (t *tag04) Parse() (*info.Item, error) {
 	// [00] one-octet version number
 	v, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal version")
+		return rootInfo, errs.New("illegal version", errs.WithCause(err))
 	}
 	version := values.OneSigVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 	// [01] one-octet signature type
 	sig, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal sigid")
+		return rootInfo, errs.New("illegal sigid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.SigID(sig).ToItem(t.cxt.Debug()))
 	// [02] one-octet number describing the hash algorithm used.
 	hashid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal hashid")
+		return rootInfo, errs.New("illegal hashid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.HashID(hashid).ToItem(t.cxt.Debug()))
 	// [03] one-octet number describing the public-key algorithm used.
 	pubid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal pubid")
+		return rootInfo, errs.New("illegal pubid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
 	// [04] eight-octet number holding the Key ID of the signing key.
 	keyid, err := t.reader.ReadBytes(8)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal keyid")
+		return rootInfo, errs.New("illegal keyid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.NewKeyID(keyid).ToItem())
 	// [12] one-octet number holding a flag showing whether the signature.
 	flag, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal flag")
+		return rootInfo, errs.New("illegal flag", errs.WithCause(err))
 	}
 	f := "other than one pass signature"
 	if flag == 0 {
@@ -75,7 +75,7 @@ func (t *tag04) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

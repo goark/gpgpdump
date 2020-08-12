@@ -56,10 +56,7 @@ func NewLiteralFname(r *reader.Reader, l int64) (*Text, error) {
 	}
 	data, err := r.ReadBytes(l)
 	if err != nil {
-		return nil, errs.Wrap(
-			err,
-			fmt.Sprintf("illegal file name of literal packet (length: %d bytes)", l),
-		)
+		return nil, errs.New(fmt.Sprintf("illegal file name of literal packet (length: %d bytes)", l), errs.WithCause(err))
 	}
 	return NewText(data, name), nil
 }
@@ -109,7 +106,7 @@ func RawData(r *reader.Reader, name string, dumpFlag bool) *info.Item {
 	)
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -31,7 +31,7 @@ func (t *Tag08) Parse() (*info.Item, error) {
 	rootInfo := t.ToItem()
 	compID, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal compID")
+		return rootInfo, errs.New("illegal compID", errs.WithCause(err))
 	}
 	cid := values.CompID(compID)
 	rootInfo.Add(cid.ToItem(t.cxt.Debug()))
@@ -44,7 +44,7 @@ func (t *Tag08) Parse() (*info.Item, error) {
 			var zd []byte
 			zd, err = t.reader.Read2EOF()
 			if err != nil {
-				return rootInfo, errs.Wrap(err, "illegal compressed data")
+				return rootInfo, errs.New("illegal compressed data", errs.WithCause(err))
 			}
 			t.data = bytes.NewReader(zd)
 		case 1: //zip <RFC1951>
@@ -55,7 +55,7 @@ func (t *Tag08) Parse() (*info.Item, error) {
 			t.data, err = t.extractBzip2()
 		default:
 		}
-		return rootInfo, errs.Wrap(err, "")
+		return rootInfo, errs.Wrap(err)
 	}
 	return rootInfo, nil
 }
@@ -68,22 +68,22 @@ func (t *Tag08) Reader() io.Reader {
 func (t *Tag08) extractZip() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
 	}
 	zr := flate.NewReader(bytes.NewReader(zd))
 	buf := new(bytes.Buffer)
 	_, err = io.Copy(buf, zr)
-	return buf, errs.Wrap(err, "")
+	return buf, errs.Wrap(err)
 }
 
 func (t *Tag08) extractZLib() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
 	}
 	zr, err := zlib.NewReader(bytes.NewReader(zd))
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
 	}
 	buf := new(bytes.Buffer)
 	_, err = io.Copy(buf, zr)
@@ -93,15 +93,15 @@ func (t *Tag08) extractZLib() (io.Reader, error) {
 func (t *Tag08) extractBzip2() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
 	}
 	zr := bzip2.NewReader(bytes.NewReader(zd))
 	buf := new(bytes.Buffer)
 	_, err = io.Copy(buf, zr)
-	return buf, errs.Wrap(err, "")
+	return buf, errs.Wrap(err)
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

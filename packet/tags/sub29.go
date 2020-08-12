@@ -34,7 +34,7 @@ func (s *sub29) Parse() (*info.Item, error) {
 	code, err := s.reader.ReadByte()
 	var name string
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal Reason code")
+		return rootInfo, errs.New("illegal Reason code", errs.WithCause(err))
 	}
 	if 100 <= code && code <= 110 {
 		name = "(Private Use)"
@@ -50,7 +50,7 @@ func (s *sub29) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

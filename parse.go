@@ -14,7 +14,7 @@ import (
 func Parse(r io.Reader, o options.Options) (*info.Info, error) {
 	parser, err := packet.NewParser(r, o)
 	if err != nil {
-		return nil, errs.Wrap(err, "")
+		return nil, errs.Wrap(err)
 	}
 	return parser.Parse()
 }
@@ -24,7 +24,7 @@ func ParseByte(data []byte, o options.Options) (*info.Info, error) {
 	return Parse(bytes.NewReader(data), o)
 }
 
-/* Copyright 2017 Spiegel
+/* Copyright 2017-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

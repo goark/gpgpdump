@@ -27,28 +27,28 @@ func (t *tag20) Parse() (*info.Item, error) {
 	//A one-octet version number.  The only currently defined value is 1.
 	v, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal version")
+		return rootInfo, errs.New("illegal version", errs.WithCause(err))
 	}
 	version := values.AEADVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 	//A one-octet cipher algorithm.
 	alg, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal symid")
+		return rootInfo, errs.New("illegal symid", errs.WithCause(err))
 	}
 	symid := values.SymID(alg)
 	rootInfo.Add(symid.ToItem(t.cxt.Debug()))
 	//A one-octet AEAD algorithm.
 	alg, err = t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal aeadid")
+		return rootInfo, errs.New("illegal aeadid", errs.WithCause(err))
 	}
 	aeadid := values.AEADID(alg)
 	rootInfo.Add(aeadid.ToItem(t.cxt.Debug()))
 	//A one-octet chunk size.
 	c, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal chunk size")
+		return rootInfo, errs.New("illegal chunk size", errs.WithCause(err))
 	}
 	chunkSize := uint64(1) << (c + 6)
 	rootInfo.Add(info.NewItem(
@@ -73,10 +73,7 @@ func (t *tag20) iv(aeadid values.AEADID) (*info.Item, error) {
 	sz64 := int64(aeadid.IVLen())
 	iv, err := t.reader.ReadBytes(sz64)
 	if err != nil {
-		return nil, errs.Wrap(
-			err,
-			fmt.Sprintf("illegal initialization vector (length: %d bytes)", sz64),
-		)
+		return nil, errs.New(fmt.Sprintf("illegal initialization vector (length: %d bytes)", sz64), errs.WithCause(err))
 	}
 	return info.NewItem(
 		info.Name("IV"),
@@ -96,7 +93,7 @@ func (t *tag20) iv(aeadid values.AEADID) (*info.Item, error) {
 // 	), nil
 // }
 
-/* Copyright 2018,2019 Spiegel
+/* Copyright 2018-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -21,10 +21,10 @@ func newTag07(cxt *context.Context, tag values.TagID, body []byte) Tags {
 // Parse parsing Secret-Subkey Packet
 func (t *tag07) Parse() (*info.Item, error) {
 	item, err := newTag05(t.cxt, t.tag, t.reader.GetBody()).Parse() //redirect to Tag05
-	return item, errs.Wrap(err, "")
+	return item, errs.Wrap(err)
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

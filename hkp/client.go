@@ -31,23 +31,23 @@ func (c *Client) Get(userID string) ([]byte, error) {
 	u.RawQuery = values.Encode()
 	req, err := http.NewRequestWithContext(c.ctx, "GET", u.String(), nil)
 	if err != nil {
-		return nil, errs.Wrap(err, "", errs.WithContext("url", u.String()))
+		return nil, errs.Wrap(err, errs.WithContext("url", u.String()))
 	}
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, errs.Wrap(err, "", errs.WithContext("url", u.String()))
+		return nil, errs.Wrap(err, errs.WithContext("url", u.String()))
 	}
 	defer resp.Body.Close()
 
 	if !(resp.StatusCode != 0 && resp.StatusCode < http.StatusBadRequest) {
-		return nil, errs.Wrap(ecode.ErrHTTPStatus, "", errs.WithContext("url", u.String()), errs.WithContext("status", resp.Status))
+		return nil, errs.Wrap(ecode.ErrHTTPStatus, errs.WithContext("url", u.String()), errs.WithContext("status", resp.Status))
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, errs.Wrap(err, "", errs.WithContext("url", u.String()))
+		return nil, errs.Wrap(err, errs.WithContext("url", u.String()))
 	}
-	return body, errs.Wrap(hasASCIIArmorText(body), "", errs.WithContext("url", u.String()))
+	return body, errs.Wrap(hasASCIIArmorText(body), errs.WithContext("url", u.String()))
 }
 
 func hasASCIIArmorText(body []byte) error {
@@ -69,7 +69,7 @@ func hasASCIIArmorText(body []byte) error {
 	return nil
 }
 
-/* Copyright 2019 Spiegel
+/* Copyright 2019,2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

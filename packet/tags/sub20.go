@@ -26,7 +26,7 @@ func (s *sub20) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	flags, err := s.reader.ReadBytes(8)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal flags")
+		return rootInfo, errs.New("illegal flags", errs.WithCause(err))
 	}
 	human := flags[0] & 0x80
 	rootInfo.Add(values.Flag2Item(human, "Human-readable"))
@@ -37,26 +37,20 @@ func (s *sub20) Parse() (*info.Item, error) {
 
 	nameLength, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal length of name")
+		return rootInfo, errs.New("illegal length of name", errs.WithCause(err))
 	}
 	valueLength, err := s.reader.ReadBytes(2)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal length of value")
+		return rootInfo, errs.New("illegal length of value", errs.WithCause(err))
 	}
 	name, err := s.reader.ReadBytes(int64(binary.BigEndian.Uint16(nameLength)))
 	if err != nil {
-		return rootInfo, errs.Wrap(
-			err,
-			fmt.Sprintf("illegal name (length: %d bytes)", nameLength),
-		)
+		return rootInfo, errs.New(fmt.Sprintf("illegal name (length: %d bytes)", nameLength), errs.WithCause(err))
 	}
 	rootInfo.Add(values.NewText(name, "Name").ToItem(s.cxt.Debug()))
 	value, err := s.reader.ReadBytes(int64(binary.BigEndian.Uint16(valueLength)))
 	if err != nil {
-		return rootInfo, errs.Wrap(
-			err,
-			fmt.Sprintf("illegal value (length: %d bytes)", valueLength),
-		)
+		return rootInfo, errs.New(fmt.Sprintf("illegal value (length: %d bytes)", valueLength), errs.WithCause(err))
 	}
 	if human != 0x00 {
 		//human readable data (text)
@@ -71,7 +65,7 @@ func (s *sub20) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

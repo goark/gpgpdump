@@ -27,24 +27,24 @@ func (t *tag01) Parse() (*info.Item, error) {
 	// [00] one-octet number giving the version number of the packet type.
 	ver, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal version")
+		return rootInfo, errs.New("illegal version", errs.WithCause(err))
 	}
 	rootInfo.Add(values.PubSessKeyVer(ver).ToItem(t.cxt.Debug()))
 	// [01] eight-octet number that gives the Key ID of the public key to which the session key is encrypted.
 	keyid, err := t.reader.ReadBytes(8)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal keyid")
+		return rootInfo, errs.New("illegal keyid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.NewKeyID(keyid).ToItem())
 	// [09] one-octet number giving the public-key algorithm used.
 	pubid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal pubid")
+		return rootInfo, errs.New("illegal pubid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
 	// [10] string of octets that is the encrypted session key.
 	if err := pubkey.New(t.cxt, values.PubID(pubid), t.reader).ParseSes(rootInfo); err != nil {
-		return rootInfo, errs.Wrap(err, "")
+		return rootInfo, errs.Wrap(err)
 	}
 
 	if t.reader.Rest() > 0 {
@@ -53,7 +53,7 @@ func (t *tag01) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

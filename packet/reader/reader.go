@@ -25,11 +25,7 @@ func (r *Reader) Read(p []byte) (int, error) {
 	pl := len(p)
 	b, err := r.ReadBytes(int64(pl))
 	if err != nil {
-		return 0, errs.Wrap(
-			err,
-			"",
-			errs.WithContext("length", pl),
-		)
+		return 0, errs.Wrap(err, errs.WithContext("length", pl))
 	}
 	copy(p, b)
 	return pl, nil
@@ -38,27 +34,19 @@ func (r *Reader) Read(p []byte) (int, error) {
 //ReadAt returns []byte data from off pinter (io.ReaderAt compatible)
 func (r *Reader) ReadAt(p []byte, off int64) (int, error) {
 	if _, err := r.Seek(off, io.SeekStart); err != nil {
-		return 0, errs.Wrap(
-			err,
-			"",
-			errs.WithContext("off", off),
-		)
+		return 0, errs.Wrap(err, errs.WithContext("off", off))
 	}
 	pl, err := r.Read(p)
-	return pl, errs.Wrap(
-		err,
-		"",
-		errs.WithContext("off", off),
-	)
+	return pl, errs.Wrap(err, errs.WithContext("off", off))
 }
 
 //ReadByte returns byte data (io.ByteReader compatible)
 func (r *Reader) ReadByte() (byte, error) {
 	b, err := r.ReadBytes(1)
 	if len(b) == 0 {
-		return byte(0), errs.Wrap(err, "")
+		return byte(0), errs.Wrap(err)
 	}
-	return b[0], errs.Wrap(err, "")
+	return b[0], errs.Wrap(err)
 }
 
 //WriteTo is copying buffer to io.Writer (io.WriterTo compatible)
@@ -67,7 +55,7 @@ func (r *Reader) WriteTo(w io.Writer) (int64, error) {
 	if err == nil {
 		r.offset = r.Size()
 	}
-	return size, errs.Wrap(err, "")
+	return size, errs.Wrap(err)
 }
 
 //Seek is changing offset in buffer (io.Seeker compatible)
@@ -84,7 +72,6 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 	default: //error ?
 		return r.offset, errs.Wrap(
 			ecode.ErrInvalidWhence,
-			"",
 			errs.WithContext("offset", offset),
 			errs.WithContext("whence", whence),
 		)
@@ -93,7 +80,6 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 	if origin < 0 || origin > rl {
 		return r.offset, errs.Wrap(
 			ecode.ErrInvalidOffset,
-			"",
 			errs.WithContext("offset", offset),
 			errs.WithContext("whence", whence),
 		)
@@ -124,18 +110,10 @@ func (r *Reader) ReadBytes(size int64) ([]byte, error) {
 	}
 	rl := r.Size()
 	if r.offset >= rl {
-		return nil, errs.Wrap(
-			io.EOF,
-			"",
-			errs.WithContext("size", size),
-		)
+		return nil, errs.Wrap(io.EOF, errs.WithContext("size", size))
 	}
 	if r.offset+size > rl {
-		return nil, errs.Wrap(
-			io.ErrUnexpectedEOF,
-			"",
-			errs.WithContext("size", size),
-		)
+		return nil, errs.Wrap(io.ErrUnexpectedEOF, errs.WithContext("size", size))
 	}
 	b := r.buffer[r.offset : r.offset+size]
 	r.offset += size
@@ -146,7 +124,7 @@ func (r *Reader) ReadBytes(size int64) ([]byte, error) {
 func (r *Reader) Read2EOF() ([]byte, error) {
 	rl := r.Size()
 	if r.offset >= rl {
-		return nil, errs.Wrap(io.EOF, "")
+		return nil, errs.Wrap(io.EOF)
 	}
 	b := r.buffer[r.offset:]
 	r.offset += rl
@@ -174,7 +152,7 @@ func (r *Reader) DumpString(off int64) string {
 	return string(buf)
 }
 
-/* Copyright 2017-2019 Spiegel
+/* Copyright 2017-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

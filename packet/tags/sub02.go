@@ -23,7 +23,7 @@ func (s *sub02) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	tm, err := values.NewDateTime(s.reader, s.cxt.UTC())
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal Signature Creation Time")
+		return rootInfo, errs.New("illegal Signature Creation Time", errs.WithCause(err))
 	}
 	sigTime := values.SigTimeItem(tm, s.cxt.Debug())
 	sigTime.Name = rootInfo.Name
@@ -31,7 +31,7 @@ func (s *sub02) Parse() (*info.Item, error) {
 	return sigTime, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

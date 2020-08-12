@@ -28,17 +28,14 @@ var oidList = map[string][]byte{
 func NewOID(r *reader.Reader) (OID, error) {
 	length, err := r.ReadByte()
 	if err != nil {
-		return nil, errs.Wrap(err, "")
+		return nil, errs.Wrap(err)
 	}
 	if length == 0 {
 		return nil, nil
 	}
 	oid, err := r.ReadBytes(int64(length))
 	if err != nil {
-		return nil, errs.Wrap(
-			err,
-			fmt.Sprintf("length of ECC OID: %v", length),
-		)
+		return nil, errs.New(fmt.Sprintf("length of ECC OID: %v", length), errs.WithCause(err))
 	}
 	return oid, err
 }
@@ -76,10 +73,7 @@ func NewECParm(r *reader.Reader) (ECParm, error) {
 	}
 	buf, err := r.ReadBytes(int64(length))
 	if err != nil {
-		return nil, errs.Wrap(
-			err,
-			fmt.Sprintf("length of ECParm body: %v", length),
-		)
+		return nil, errs.New(fmt.Sprintf("length of ECParm body: %v", length), errs.WithCause(err))
 	}
 	return buf, nil
 }
@@ -111,7 +105,7 @@ func (f ECCPointCompFlag) String() string {
 	return eccPointCompFlagNames.Get(int(f), Unknown)
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
