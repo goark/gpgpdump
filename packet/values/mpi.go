@@ -19,16 +19,13 @@ type MPI struct {
 func NewMPI(r *reader.Reader) (*MPI, error) {
 	length, err := r.ReadBytes(2)
 	if err != nil {
-		return nil, errs.Wrap(err, "illegal length of MPI value")
+		return nil, errs.New("illegal length of MPI value", errs.WithCause(err))
 	}
 	bitLength := binary.BigEndian.Uint16(length)
 	byteLength := (int64(bitLength) + 7) / 8
 	data, err := r.ReadBytes(byteLength)
 	if err != nil {
-		return nil, errs.Wrap(
-			err,
-			fmt.Sprintf("illegal body of MPI value (length: %d bits, %d bytes)", bitLength, byteLength),
-		)
+		return nil, errs.New(fmt.Sprintf("illegal body of MPI value (length: %d bits, %d bytes)", bitLength, byteLength), errs.WithCause(err))
 	}
 	return &MPI{bitLength: bitLength, data: data}, nil
 }
@@ -56,7 +53,7 @@ func (mpi *MPI) ToItem(name string, dumpFlag bool) *info.Item {
 	)
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

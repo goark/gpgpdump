@@ -56,12 +56,12 @@ func (p *Pubkey) ParseSecEnc(parent *info.Item) error {
 		))
 	}
 	if _, err := p.reader.Seek(0, io.SeekEnd); err != nil { //skip to EOF
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	return nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

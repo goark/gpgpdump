@@ -23,17 +23,17 @@ func (t *tag17) Parse() (*info.Item, error) {
 	rootInfo := t.ToItem()
 	subpcket, err := newSubparser(t.cxt, t.tag, "Subpacket", t.reader.GetBody())
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal subpacket")
+		return rootInfo, errs.New("illegal subpacket", errs.WithCause(err))
 	}
 	itm, err := subpcket.Parse()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "")
+		return rootInfo, errs.Wrap(err)
 	}
 	rootInfo.Add(itm)
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

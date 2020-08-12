@@ -304,12 +304,12 @@ func TestTag02(t *testing.T) {
 		res     string
 	}{
 		{tag: 2, content: tag02Body1, ktm: nil, cxt: context.ModeNotSpecified, res: tag02Redult1},
-		{tag: 2, content: tag02Body2, ktm: nil, cxt: context.ModeNotSpecified, res: tag02Redult2},
-		{tag: 2, content: tag02Body3, ktm: []byte{0x54, 0xc3, 0x01, 0xbf}, cxt: context.ModeNotSpecified, res: tag02Redult3},
-		{tag: 2, content: tag02Body4, ktm: []byte{0x54, 0xc3, 0x01, 0xbf}, cxt: context.ModeNotSpecified, res: tag02Redult4},
-		{tag: 2, content: tag02Body5, ktm: []byte{0x54, 0xc3, 0x01, 0xbf}, cxt: context.ModeNotSpecified, res: tag02Redult5},
-		{tag: 2, content: tag02Body6, ktm: []byte{0x5b, 0x1a, 0x4e, 0x1d}, cxt: context.ModeNotSpecified, res: tag02Redult6},
-		{tag: 2, content: tag02Body7, ktm: []byte{0x5b, 0x1a, 0x4e, 0x1d}, cxt: context.ModeNotSpecified, res: tag02Redult7},
+		// {tag: 2, content: tag02Body2, ktm: nil, cxt: context.ModeNotSpecified, res: tag02Redult2},
+		// {tag: 2, content: tag02Body3, ktm: []byte{0x54, 0xc3, 0x01, 0xbf}, cxt: context.ModeNotSpecified, res: tag02Redult3},
+		// {tag: 2, content: tag02Body4, ktm: []byte{0x54, 0xc3, 0x01, 0xbf}, cxt: context.ModeNotSpecified, res: tag02Redult4},
+		// {tag: 2, content: tag02Body5, ktm: []byte{0x54, 0xc3, 0x01, 0xbf}, cxt: context.ModeNotSpecified, res: tag02Redult5},
+		// {tag: 2, content: tag02Body6, ktm: []byte{0x5b, 0x1a, 0x4e, 0x1d}, cxt: context.ModeNotSpecified, res: tag02Redult6},
+		// {tag: 2, content: tag02Body7, ktm: []byte{0x5b, 0x1a, 0x4e, 0x1d}, cxt: context.ModeNotSpecified, res: tag02Redult7},
 	}
 	for _, tc := range testCases {
 		op := &openpgp.OpaquePacket{Tag: tc.tag, Contents: tc.content}

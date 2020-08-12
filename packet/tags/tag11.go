@@ -25,31 +25,28 @@ func (t *tag11) Parse() (*info.Item, error) {
 	rootInfo := t.ToItem()
 	f, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal format")
+		return rootInfo, errs.New("illegal format", errs.WithCause(err))
 	}
 	rootInfo.Add(values.LiteralFormat(f).ToItem())
 	flen, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal length of file name")
+		return rootInfo, errs.New("illegal length of file name", errs.WithCause(err))
 	}
 	fname, err := values.NewLiteralFname(t.reader, int64(flen))
 	if err != nil {
-		return rootInfo, errs.Wrap(
-			err,
-			fmt.Sprintf("illegal file name (length: %d bytes)", int64(flen)),
-		)
+		return rootInfo, errs.New(fmt.Sprintf("illegal file name (length: %d bytes)", int64(flen)), errs.WithCause(err))
 	}
 	rootInfo.Add(fname.ToItem(t.cxt.Literal()))
 	ftime, err := values.NewDateTime(t.reader, t.cxt.UTC())
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal timestump of file")
+		return rootInfo, errs.New("illegal timestump of file", errs.WithCause(err))
 	}
 	rootInfo.Add(values.FileTimeItem(ftime, t.cxt.Debug()))
 	rootInfo.Add(values.RawData(t.reader, "Literal data", t.cxt.Literal()))
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

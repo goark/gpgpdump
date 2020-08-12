@@ -12,17 +12,17 @@ import (
 func (p *Pubkey) ParsePub(parent *info.Item) error {
 	switch true {
 	case p.pubID.IsRSA():
-		return errs.Wrap(p.rsaPub(parent), "")
+		return errs.Wrap(p.rsaPub(parent))
 	case p.pubID.IsDSA():
-		return errs.Wrap(p.dsaPub(parent), "")
+		return errs.Wrap(p.dsaPub(parent))
 	case p.pubID.IsElgamal():
-		return errs.Wrap(p.elgPub(parent), "")
+		return errs.Wrap(p.elgPub(parent))
 	case p.pubID.IsECDH():
-		return errs.Wrap(p.ecdhPub(parent), "")
+		return errs.Wrap(p.ecdhPub(parent))
 	case p.pubID.IsECDSA():
-		return errs.Wrap(p.ecdsaPub(parent), "")
+		return errs.Wrap(p.ecdsaPub(parent))
 	case p.pubID.IsEdDSA():
-		return errs.Wrap(p.eddsaPub(parent), "")
+		return errs.Wrap(p.eddsaPub(parent))
 	default:
 		parent.Add(info.NewItem(
 			info.Name(fmt.Sprintf("Multi-precision integers of Unknown (pub %d)", p.pubID)),
@@ -36,12 +36,12 @@ func (p *Pubkey) ParsePub(parent *info.Item) error {
 func (p *Pubkey) rsaPub(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("RSA public modulus n", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("RSA public encryption exponent e", p.cxt.Integer()))
 	return nil
@@ -50,22 +50,22 @@ func (p *Pubkey) rsaPub(item *info.Item) error {
 func (p *Pubkey) dsaPub(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("DSA p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("DSA q (q is a prime divisor of p-1)", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("DSA g", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("DSA y (= g^x mod p where x is secret)", p.cxt.Integer()))
 	return nil
@@ -74,19 +74,19 @@ func (p *Pubkey) dsaPub(item *info.Item) error {
 func (p *Pubkey) elgPub(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("ElGamal prime p", p.cxt.Integer()))
 
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("ElGamal group generator g", p.cxt.Integer()))
 
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("ElGamal public key value y (= g^x mod p where x is secret)", p.cxt.Integer()))
 	return nil
@@ -95,13 +95,13 @@ func (p *Pubkey) elgPub(item *info.Item) error {
 func (p *Pubkey) ecdhPub(item *info.Item) error {
 	oid, err := values.NewOID(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(oid.ToItem(true)) //enable dump data
 
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	flag := values.ECCPointCompFlag(0xff)
 	if body := mpi.Rawdata(); len(body) > 0 {
@@ -111,7 +111,7 @@ func (p *Pubkey) ecdhPub(item *info.Item) error {
 
 	ep, err := values.NewECParm(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	i := ep.ToItem("KDF parameters", p.cxt.Integer())
 	ln := len(ep)
@@ -138,13 +138,13 @@ func (p *Pubkey) ecdhPub(item *info.Item) error {
 func (p *Pubkey) ecdsaPub(item *info.Item) error {
 	oid, err := values.NewOID(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(oid.ToItem(true)) //enable dump data
 
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	flag := values.ECCPointCompFlag(0xff)
 	if body := mpi.Rawdata(); len(body) > 0 {
@@ -157,13 +157,13 @@ func (p *Pubkey) ecdsaPub(item *info.Item) error {
 func (p *Pubkey) eddsaPub(item *info.Item) error {
 	oid, err := values.NewOID(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(oid.ToItem(true)) //enable dump data
 
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	flag := values.ECCPointCompFlag(0xff)
 	if body := mpi.Rawdata(); len(body) > 0 {
@@ -173,7 +173,7 @@ func (p *Pubkey) eddsaPub(item *info.Item) error {
 	return nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

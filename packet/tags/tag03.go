@@ -26,7 +26,7 @@ func (t *tag03) Parse() (*info.Item, error) {
 	// [00] one-octet version number
 	v, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal version")
+		return rootInfo, errs.New("illegal version", errs.WithCause(err))
 	}
 	version := values.SymSessKeyVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
@@ -34,12 +34,12 @@ func (t *tag03) Parse() (*info.Item, error) {
 	if version.IsCurrent() {
 		_, err := t.parseV4(rootInfo)
 		if err != nil {
-			return rootInfo, errs.Wrap(err, "")
+			return rootInfo, errs.Wrap(err)
 		}
 	} else if version.IsDraft() {
 		_, err := t.parseV5(rootInfo)
 		if err != nil {
-			return rootInfo, errs.Wrap(err, "")
+			return rootInfo, errs.Wrap(err)
 		}
 	}
 
@@ -54,13 +54,13 @@ func (t *tag03) parseV4(rootInfo *info.Item) (*info.Item, error) {
 	// [01] one-octet number describing the symmetric algorithm used.
 	symid, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal symid")
+		return rootInfo, errs.New("illegal symid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.SymID(symid).ToItem(t.cxt.Debug()))
 	// [02] string-to-key (S2K) specifier
 	s2k := s2k.New(t.reader)
 	if err := s2k.Parse(rootInfo, t.cxt.Debug()); err != nil {
-		return rootInfo, errs.Wrap(err, "illegal s2k")
+		return rootInfo, errs.New("illegal s2k", errs.WithCause(err))
 	}
 	return rootInfo, nil
 }
@@ -76,7 +76,7 @@ func (t *tag03) parseV5(rootInfo *info.Item) (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

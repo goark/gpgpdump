@@ -12,7 +12,7 @@ import (
 func (p *Pubkey) ParseSes(parent *info.Item) error {
 	switch true {
 	case p.pubID.IsRSA():
-		return errs.Wrap(p.rsaSes(parent), "")
+		return errs.Wrap(p.rsaSes(parent))
 	case p.pubID.IsDSA():
 		parent.Add(info.NewItem(
 			info.Name("Multi-precision integers of DSA"),
@@ -20,9 +20,9 @@ func (p *Pubkey) ParseSes(parent *info.Item) error {
 			info.DumpStr(values.Dump(p.reader, p.cxt.Debug()).String()),
 		))
 	case p.pubID.IsElgamal():
-		return errs.Wrap(p.elgSes(parent), "")
+		return errs.Wrap(p.elgSes(parent))
 	case p.pubID.IsECDH():
-		return errs.Wrap(p.ecdhSes(parent), "")
+		return errs.Wrap(p.ecdhSes(parent))
 	case p.pubID.IsECDSA():
 		parent.Add(info.NewItem(
 			info.Name("Multi-precision integers of ECDSA"),
@@ -48,30 +48,30 @@ func (p *Pubkey) ParseSes(parent *info.Item) error {
 func (p *Pubkey) rsaSes(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
-	item.Add(mpi.ToItem("RSA m^e mod n", p.cxt.Integer()))
+	item.Add(mpi.ToItem("RSA m^e mod n; m = sym alg(1 byte) + checksum(2 bytes) + PKCS#1 block encoding EME-PKCS1-v1_5", p.cxt.Integer()))
 	return nil
 }
 
 func (p *Pubkey) elgSes(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(mpi.ToItem("ElGamal g^k mod p", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
-	item.Add(mpi.ToItem("ElGamal m * y^k mod p", p.cxt.Integer()))
+	item.Add(mpi.ToItem("ElGamal m * y^k mod p; m = sym alg(1 byte) + checksum(2 bytes) + PKCS#1 block encoding EME-PKCS1-v1_5", p.cxt.Integer()))
 	return nil
 }
 
 func (p *Pubkey) ecdhSes(item *info.Item) error {
 	mpi, err := values.NewMPI(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	flag := values.ECCPointCompFlag(0xff)
 	if body := mpi.Rawdata(); len(body) > 0 {
@@ -81,13 +81,13 @@ func (p *Pubkey) ecdhSes(item *info.Item) error {
 
 	ep, err := values.NewECParm(p.reader)
 	if err != nil {
-		return errs.Wrap(err, "")
+		return errs.Wrap(err)
 	}
 	item.Add(ep.ToItem("symmetric key (encoded)", p.cxt.Integer()))
 	return nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

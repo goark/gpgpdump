@@ -23,19 +23,19 @@ func (s *sub31) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	pubid, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal pubid")
+		return rootInfo, errs.New("illegal pubid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.PubID(pubid).ToItem(s.cxt.Debug()))
 	hashid, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal hashid")
+		return rootInfo, errs.New("illegal hashid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.HashID(hashid).ToItem(s.cxt.Debug()))
 	rootInfo.Add(values.RawData(s.reader, "Hash", true))
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

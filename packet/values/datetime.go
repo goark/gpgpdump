@@ -19,7 +19,7 @@ type DateTime struct {
 func NewDateTime(r *reader.Reader, utcFlag bool) (*DateTime, error) {
 	tm, err := r.ReadBytes(4)
 	if err != nil {
-		return nil, errs.Wrap(err, "illegal body of DateTime value")
+		return nil, errs.New("illegal body of DateTime value", errs.WithCause(err))
 	}
 	return &DateTime{tm: tm, utcFlag: utcFlag}, nil
 }

@@ -43,7 +43,7 @@ func (i *Info) TOML(indent int) (io.Reader, error) {
 		encoder.Indent = strings.Repeat(" ", indent)
 	}
 	if err := encoder.Encode(i); err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
 	}
 	return buf, nil
 }
@@ -59,7 +59,7 @@ func (i *Info) JSON(indent int) (io.Reader, error) {
 		encoder.SetIndent("", strings.Repeat(" ", indent))
 	}
 	if err := encoder.Encode(i); err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err, "")
+		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
 	}
 	return buf, nil
 }
@@ -174,7 +174,7 @@ func (i *Item) String() string {
 	return buf.String()
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -30,7 +30,7 @@ func newSeckey(cxt *context.Context, reader *reader.Reader, pubVer *values.Versi
 func (p *seckeyInfo) Parse(parent *info.Item) error {
 	usage, err := p.reader.ReadByte()
 	if err != nil {
-		return errs.Wrap(err, "illegal s2k usage")
+		return errs.New("illegal s2k usage", errs.WithCause(err))
 	}
 
 	if rOpt, err := p.getField1(); err != nil {
@@ -41,9 +41,9 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		if usage != 0 { //encrypted secret-key
 			alg, err := rOpt.ReadByte()
 			if err != nil {
-				return errs.Wrap(
-					err,
+				return errs.New(
 					"illegal symid",
+					errs.WithCause(err),
 					errs.WithContext("s2k_usage", usage),
 				)
 			}
@@ -54,10 +54,10 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		if usage == 253 {
 			alg, err := rOpt.ReadByte()
 			if err != nil {
-				return errs.Wrap(
-					err,
+				return errs.New(
 					"illegal AEAD",
 					errs.WithContext("s2k_usage", usage),
+					errs.WithCause(err),
 				)
 			}
 			parent.Add(values.AEADID(alg).ToItem(p.cxt.Debug()))
@@ -69,10 +69,10 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		case 253, 254, 255:
 			s2k := s2k.New(rOpt)
 			if err := s2k.Parse(parent, p.cxt.Debug()); err != nil {
-				return errs.Wrap(
-					err,
+				return errs.New(
 					"illegal s2k",
 					errs.WithContext("s2k_usage", usage),
+					errs.WithCause(err),
 				)
 			}
 			hasIV = s2k.HasIV()
@@ -103,16 +103,12 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 			parent.Note = "s2k usage 0; plain secret-key material"
 			//parse plain key material
 			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecPlain(parent); err != nil {
-				return errs.Wrap(
-					err,
-					"",
-					errs.WithContext("s2k_usage", usage),
-				)
+				return errs.Wrap(err, errs.WithContext("s2k_usage", usage))
 			}
 			//checksum
 			chk, err := p.reader.ReadBytes(2)
 			if err != nil {
-				return errs.Wrap(err, "illegal checksum value")
+				return errs.New("illegal checksum value", errs.WithCause(err))
 			}
 			parent.Add(info.NewItem(
 				info.Name("2-octet checksum"),
@@ -121,28 +117,28 @@ func (p *seckeyInfo) Parse(parent *info.Item) error {
 		case 253:
 			parent.Note = "s2k usage 253; encrypted secret-key material and AEAD authentication tag"
 			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecEnc(parent); err != nil {
-				return errs.Wrap(
-					err,
+				return errs.New(
 					"illegal pubkey",
 					errs.WithContext("s2k_usage", usage),
+					errs.WithCause(err),
 				)
 			}
 		case 254:
 			parent.Note = "s2k usage 254; encrypted secret-key material and 20-octet SHA-1 hash"
 			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecEnc(parent); err != nil {
-				return errs.Wrap(
-					err,
+				return errs.New(
 					"illegal pubkey",
 					errs.WithContext("s2k_usage", usage),
+					errs.WithCause(err),
 				)
 			}
 		default:
 			parent.Note = fmt.Sprintf("s2k usage %d; encrypted secret-key material and 2-octet checksum", usage)
 			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecEnc(parent); err != nil {
-				return errs.Wrap(
-					err,
+				return errs.New(
 					"illegal pubkey",
 					errs.WithContext("s2k_usage", usage),
+					errs.WithCause(err),
 				)
 			}
 		}
@@ -161,14 +157,14 @@ func (p *seckeyInfo) getField1() (*reader.Reader, error) {
 	if p.pubVer.Number() == 5 {
 		l, err := p.reader.ReadByte()
 		if err != nil {
-			return nil, errs.Wrap(err, "illegal length of option field")
+			return nil, errs.New("illegal length of option field", errs.WithCause(err))
 		}
 		if l == 0 {
 			return nil, nil
 		}
 		b, err := p.reader.ReadBytes(int64(l))
 		if err != nil {
-			return nil, errs.Wrap(err, "illegal option field")
+			return nil, errs.New("illegal option field", errs.WithCause(err))
 		}
 		return reader.New(b), nil
 	}
@@ -181,14 +177,14 @@ func (p *seckeyInfo) getField2() (*reader.Reader, error) {
 		l, err := p.reader.ReadBytes(4)
 		ll := binary.BigEndian.Uint32(l)
 		if err != nil {
-			return nil, errs.Wrap(err, "illegal length of key materia")
+			return nil, errs.New("illegal length of key materia", errs.WithCause(err))
 		}
 		if ll == 0 {
 			return nil, nil
 		}
 		b, err := p.reader.ReadBytes(int64(ll))
 		if err != nil {
-			return nil, errs.Wrap(err, "illegal key materia")
+			return nil, errs.New("illegal key materia", errs.WithCause(err))
 		}
 		return reader.New(b), nil
 	}
@@ -200,10 +196,7 @@ func (p *seckeyInfo) iv(symid values.SymID, isAEAD bool) (*info.Item, error) {
 	sz64 := int64(symid.IVLen())
 	iv, err := p.reader.ReadBytes(sz64)
 	if err != nil {
-		return nil, errs.Wrap(
-			err,
-			fmt.Sprintf("illegal s2k iv (length: %d bytes)", sz64),
-		)
+		return nil, errs.New(fmt.Sprintf("illegal s2k iv (length: %d bytes)", sz64), errs.WithCause(err))
 	}
 	var name string
 	if isAEAD {
@@ -218,7 +211,7 @@ func (p *seckeyInfo) iv(symid values.SymID, isAEAD bool) (*info.Item, error) {
 	), nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

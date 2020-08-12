@@ -25,7 +25,7 @@ func (s *sub33) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	ver, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal version")
+		return rootInfo, errs.New("illegal version", errs.WithCause(err))
 	}
 	itm := info.NewItem(
 		info.Name("Version"),
@@ -44,7 +44,7 @@ func (s *sub33) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2017-2019 Spiegel
+/* Copyright 2017-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

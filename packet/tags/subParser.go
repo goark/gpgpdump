@@ -27,7 +27,7 @@ func newSubparser(cxt *context.Context, tagID values.TagID, name string, body []
 		info.DumpStr(values.DumpBytes(body, cxt.Debug()).String()),
 	)
 	osps, err := openpgp.OpaqueSubpackets(body)
-	return &subParser{cxt: cxt, tagID: tagID, opaqueSubpacke: osps, item: item}, errs.Wrap(err, "illegal subpacket")
+	return &subParser{cxt: cxt, tagID: tagID, opaqueSubpacke: osps, item: item}, errs.Wrap(err)
 }
 
 //Parse returns sub-packet info.
@@ -44,7 +44,7 @@ func (sp *subParser) Parse() (*info.Item, error) {
 	return sp.item, lastErr
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

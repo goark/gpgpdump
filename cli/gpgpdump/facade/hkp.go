@@ -36,22 +36,22 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 			//options
 			sks, err := cmd.Flags().GetString("keyserver")
 			if err != nil {
-				return debugPrint(ui, errs.Wrap(err, "error in --keyserver option"))
+				return debugPrint(ui, errs.New("error in --keyserver option", errs.WithCause(err)))
 			}
 			if len(sks) == 0 {
-				return debugPrint(ui, errs.Wrap(ecode.ErrEmptyKeyServer, "error in --keyserver option"))
+				return debugPrint(ui, errs.New("error in --keyserver option", errs.WithCause(ecode.ErrEmptyKeyServer)))
 			}
 			port, err := cmd.Flags().GetInt("port")
 			if err != nil {
-				return debugPrint(ui, errs.Wrap(err, "error in --port option"))
+				return debugPrint(ui, errs.New("error in --port option", errs.WithCause(err)))
 			}
 			rawFlag, err := cmd.Flags().GetBool("raw")
 			if err != nil {
-				return debugPrint(ui, errs.Wrap(err, "error in --raw option"))
+				return debugPrint(ui, errs.New("error in --raw option", errs.WithCause(err)))
 			}
 			secFlag, err := cmd.Flags().GetBool("secure")
 			if err != nil {
-				return debugPrint(ui, errs.Wrap(err, "error in --secure option"))
+				return debugPrint(ui, errs.New("error in --secure option", errs.WithCause(err)))
 			}
 			prt := hkp.HKP
 			if secFlag {
@@ -88,7 +88,7 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 	return hkpCmd
 }
 
-/* Copyright 2019 Spiegel
+/* Copyright 2019,2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

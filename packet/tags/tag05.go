@@ -24,7 +24,7 @@ func (t *tag05) Parse() (*info.Item, error) {
 	// [00] One-octet version number.
 	v, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal version")
+		return rootInfo, errs.New("illegal version", errs.WithCause(err))
 	}
 	version := values.PubVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
@@ -33,13 +33,13 @@ func (t *tag05) Parse() (*info.Item, error) {
 	rootInfo.Add(pub)
 	pubkey := newPubkey(t.cxt, t.reader, version)
 	if err := pubkey.Parse(pub); err != nil {
-		return rootInfo, errs.Wrap(err, "")
+		return rootInfo, errs.Wrap(err)
 	}
 
 	sec := info.NewItem(info.Name("Secret-Key"))
 	rootInfo.Add(sec)
 	if err := newSeckey(t.cxt, t.reader, version, pubkey.PubID()).Parse(sec); err != nil {
-		return rootInfo, errs.Wrap(err, "")
+		return rootInfo, errs.Wrap(err)
 	}
 
 	if t.reader.Rest() > 0 {
@@ -48,7 +48,7 @@ func (t *tag05) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

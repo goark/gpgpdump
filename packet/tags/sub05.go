@@ -25,7 +25,7 @@ func (s *sub05) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	b, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal Level")
+		return rootInfo, errs.New("illegal Level", errs.WithCause(err))
 	}
 	rootInfo.Add(info.NewItem(
 		info.Name("Level"),
@@ -33,7 +33,7 @@ func (s *sub05) Parse() (*info.Item, error) {
 	))
 	b, err = s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal Trust amount")
+		return rootInfo, errs.New("illegal Trust amount", errs.WithCause(err))
 	}
 	rootInfo.Add(info.NewItem(
 		info.Name("Trust amount"),
@@ -42,7 +42,7 @@ func (s *sub05) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

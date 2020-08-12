@@ -23,13 +23,13 @@ func (s *sub03) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	exp, err := values.NewExpire(s.reader, s.cxt.SigCreationTime)
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal Expiration Timee")
+		return rootInfo, errs.New("illegal Expiration Timee", errs.WithCause(err))
 	}
 	s.cxt.SigCreationTime = nil
 	return exp.ToItem(rootInfo.Name, s.cxt.Debug()), nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

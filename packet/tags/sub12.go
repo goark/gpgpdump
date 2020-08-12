@@ -25,7 +25,7 @@ func (s *sub12) Parse() (*info.Item, error) {
 	rootInfo := s.ToItem()
 	class, err := s.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.Wrap(err, "illegal Revocation class")
+		return rootInfo, errs.New("illegal Revocation class", errs.WithCause(err))
 	}
 	itm := info.NewItem(
 		info.Name("Class"),
@@ -52,7 +52,7 @@ func (s *sub12) Parse() (*info.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
