@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
 )
 
@@ -24,7 +24,7 @@ func newSub20(cxt *context.Context, subID values.SuboacketID, body []byte) Subs 
 // Parse parsing Notation Data Sub-packet
 func (s *sub20) Parse() (*result.Item, error) {
 	rootInfo := s.ToItem()
-	flags, err := s.reader.ReadBytes(8)
+	flags, err := s.reader.ReadBytes(4)
 	if err != nil {
 		return rootInfo, errs.New("illegal flags", errs.WithCause(err))
 	}
