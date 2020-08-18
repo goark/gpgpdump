@@ -77,7 +77,11 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 			if err != nil {
 				return debugPrint(ui, err)
 			}
-			r, err := marshalPacketInfo(p.Parse())
+			res, err := p.Parse()
+			if err != nil {
+				return debugPrint(ui, err)
+			}
+			r, err := marshalPacketInfo(res)
 			if err != nil {
 				return debugPrint(ui, err)
 			}

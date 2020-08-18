@@ -2,7 +2,6 @@ package result
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"strings"
 	"testing"
@@ -14,75 +13,6 @@ func r2s(r io.Reader) string {
 		return ""
 	}
 	return buf.String()
-}
-
-func TestTOMLNull(t *testing.T) {
-	info := (*Info)(nil)
-	info.Add(nil)
-	res, err := info.TOML(2)
-	if err != nil {
-		t.Errorf("TOML() err = \"%+v\", want nil.", err)
-		return
-	}
-	str := r2s(res)
-	if str != "" {
-		t.Errorf("TOML() = \"%v\", want \"\".", str)
-	}
-}
-
-func TestTOMLEmpty(t *testing.T) {
-	info := New()
-	res, err := info.TOML(2)
-	if err != nil {
-		t.Errorf("TOML() err = \"%+v\", want nil.", err)
-		return
-	}
-	str := r2s(res)
-	if str != "" {
-		t.Errorf("TOML() = \"%v\", want \"\".", str)
-	}
-}
-
-func TestTOML(t *testing.T) {
-	norm := `
-[[Packet]]
-  name = "name1"
-  value = "value1"
-  dump = "00 01 02"
-  note = "note1"
-
-  [[Packet.Item]]
-    name = "name2"
-    dump = "03 04 05"
-    note = "note2"
-`
-	output := strings.Trim(norm, " \t\n\r") + "\n"
-
-	info := New()
-	item1 := NewItem(
-		Name("name1"),
-		Value("value1"),
-		Note("note1"),
-		DumpStr("00 01 02"),
-	)
-	item2 := NewItem(
-		Name("name2"),
-		Note("note2"),
-		DumpStr("03 04 05"),
-	)
-	item1.Add(item2)
-	item1.Add(nil) //abnormal
-	info.Add(item1)
-	info.Add(nil) //abnormal
-	toml, err := info.TOML(2)
-	if err != nil {
-		t.Errorf("TOML() err = \"%+v\", want nil.", err)
-		return
-	}
-	str := r2s(toml)
-	if str != output {
-		t.Errorf("TOML output = \n%s\n want \n%s\n", str, output)
-	}
 }
 
 func TestItemString(t *testing.T) {
@@ -109,18 +39,6 @@ func TestItemString(t *testing.T) {
 	}
 }
 
-func ExampleNewInfo() {
-	item := NewItem(
-		Name("name"),
-		Value("value"),
-		Note("note"),
-		DumpStr("00 01 02"),
-	)
-	fmt.Println(item.Dump)
-	// Output:
-	// 00 01 02
-}
-
 func TestJSONNull(t *testing.T) {
 	info := (*Info)(nil)
 	info.Add(nil)
@@ -144,14 +62,42 @@ func TestJSONEmpty(t *testing.T) {
 		return
 	}
 	str := r2s(res)
-	if str != output+"\n" {
+	if str != output {
 		t.Errorf("JSON() = \"%v\", want \"%v\n\".", str, output)
 	}
 }
 
 func TestJSON(t *testing.T) {
-	norm := `
-{
+	norm := `{"Packet":[{"name":"name1","value":"value1","dump":"00 01 02","note":"note1","Item":[{"name":"name2","dump":"03 04 05","note":"note2"}]}]}`
+	output := strings.Trim(norm, " \t\n\r")
+
+	info := New()
+	item1 := NewItem(
+		Name("name1"),
+		Value("value1"),
+		Note("note1"),
+		DumpStr("00 01 02"),
+	)
+	item2 := NewItem(
+		Name("name2"),
+		Note("note2"),
+		DumpStr("03 04 05"),
+	)
+	item1.Add(item2)
+	info.Add(item1)
+	json, err := info.JSON(0)
+	if err != nil {
+		t.Errorf("JSON() err = \"%+v\", want nil.", err)
+		return
+	}
+	str := r2s(json)
+	if str != output {
+		t.Errorf("JSON output = \"%s\" want \"%s\"", str, output)
+	}
+}
+
+func TestJSONIndent(t *testing.T) {
+	norm := `{
   "Packet": [
     {
       "name": "name1",
@@ -167,8 +113,7 @@ func TestJSON(t *testing.T) {
       ]
     }
   ]
-}
-`
+}`
 	output := strings.Trim(norm, " \t\n\r")
 
 	info := New()
@@ -191,7 +136,7 @@ func TestJSON(t *testing.T) {
 		return
 	}
 	str := r2s(json)
-	if str != output+"\n" {
+	if str != output {
 		t.Errorf("JSON output = \"%s\" want \"%s\"", str, output)
 	}
 }

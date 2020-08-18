@@ -20,7 +20,7 @@ builds:
   main: ./
   flags:
   - -trimpath
-  ldflags: -s -w -X github.com/spiegel-im-spiegel/gpgpdump/facade.Version={{ .Version }}
+  ldflags: -s -w -X github.com/spiegel-im-spiegel/gpgpdump/facade.Version=v{{ .Version }}
   binary: gpgpdump
 
 archives:

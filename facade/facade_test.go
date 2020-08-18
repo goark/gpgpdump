@@ -1,5 +1,14 @@
 package facade
 
+import (
+	"bytes"
+	"fmt"
+	"testing"
+
+	"github.com/spiegel-im-spiegel/gocli/exitcode"
+	"github.com/spiegel-im-spiegel/gocli/rwi"
+)
+
 var (
 	bindata1 = []byte{0xa8, 0x03, 0x50, 0x47, 0x50, 0xc3, 0x04, 0x04, 0x03, 0x00, 0x01, 0xc9, 0x38, 0xe7, 0x2d, 0x2f, 0xb1, 0xf1, 0x0f, 0xc3, 0xce, 0x55, 0x5d, 0xb2, 0x8a, 0x4b, 0xe8, 0x4f, 0x43, 0x15, 0x6e, 0x7d, 0x90, 0x90, 0x53, 0x6a, 0x9a, 0xe3, 0xaa, 0x1c, 0x68, 0xd6, 0xd3, 0xfc, 0x6a, 0x4e, 0x79, 0xa8, 0xe7, 0xb1, 0xa5, 0x87, 0xea, 0xcc, 0xcc, 0x99, 0x66, 0x31, 0xad, 0xff, 0xe1, 0xa3, 0x03, 0xb6, 0x47, 0x85, 0x76, 0xbd, 0x0b}
 	ascdata1 = `
@@ -40,81 +49,81 @@ Symmetrically Encrypted Data Packet (tag 9) (56 bytes)
 `
 )
 
-// func TestLoadByStdin(t *testing.T) {
-// 	inData := bytes.NewReader(bindata1)
-// 	outBuf := new(bytes.Buffer)
-// 	outErrBuf := new(bytes.Buffer)
-// 	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
-// 	args := []string{}
-//
-// 	exit := Execute(ui, args)
-// 	if exit != exitcode.Normal {
-// 		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", exit, exitcode.Normal)
-// 	}
-// 	str := outErrBuf.String()
-// 	if str != "" {
-// 		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, "")
-// 	}
-// 	str = outBuf.String()
-// 	if str != resdataFromBindata1 {
-// 		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, resdataFromBindata1)
-// 	}
-// }
-//
-// func TestLoadByNosata(t *testing.T) {
-// 	inData := bytes.NewReader([]byte{})
-// 	outBuf := new(bytes.Buffer)
-// 	outErrBuf := new(bytes.Buffer)
-// 	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
-// 	args := []string{}
-//
-// 	exit := Execute(ui, args)
-// 	if exit != exitcode.Normal {
-// 		t.Errorf("Execute(nodata) = \"%v\", want \"%v\".", exit, exitcode.Normal)
-// 	}
-// 	str := outErrBuf.String()
-// 	if str != "" {
-// 		t.Errorf("Execute(nodata) = \"%v\", want \"%v\".", str, "")
-// 	}
-// 	str = outBuf.String()
-// 	if str != "" {
-// 		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, "")
-// 	}
-// }
-//
-// func TestLoadByFile(t *testing.T) {
-// 	outBuf := new(bytes.Buffer)
-// 	outErrBuf := new(bytes.Buffer)
-// 	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
-// 	args := []string{"-f", "testdata/bindata1"}
-//
-// 	exit := Execute(ui, args)
-// 	if exit != exitcode.Normal {
-// 		t.Errorf("Execute(file) = \"%v\", want \"%v\".", exit, exitcode.Normal)
-// 	}
-// 	str := outErrBuf.String()
-// 	if str != "" {
-// 		t.Errorf("Execute(file) = \"%v\", want \"%v\".", str, "")
-// 	}
-// 	str = outBuf.String()
-// 	if str != resdataFromBindata1 {
-// 		t.Errorf("Execute(file) = \"%v\", want \"%v\".", str, resdataFromBindata1)
-// 	}
-// }
-//
-// func TestLoadByNofile(t *testing.T) {
-// 	outBuf := new(bytes.Buffer)
-// 	outErrBuf := new(bytes.Buffer)
-// 	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
-// 	args := []string{"--debug", "noexist"}
-//
-// 	exit := Execute(ui, args)
-// 	if exit != exitcode.Abnormal {
-// 		t.Errorf("Execute(nofile) = \"%v\", want \"%v\".", exit, exitcode.Abnormal)
-// 	} else {
-// 		fmt.Printf("Info: %+v", outErrBuf.String())
-// 	}
-// }
+func TestLoadByStdin(t *testing.T) {
+	inData := bytes.NewReader(bindata1)
+	outBuf := new(bytes.Buffer)
+	outErrBuf := new(bytes.Buffer)
+	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
+	args := []string{}
+
+	exit := Execute(ui, args)
+	if exit != exitcode.Normal {
+		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", exit, exitcode.Normal)
+	}
+	str := outErrBuf.String()
+	if str != "" {
+		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, "")
+	}
+	str = outBuf.String()
+	if str != resdataFromBindata1 {
+		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, resdataFromBindata1)
+	}
+}
+
+func TestLoadByNosata(t *testing.T) {
+	inData := bytes.NewReader([]byte{})
+	outBuf := new(bytes.Buffer)
+	outErrBuf := new(bytes.Buffer)
+	ui := rwi.New(rwi.WithReader(inData), rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
+	args := []string{}
+
+	exit := Execute(ui, args)
+	if exit != exitcode.Normal {
+		t.Errorf("Execute(nodata) = \"%v\", want \"%v\".", exit, exitcode.Normal)
+	}
+	str := outErrBuf.String()
+	if str != "" {
+		t.Errorf("Execute(nodata) = \"%v\", want \"%v\".", str, "")
+	}
+	str = outBuf.String()
+	if str != "" {
+		t.Errorf("Execute(stdin) = \"%v\", want \"%v\".", str, "")
+	}
+}
+
+func TestLoadByFile(t *testing.T) {
+	outBuf := new(bytes.Buffer)
+	outErrBuf := new(bytes.Buffer)
+	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
+	args := []string{"-f", "testdata/bindata1"}
+
+	exit := Execute(ui, args)
+	if exit != exitcode.Normal {
+		t.Errorf("Execute(file) = \"%v\", want \"%v\".", exit, exitcode.Normal)
+	}
+	str := outErrBuf.String()
+	if str != "" {
+		t.Errorf("Execute(file) = \"%v\", want \"%v\".", str, "")
+	}
+	str = outBuf.String()
+	if str != resdataFromBindata1 {
+		t.Errorf("Execute(file) = \"%v\", want \"%v\".", str, resdataFromBindata1)
+	}
+}
+
+func TestLoadByNofile(t *testing.T) {
+	outBuf := new(bytes.Buffer)
+	outErrBuf := new(bytes.Buffer)
+	ui := rwi.New(rwi.WithWriter(outBuf), rwi.WithErrorWriter(outErrBuf))
+	args := []string{"--debug", "noexist"}
+
+	exit := Execute(ui, args)
+	if exit != exitcode.Abnormal {
+		t.Errorf("Execute(nofile) = \"%v\", want \"%v\".", exit, exitcode.Abnormal)
+	} else {
+		fmt.Printf("Info: %+v", outErrBuf.String())
+	}
+}
 
 /* Copyright 2017-2020 Spiegel
  *

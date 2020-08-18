@@ -25,7 +25,6 @@ var (
 var (
 	versionFlag bool //version flag
 	jsonFlag    bool //output with JSON format
-	tomlFlag    bool //output with TOML format
 	debugFlag   bool //debug flag
 	indentSize  int
 	filePath    string
@@ -58,18 +57,20 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 			if err != nil {
 				return debugPrint(ui, err)
 			}
-			r, err = marshalPacketInfo(p.Parse())
+			res, err := p.Parse()
+			if err != nil {
+				return debugPrint(ui, err)
+			}
+			r, err = marshalPacketInfo(res)
 			if err != nil {
 				return debugPrint(ui, err)
 			}
 			return debugPrint(ui, errs.Wrap(ui.WriteFrom(r)))
-			return nil
 		},
 	}
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
 	rootCmd.Flags().StringVarP(&filePath, "file", "f", "", "path of OpenPGP file")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
-	rootCmd.PersistentFlags().BoolVarP(&tomlFlag, "toml", "t", false, "output with TOML format")
 	rootCmd.PersistentFlags().IntVarP(&indentSize, "indent", "", 0, "indent size for output string")
 	rootCmd.PersistentFlags().BoolP(context.ARMOR.String(), "a", false, "accepts ASCII input only")
 	rootCmd.PersistentFlags().BoolP(context.CERT.String(), "c", false, "dumps attested certification in signature packets (tag 2)")
@@ -90,23 +91,14 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	return rootCmd
 }
 
-func marshalPacketInfo(i *result.Info, e error) (r io.Reader, err error) {
-	if e != nil {
-		err = e
-		return
-	}
+func marshalPacketInfo(i *result.Info) (io.Reader, error) {
 	if jsonFlag {
-		r, err = i.JSON(indentSize)
-	} else if tomlFlag {
-		r, err = i.TOML(indentSize)
-	} else if indentSize > 0 {
-		r = i.ToString(strings.Repeat(" ", indentSize))
-		err = nil
-	} else {
-		r = i.ToString("\t")
-		err = nil
+		return i.JSON(indentSize)
 	}
-	return
+	if indentSize > 0 {
+		return i.ToString(strings.Repeat(" ", indentSize)), nil
+	}
+	return i.ToString("\t"), nil
 }
 
 func getBool(cmd *cobra.Command, code context.OptCode) (context.OptCode, bool) {

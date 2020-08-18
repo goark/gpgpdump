@@ -57,8 +57,7 @@ var resJSON = `{
       ]
     }
   ]
-}
-`
+}`
 
 func TestJsonOn(t *testing.T) {
 	inData := bytes.NewReader(bindata1)

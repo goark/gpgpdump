@@ -8,7 +8,7 @@ import (
 
 func debugPrint(ui *rwi.RWI, err error) error {
 	if debugFlag && err != nil {
-		fmt.Fprintf(ui.ErrorWriter(), "%+v\n", err)
+		fmt.Fprintf(ui.Writer(), "%+v\n", err)
 		return nil
 	}
 	return err

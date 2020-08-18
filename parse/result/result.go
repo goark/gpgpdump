@@ -5,10 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 
-	"github.com/BurntSushi/toml"
 	"github.com/spiegel-im-spiegel/errs"
 )
 
@@ -32,41 +30,22 @@ func (i *Info) Add(a *Item) {
 	}
 }
 
-//TOML returns TOML formated string
-func (i *Info) TOML(indent int) (io.Reader, error) {
-	if i == nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), nil
-	}
-	buf := new(bytes.Buffer)
-	encoder := toml.NewEncoder(buf)
-	if indent > 0 {
-		encoder.Indent = strings.Repeat(" ", indent)
-	}
-	if err := encoder.Encode(i); err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
-	}
-	return buf, nil
-}
-
 //JSON returns JSON formated string
 func (i *Info) JSON(indent int) (io.Reader, error) {
 	if i == nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), nil
+		return bytes.NewReader([]byte{}), nil
 	}
-	buf := new(bytes.Buffer)
-	encoder := json.NewEncoder(buf)
 	if indent > 0 {
-		encoder.SetIndent("", strings.Repeat(" ", indent))
+		b, err := json.MarshalIndent(i, "", strings.Repeat(" ", indent))
+		return bytes.NewReader(b), errs.Wrap(err)
 	}
-	if err := encoder.Encode(i); err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
-	}
-	return buf, nil
+	b, err := json.Marshal(i)
+	return bytes.NewReader(b), errs.Wrap(err)
 }
 
 //ToString returns string buffer
 func (i *Info) ToString(indent string) *bytes.Buffer {
-	buf := new(bytes.Buffer)
+	buf := &bytes.Buffer{}
 	if i == nil {
 		return buf
 	}
@@ -146,32 +125,31 @@ func Note(note string) ItemOpt {
 	}
 }
 
-func (i *Item) toString(indent string, lvl int, buf *bytes.Buffer) {
+func (i *Item) toString(indent string, lvl int, buf *bytes.Buffer) *bytes.Buffer {
 	if i == nil || buf == nil {
-		return
+		return buf
 	}
-	buf.WriteString(fmt.Sprintf("%s%s", strings.Repeat(indent, lvl), i.Name))
+	fmt.Fprintf(buf, "%s%s", strings.Repeat(indent, lvl), i.Name)
 	if len(i.Value) > 0 {
-		buf.WriteString(fmt.Sprintf(": %s", i.Value))
+		fmt.Fprintf(buf, ": %s", i.Value)
 	}
 	if len(i.Note) > 0 {
-		buf.WriteString(fmt.Sprintf(" (%s)", i.Note))
+		fmt.Fprintf(buf, " (%s)", i.Note)
 	}
 	buf.WriteString("\n")
 	if len(i.Dump) > 0 {
-		buf.WriteString(fmt.Sprintf("%s%s\n", strings.Repeat(indent, lvl+1), i.Dump))
+		fmt.Fprintf(buf, "%s%s\n", strings.Repeat(indent, lvl+1), i.Dump)
 	}
 	if len(i.Items) > 0 {
 		for _, itm := range i.Items {
 			itm.toString(indent, lvl+1, buf)
 		}
 	}
+	return buf
 }
 
 func (i *Item) String() string {
-	buf := new(bytes.Buffer)
-	i.toString("\t", 0, buf)
-	return buf.String()
+	return i.toString("\t", 0, &bytes.Buffer{}).String()
 }
 
 /* Copyright 2016-2020 Spiegel
