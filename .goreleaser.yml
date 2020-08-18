@@ -17,10 +17,10 @@ builds:
   - amd64
   - arm
   - arm64
-  main: ./cli/gpgpdump/
+  main: ./
   flags:
   - -trimpath
-  ldflags: -s -w -X github.com/spiegel-im-spiegel/gpgpdump/cli/gpgpdump/facade.Version=v{{ .Version }}
+  ldflags: -s -w -X github.com/spiegel-im-spiegel/gpgpdump/facade.Version={{ .Version }}
   binary: gpgpdump
 
 archives:
