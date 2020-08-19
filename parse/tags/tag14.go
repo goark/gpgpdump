@@ -2,9 +2,9 @@ package tags
 
 import (
 	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
 )
 
@@ -24,7 +24,7 @@ func (t *tag14) Parse() (*result.Item, error) {
 	return item, errs.Wrap(err)
 }
 
-/* Copyright 2016,2020 Spiegel
+/* Copyright 2016-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

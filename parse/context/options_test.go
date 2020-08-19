@@ -1,17 +1,8 @@
 package context
 
 import (
-	"os"
 	"testing"
 )
-
-func TestMain(m *testing.M) {
-	//start test
-	code := m.Run()
-
-	//termination
-	os.Exit(code)
-}
 
 func TestNewOptions(t *testing.T) {
 	o := New()
@@ -112,7 +103,7 @@ func TestUTCOpt(t *testing.T) {
 	}
 }
 
-/* Copyright 2017-2019 Spiegel
+/* Copyright 2017-2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

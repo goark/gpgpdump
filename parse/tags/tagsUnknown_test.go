@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
-
 	"golang.org/x/crypto/openpgp/packet"
 )
 
