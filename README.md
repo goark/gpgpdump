@@ -6,65 +6,23 @@
 
 [gpgpdump] is a OpenPGP ([RFC 4880]) packet visualizer by [golang](https://golang.org/).
 
-- Based on [pgpdump](https://github.com/kazu-yamamoto/pgpdump)
-- Provide [golang](https://golang.org/) package and command-line Interface
-- Output with plain text, [TOML](https://github.com/toml-lang/toml), and [JSON](https://tools.ietf.org/html/rfc7159) format
+- Command-line interface
+- The base design is inspired by [pgpdump](https://github.com/kazu-yamamoto/pgpdump)
+- Output with plain text or [JSON](https://tools.ietf.org/html/rfc7159)-formatted text
 - Support [RFC 5581] and [RFC 6637]
 - Support a part of [RFC 4880bis]
 
-## Declare [gpgpdump] module
-
-See [go.mod](https://github.com/spiegel-im-spiegel/gpgpdump/blob/master/go.mod) file. 
-
-## Usage of [gpgpdump] package
-
-```go
-import (
-	"fmt"
-	"strings"
-
-	"github.com/spiegel-im-spiegel/gpgpdump"
-	"github.com/spiegel-im-spiegel/gpgpdump/options"
-)
-
-const openpgpStr = `
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iF4EARMIAAYFAlTDCN8ACgkQMfv9qV+7+hg2HwEA6h2iFFuCBv3VrsSf2BREQaT1
-T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
-=ZOTN
------END PGP SIGNATURE-----
-`
-
-info, err := gpgpdump.Parse(
-    strings.NewReader(openpgpStr),
-    options.New(
-        options.Set(options.ARMOR, true),
-        options.Set(options.UTC, true),
-    )
-)
-if err != nil {
-	return
-}
-fmt.Println(info.Packets[0].Name)
-// Output:
-// Signature Packet (tag 2)
-```
-
-## Command-Line Interface
-
-### Download and Build
+## Download and Build
 
 ```
 $ go get github.com/spiegel-im-spiegel/gpgpdump@latest
 ```
 
-### Binaries
+## Binaries
 
 See [latest release](https://github.com/spiegel-im-spiegel/gpgpdump/releases/latest).
 
-### Usage
+## Usage
 
 ```
 $ gpgpdump -h
@@ -79,7 +37,7 @@ Available Commands:
 
 Flags:
   -a, --armor         accepts ASCII input only
-  -c, --cert          dumps attested certification in signiture packets (tag 2)
+  -c, --cert          dumps attested certification in signature packets (tag 2)
       --debug         for debug
   -f, --file string   path of OpenPGP file
   -h, --help          help for gpgpdump
@@ -89,22 +47,16 @@ Flags:
   -l, --literal       dumps literal packets (tag 11)
   -m, --marker        dumps marker packets (tag 10)
   -p, --private       dumps private packets (tag 60-63)
-  -t, --toml          output with TOML format
   -u, --utc           output with UTC time
   -v, --version       output version of gpgpdump
 
 Use "gpgpdump [command] --help" for more information about a command.
+```
 
-$ cat sig
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+### Output with plain text
 
-iF4EARMIAAYFAlTDCN8ACgkQMfv9qV+7+hg2HwEA6h2iFFuCBv3VrsSf2BREQaT1
-T1ZprZqwRPOjiLJg9AwA/ArTwCPz7c2vmxlv7sRlRLUI6CdsOqhuO1KfYXrq7idI
-=ZOTN
------END PGP SIGNATURE-----
-
-$ cat sig | gpgpdump -u --indent 2
+```
+$ cat testdata/eccsig.asc | gpgpdump -u --indent 2
 Signature Packet (tag 2) (94 bytes)
   Version: 4 (current)
   Signiture Type: Signature of a canonical text document (0x01)
@@ -118,58 +70,12 @@ Signature Packet (tag 2) (94 bytes)
     36 1f
   ECDSA value r (256 bits)
   ECDSA value s (252 bits)
+```
 
-$ cat sig | gpgpdump -t -u
-[[Packet]]
-  name = "Signature Packet (tag 2)"
-  note = "94 bytes"
+### Output with JSON-formatted text
 
-  [[Packet.Item]]
-    name = "Version"
-    value = "4"
-    note = "current"
-
-  [[Packet.Item]]
-    name = "Signiture Type"
-    value = "Signature of a canonical text document (0x01)"
-
-  [[Packet.Item]]
-    name = "Public-key Algorithm"
-    value = "ECDSA public key algorithm (pub 19)"
-
-  [[Packet.Item]]
-    name = "Hash Algorithm"
-    value = "SHA2-256 (hash 8)"
-
-  [[Packet.Item]]
-    name = "Hashed Subpacket"
-    note = "6 bytes"
-
-    [[Packet.Item.Item]]
-      name = "Signature Creation Time (sub 2)"
-      value = "2015-01-24T02:52:15Z"
-
-  [[Packet.Item]]
-    name = "Unhashed Subpacket"
-    note = "10 bytes"
-
-    [[Packet.Item.Item]]
-      name = "Issuer (sub 16)"
-      value = "0x31fbfda95fbbfa18"
-
-  [[Packet.Item]]
-    name = "Hash left 2 bytes"
-    dump = "36 1f"
-
-  [[Packet.Item]]
-    name = "ECDSA value r"
-    note = "256 bits"
-
-  [[Packet.Item]]
-    name = "ECDSA value s"
-    note = "252 bits"
-
-$ cat sig | gpgpdump -j -u --indent 2
+```
+$ cat testdata/eccsig.asc | gpgpdump -j -u | jq .
 {
   "Packet": [
     {
@@ -257,7 +163,6 @@ Global Flags:
   -l, --literal      dumps literal packets (tag 11)
   -m, --marker       dumps marker packets (tag 10)
   -p, --private      dumps private packets (tag 60-63)
-  -t, --toml         output with TOML format
   -u, --utc          output with UTC time
 
 $ gpgpdump hkp -u --indent 2 0x44ce6900e2b307a4
@@ -270,6 +175,27 @@ Public-Key Packet (tag 6) (269 bytes)
   RSA public encryption exponent e (17 bits)
 User ID Packet (tag 13) (25 bytes)
   User ID: Alice <alice@example.com>
+Signature Packet (tag 2) (140 bytes)
+  Version: 4 (current)
+  Signiture Type: Generic certification of a User ID and Public-Key packet (0x10)
+  Public-key Algorithm: EdDSA (pub 22)
+  Hash Algorithm: SHA2-256 (hash 8)
+  Hashed Subpacket (52 bytes)
+    Issuer Fingerprint (sub 33) (21 bytes)
+      Version: 4 (need 20 octets length)
+      Fingerprint (20 bytes)
+        3b cc c7 cf d2 59 7e 53 44 dd 96 4a 72 9b 52 3d 11 f3 a8 d7
+    Signature Creation Time (sub 2): 2020-06-22T01:57:38Z
+    Notation Data (sub 20) (21 bytes)
+      Flag: Human-readable
+      Name: rem@gnupg.org
+      Value (0 byte)
+  Unhashed Subpacket (10 bytes)
+    Issuer (sub 16): 0x729b523d11f3a8d7
+  Hash left 2 bytes
+    b1 15
+  EdDSA compressed value r (256 bits)
+  EdDSA compressed value s (256 bits)
 Signature Packet (tag 2) (312 bytes)
   Version: 4 (current)
   Signiture Type: Positive certification of a User ID and Public-Key packet (0x13)
