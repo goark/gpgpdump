@@ -6,8 +6,8 @@
 
 [gpgpdump] is a OpenPGP ([RFC 4880]) packet visualizer by [golang](https://golang.org/).
 
+- [gpgpdump] is based on [pgpdump](https://github.com/kazu-yamamoto/pgpdump) design by [kazu-yamamoto](https://github.com/kazu-yamamoto).
 - Command-line interface
-- The base design is inspired by [pgpdump](https://github.com/kazu-yamamoto/pgpdump)
 - Output with plain text or [JSON](https://tools.ietf.org/html/rfc7159)-formatted text
 - Support [RFC 5581] and [RFC 6637]
 - Support a part of [RFC 4880bis]
