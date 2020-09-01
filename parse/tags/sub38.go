@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"io"
 	"strconv"
 
 	"github.com/spiegel-im-spiegel/errs"
@@ -33,15 +34,40 @@ func (s *sub38) Parse() (*result.Item, error) {
 	))
 	switch v {
 	case 0x00:
-		//TODO: recursive call ?
-		rootInfo.Add(values.RawData(s.reader, "Key data", true))
+		item := values.RawData(s.reader, "Key data", s.cxt.Debug())
+		if err := s.parseKeyData(item); err != nil {
+			return rootInfo, errs.New("illegal Key dtata in Key Block Sub-packet", errs.WithCause(err))
+		}
+		rootInfo.Add(item)
+		//rootInfo.Add(values.RawData(s.reader, "Key data", true))
 	default:
 		rootInfo.Add(values.RawData(s.reader, "Key data", s.cxt.Debug()))
 	}
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+func (s *sub38) parseKeyData(rootInfo *result.Item) error {
+	sp, err := NewPackets(s.cxt, s.reader)
+	if err != nil {
+		return errs.Wrap(err)
+	}
+	for {
+		if err := sp.Next(); err != nil {
+			if !errs.Is(err, io.EOF) { //EOF is not error
+				return errs.Wrap(err)
+			}
+			break
+		}
+		itm, err := sp.tag.Parse()
+		if err != nil {
+			return errs.Wrap(err)
+		}
+		rootInfo.Add(itm)
+	}
+	return nil
+}
+
+/* Copyright 2020 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

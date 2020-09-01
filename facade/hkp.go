@@ -73,7 +73,7 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 			}
 
 			//parse OpenPGP packets
-			p, err := parse.NewBytes(resp, cxt)
+			p, err := parse.NewBytes(cxt, resp)
 			if err != nil {
 				return debugPrint(ui, err)
 			}

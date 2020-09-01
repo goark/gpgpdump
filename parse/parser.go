@@ -8,33 +8,32 @@ import (
 	"strings"
 
 	"golang.org/x/crypto/openpgp/armor"
-	"golang.org/x/crypto/openpgp/packet"
 
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
+	"github.com/spiegel-im-spiegel/gpgpdump/parse/tags"
 )
 
 //Parser class for pasing packet
 type Parser struct {
-	cxt          *context.Context
-	info         *result.Info
-	opaqueReader *packet.OpaqueReader
+	pct  *tags.Packets
+	info *result.Info
 }
 
 //New returns Parser instance
-func New(reader io.Reader, c *context.Context) (*Parser, error) {
+func New(cxt *context.Context, reader io.Reader) (*Parser, error) {
 	if reader == nil {
 		return nil, errs.Wrap(ecode.ErrNullPointer)
 	}
 	var r io.Reader
 	var err error
 	switch {
-	case c.Armor():
+	case cxt.Armor():
 		r, err = newReaderArmor(reader)
 	default:
-		buf := new(bytes.Buffer)
+		buf := &bytes.Buffer{}
 		r, err = newReaderArmor(io.TeeReader(reader, buf))
 		if err != nil {
 			r, err = buf, nil
@@ -43,16 +42,20 @@ func New(reader io.Reader, c *context.Context) (*Parser, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newParser(c, packet.NewOpaqueReader(r), result.New()), nil
+	return newParser(cxt, r, result.New())
 }
 
 //NewBytes returns Parser instance
-func NewBytes(data []byte, c *context.Context) (*Parser, error) {
-	return New(bytes.NewReader(data), c)
+func NewBytes(cxt *context.Context, data []byte) (*Parser, error) {
+	return New(cxt, bytes.NewReader(data))
 }
 
-func newParser(cxt *context.Context, op *packet.OpaqueReader, info *result.Info) *Parser {
-	return &Parser{opaqueReader: op, cxt: cxt, info: info}
+func newParser(cxt *context.Context, reader io.Reader, info *result.Info) (*Parser, error) {
+	p, err := tags.NewPackets(cxt, reader)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	return &Parser{pct: p, info: info}, nil
 }
 
 func newReaderArmor(r io.Reader) (io.Reader, error) {

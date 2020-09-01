@@ -25,7 +25,7 @@ var (
 )
 
 func ExampleParse() {
-	p, err := parse.NewBytes(openpgpData, cxt)
+	p, err := parse.NewBytes(cxt, openpgpData)
 	if err != nil {
 		return
 	}
