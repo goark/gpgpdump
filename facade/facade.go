@@ -53,7 +53,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 			}
 
 			//options OpenPGP packets
-			p, err := parse.New(r, cxt)
+			p, err := parse.New(cxt, r)
 			if err != nil {
 				return debugPrint(ui, err)
 			}

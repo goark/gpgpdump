@@ -46,7 +46,8 @@ var testSubpacketNames = []string{
 	"Intended Recipient Fingerprint (sub 35)",         //35
 	"Reserved (sub 36)",                               //36
 	"Attested Certifications (sub 37)",                //37
-	"Unknown (sub 38)",                                //38
+	"Key Block (sub 38)",                              //38
+	"Unknown (sub 39)",                                //39
 }
 
 func TestSubpacketID(t *testing.T) {
@@ -111,7 +112,8 @@ var testSubpacketNamesCritical = []string{
 	"Intended Recipient Fingerprint <critical> (sub 35)",         //35
 	"Reserved <critical> (sub 36)",                               //36
 	"Attested Certifications <critical> (sub 37)",                //37
-	"Unknown <critical> (sub 38)",                                //38
+	"Key Block <critical> (sub 38)",                              //38
+	"Unknown <critical> (sub 39)",                                //39
 }
 
 func TestSubpacketIDCritical(t *testing.T) {

@@ -1,13 +1,13 @@
 package tags
 
 import (
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
 )
 
-//sub37 class for Intended Recipient Fingerprint Sub-packet
+//sub37 class for Attested Certifications Sub-packet
 type sub37 struct {
 	subInfo
 }

@@ -93,12 +93,12 @@ func (p *Pubkey) eddsaSig(item *result.Item) error {
 	if err != nil {
 		return errs.Wrap(err)
 	}
-	item.Add(mpi.ToItem("EdDSA compressed value r", p.cxt.Integer()))
+	item.Add(mpi.ToItem("EC point r", p.cxt.Integer()))
 	mpi, err = values.NewMPI(p.reader)
 	if err != nil {
 		return errs.Wrap(err)
 	}
-	item.Add(mpi.ToItem("EdDSA compressed value s", p.cxt.Integer()))
+	item.Add(mpi.ToItem("EdDSA value s in the little endian representation", p.cxt.Integer()))
 	return nil
 }
 

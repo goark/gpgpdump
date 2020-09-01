@@ -5,58 +5,26 @@ import (
 
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/tags"
-	"golang.org/x/crypto/openpgp/packet"
 )
 
 //Parse returns packet result.
-func (r *Parser) Parse() (*result.Info, error) {
-	if r == nil {
+func (p *Parser) Parse() (*result.Info, error) {
+	if p == nil {
 		return result.New(), nil
 	}
 	for {
-		op, err := r.next()
-		if err != nil {
-			return r.info, errs.Wrap(err)
-		}
-		if op == nil {
-			return r.info, nil
-		}
-		tag := tags.NewTag(op, r.cxt)
-		item, err := tag.Parse()
-		if err != nil {
-			return r.info, errs.Wrap(err)
-		}
-		r.info.Add(item)
-		switch t := tag.(type) {
-		case *tags.Tag08: //Compressed Data Packet
-			if t.Reader() != nil {
-				parser := newParser(r.cxt, packet.NewOpaqueReader(t.Reader()), result.New())
-				info, err := parser.Parse()
-				if err != nil {
-					return r.info, errs.Wrap(err)
-				}
-				if len(item.Items) > 0 {
-					item = item.Items[len(item.Items)-1]
-				}
-				for _, itm := range info.Packets {
-					item.Add(itm)
-				}
+		if err := p.pct.Next(); err != nil {
+			if !errs.Is(err, io.EOF) { //EOF is not error
+				return p.info, errs.Wrap(err)
 			}
-		default:
+			return p.info, nil
 		}
-	}
-}
-
-func (r *Parser) next() (*packet.OpaquePacket, error) {
-	op, err := r.opaqueReader.Next()
-	if err != nil {
-		if !errs.Is(err, io.EOF) { //EOF is not error
-			return nil, errs.Wrap(err)
+		item, err := p.pct.Parse()
+		if err != nil {
+			return p.info, errs.Wrap(err)
 		}
-		return nil, nil
+		p.info.Add(item)
 	}
-	return op, nil
 }
 
 /* Copyright 2017-2020 Spiegel

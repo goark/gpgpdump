@@ -3,8 +3,8 @@ package values
 import (
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 )
 
 var subpacketNames = Msgs{
@@ -46,6 +46,7 @@ var subpacketNames = Msgs{
 	35: "Intended Recipient Fingerprint",         //35
 	36: "Reserved",                               //36
 	37: "Attested Certifications",                //37
+	38: "Key Block",                              //38
 }
 
 //SuboacketID is sub-packet type ID
