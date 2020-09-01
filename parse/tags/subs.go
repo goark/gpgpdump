@@ -1,9 +1,9 @@
 package tags
 
 import (
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
 	"golang.org/x/crypto/openpgp/packet"
 )
@@ -63,10 +63,12 @@ var newFunctionsSub02 = SubFuncMap{
 	29: newSub29, //Reason for Revocation
 	30: newSub30, //Features
 	31: newSub31, //Signature Target
+	// 32: newSub32, //Embedded Signature (with recursive call)
 	33: newSub33, //Issuer Fingerprint
 	34: newSub34, //Preferred AEAD Algorithms
 	35: newSub35, //Intended Recipient Fingerprint
 	37: newSub37, //Attested Certifications
+	// 38: newSub38, //Key Block (with recursive call)
 }
 
 var newFunctionsSub17 = SubFuncMap{
@@ -77,11 +79,16 @@ var newFunctionsSub17 = SubFuncMap{
 func NewSubs(cxt *context.Context, osp *packet.OpaqueSubpacket, tagID values.TagID) Subs {
 	st := osp.SubType & 0x7f
 	if tagID == 2 {
-		if st == 32 {
+		switch st {
+		case 32:
 			// recursive call in sub32.Parse()
 			return newSub32(cxt, values.SuboacketID(osp.SubType), osp.Contents)
+		case 38:
+			// recursive call in sub38.Parse()
+			return newSub38(cxt, values.SuboacketID(osp.SubType), osp.Contents)
+		default:
+			return newFunctionsSub02.Get(int(st), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 		}
-		return newFunctionsSub02.Get(int(st), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 	} else if tagID == 17 {
 		return newFunctionsSub17.Get(int(st), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 	}

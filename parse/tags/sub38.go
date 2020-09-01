@@ -1,30 +1,47 @@
 package tags
 
 import (
+	"strconv"
+
+	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
 )
 
-//sub37 class for Attested Certifications Sub-packet
-type sub37 struct {
+//sub38 class for Key Block Sub-packet
+type sub38 struct {
 	subInfo
 }
 
-//newSub37 return sub37 instance
-func newSub37(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub37{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
+//newSub38 return sub38 instance
+func newSub38(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
+	return &subReserved{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
-// Parse parsing Attested Certifications Sub-packet
-func (s *sub37) Parse() (*result.Item, error) {
+// Parse parsing Key Block Sub-packet
+func (s *sub38) Parse() (*result.Item, error) {
 	rootInfo := s.ToItem()
-	rootInfo.Add(values.RawData(s.reader, "certification digests", s.cxt.Cert()))
+	v, err := s.reader.ReadByte()
+	if err != nil {
+		return rootInfo, errs.New("illegal Type in Key Block Sub-packet", errs.WithCause(err))
+	}
+	rootInfo.Add(result.NewItem(
+		result.Name("Type"),
+		result.Value(strconv.Itoa(int(v))),
+	))
+	switch v {
+	case 0x00:
+		//TODO: recursive call ?
+		rootInfo.Add(values.RawData(s.reader, "Key data", true))
+	default:
+		rootInfo.Add(values.RawData(s.reader, "Key data", s.cxt.Debug()))
+	}
 	return rootInfo, nil
 }
 
-/* Copyright 2019 Spiegel
+/* Copyright 2016-2019 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

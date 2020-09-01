@@ -25,7 +25,7 @@ func TestSigIS(t *testing.T) {
 		case 0x13:
 			value = "Positive certification of a User ID and Public-Key packet (0x13)"
 		case 0x16:
-			value = "Attestion Key Signature (0x16)"
+			value = "Attested Key Signature (0x16)"
 		case 0x18:
 			value = "Subkey Binding Signature (0x18)"
 		case 0x19:

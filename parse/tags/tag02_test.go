@@ -213,9 +213,9 @@ const (
 		Issuer <critical> (sub 16): 0x910e554478ccde00
 	Hash left 2 bytes
 		bd fc
-	EdDSA compressed value r (253 bits)
+	EC point r (253 bits)
 		17 e2 b2 a9 a4 dd 49 9c 67 e8 a2 9d 82 b7 0e 8a e9 ee c4 0d 69 67 f6 cf d9 36 01 58 b5 e8 8a b4
-	EdDSA compressed value s (251 bits)
+	EdDSA value s in the little endian representation (251 bits)
 		04 e6 f4 ad 9a 49 cf 58 ba 56 c9 70 51 77 5c a4 09 0f 3b ca 78 3c a4 9e 89 3e 4d 5c d8 21 53 08
 `
 	tag02Redult7 = `Signature Packet (tag 2) (150 bytes)
@@ -287,9 +287,9 @@ const (
 			Flag: No-modify
 	Hash left 2 bytes
 		f5 c0
-	EdDSA compressed value r (254 bits)
+	EC point r (254 bits)
 		38 91 df 23 2c 64 c7 84 43 8d 2e ea ec c4 a1 76 ba 51 77 95 fd 2d f0 c0 90 17 44 9c bd 33 cb 34
-	EdDSA compressed value s (255 bits)
+	EdDSA value s in the little endian representation (255 bits)
 		6f b8 bf fb 03 24 df 15 7c 30 cd 28 c3 9d 89 b3 4b 4a 80 85 b2 c3 43 ae 37 37 e3 17 18 12 76 05
 `
 	tag02Redult8 = `Signature Packet (tag 2) (140 bytes)
@@ -322,9 +322,9 @@ const (
 		Issuer (sub 16): 0x729b523d11f3a8d7
 	Hash left 2 bytes
 		b1 15
-	EdDSA compressed value r (256 bits)
+	EC point r (256 bits)
 		df 01 42 f0 f3 7d 8c ec 85 25 a9 34 eb f3 96 a6 56 69 40 23 2f 04 40 4a 26 5f a1 25 96 0b 35 d2
-	EdDSA compressed value s (256 bits)
+	EdDSA value s in the little endian representation (256 bits)
 		f1 19 6b 2d 34 e0 bf c7 0f 40 80 e8 ef 25 f5 e9 90 c8 30 a0 95 89 13 cb 60 08 cf 3a 5e 16 f0 01
 `
 )

@@ -23,9 +23,9 @@ const (
 		0a d3 c0 23 f3 ed cd af 9b 19 6f ee c4 65 44 b5 08 e8 27 6c 3a a8 6e 3b 52 9f 61 7a ea ee 27 48
 `
 	pubkeySigResult22 = `
-	EdDSA compressed value r (253 bits)
+	EC point r (253 bits)
 		17 e2 b2 a9 a4 dd 49 9c 67 e8 a2 9d 82 b7 0e 8a e9 ee c4 0d 69 67 f6 cf d9 36 01 58 b5 e8 8a b4
-	EdDSA compressed value s (251 bits)
+	EdDSA value s in the little endian representation (251 bits)
 		04 e6 f4 ad 9a 49 cf 58 ba 56 c9 70 51 77 5c a4 09 0f 3b ca 78 3c a4 9e 89 3e 4d 5c d8 21 53 08
 `
 	pubkeySigResultUnknown = `
