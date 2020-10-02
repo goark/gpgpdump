@@ -24,7 +24,7 @@ var (
 	cxt         = context.New()
 )
 
-func ExampleParse() {
+func ExampleParser_Parse() {
 	p, err := parse.NewBytes(cxt, openpgpData)
 	if err != nil {
 		return

@@ -18,7 +18,7 @@ type sub38 struct {
 
 //newSub38 return sub38 instance
 func newSub38(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &subReserved{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
+	return &sub38{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
 // Parse parsing Key Block Sub-packet
