@@ -53,7 +53,7 @@ func (p *pubkeyInfo) parseV3(parent *result.Item) error {
 		return errs.New("illegal Key Creation Time", errs.WithCause(err))
 	}
 	p.cxt.KeyCreationTime = tm
-	parent.Add(values.PubKeyTimeItem(tm, true))
+	parent.Add(values.PubKeyTimeItem(tm, p.cxt.Debug()))
 	// [05] two-octet number denoting the time in days that this key is valid.
 	days, err := p.reader.ReadBytes(2)
 	if err != nil {
@@ -84,7 +84,7 @@ func (p *pubkeyInfo) parseV4(parent *result.Item) error {
 		return errs.New("illegal Key Creation Time", errs.WithCause(err))
 	}
 	p.cxt.KeyCreationTime = tm
-	parent.Add(values.PubKeyTimeItem(tm, true))
+	parent.Add(values.PubKeyTimeItem(tm, p.cxt.Debug()))
 	// [05] one-octet number denoting the public-key algorithm of this key.
 	pubid, err := p.reader.ReadByte()
 	if err != nil {
@@ -105,7 +105,7 @@ func (p *pubkeyInfo) parseV5(parent *result.Item) error {
 		return errs.New("illegal Key Creation Time", errs.WithCause(err))
 	}
 	p.cxt.KeyCreationTime = tm
-	parent.Add(values.PubKeyTimeItem(tm, true))
+	parent.Add(values.PubKeyTimeItem(tm, p.cxt.Debug()))
 	// [05] one-octet number denoting the public-key algorithm of this key.
 	pubid, err := p.reader.ReadByte()
 	if err != nil {
