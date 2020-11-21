@@ -12,26 +12,34 @@ const (
 	ErrInvalidWhence
 	ErrInvalidOffset
 	ErrUserID
+	ErrGitHubUserID
+	ErrNoKey
+	ErrNoURL
+	ErrInvalidRequest
 	ErrHTTPStatus
 	ErrEmptyKeyServer
 )
 
 var errMessage = map[ECode]string{
-	ErrNullPointer:    "Null reference instance",
-	ErrInvalidOption:  "Invalid option",
-	ErrArmorText:      "Cannot find OpenPGP armor boundary",
-	ErrInvalidWhence:  "Invalid whence",
-	ErrInvalidOffset:  "Invalid offset",
-	ErrUserID:         "No user id",
-	ErrEmptyKeyServer: "Empty name of key serve",
-	ErrHTTPStatus:     "Bad HTTP(S) status",
+	ErrNullPointer:    "null reference instance",
+	ErrInvalidOption:  "invalid option",
+	ErrArmorText:      "cannot find OpenPGP armor boundary",
+	ErrInvalidWhence:  "invalid whence",
+	ErrInvalidOffset:  "invalid offset",
+	ErrUserID:         "no user id",
+	ErrGitHubUserID:   "no GitHub user id",
+	ErrNoKey:          "not exist OpenPGP key",
+	ErrNoURL:          "no URL",
+	ErrInvalidRequest: "invalid request",
+	ErrEmptyKeyServer: "empty name of key serve",
+	ErrHTTPStatus:     "bad HTTP(S) status",
 }
 
 func (e ECode) Error() string {
 	if s, ok := errMessage[e]; ok {
 		return s
 	}
-	return fmt.Sprintf("Unknown error (%d)", int(e))
+	return fmt.Sprintf("unknown error (%d)", int(e))
 }
 
 /* Copyright 2019 Spiegel

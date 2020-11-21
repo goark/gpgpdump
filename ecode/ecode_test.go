@@ -10,16 +10,20 @@ func TestNumError(t *testing.T) {
 		err error
 		str string
 	}{
-		{err: ECode(0), str: "Unknown error (0)"},
-		{err: ErrNullPointer, str: "Null reference instance"},
-		{err: ErrInvalidOption, str: "Invalid option"},
-		{err: ErrArmorText, str: "Cannot find OpenPGP armor boundary"},
-		{err: ErrInvalidWhence, str: "Invalid whence"},
-		{err: ErrInvalidOffset, str: "Invalid offset"},
-		{err: ErrUserID, str: "No user id"},
-		{err: ErrEmptyKeyServer, str: "Empty name of key serve"},
-		{err: ErrHTTPStatus, str: "Bad HTTP(S) status"},
-		{err: ECode(9), str: "Unknown error (9)"},
+		{err: ECode(0), str: "unknown error (0)"},
+		{err: ErrNullPointer, str: "null reference instance"},
+		{err: ErrInvalidOption, str: "invalid option"},
+		{err: ErrArmorText, str: "cannot find OpenPGP armor boundary"},
+		{err: ErrInvalidWhence, str: "invalid whence"},
+		{err: ErrInvalidOffset, str: "invalid offset"},
+		{err: ErrUserID, str: "no user id"},
+		{err: ErrGitHubUserID, str: "no GitHub user id"},
+		{err: ErrNoKey, str: "not exist OpenPGP key"},
+		{err: ErrNoURL, str: "no URL"},
+		{err: ErrInvalidRequest, str: "invalid request"},
+		{err: ErrEmptyKeyServer, str: "empty name of key serve"},
+		{err: ErrHTTPStatus, str: "bad HTTP(S) status"},
+		{err: ECode(13), str: "unknown error (13)"},
 	}
 
 	for _, tc := range testCases {

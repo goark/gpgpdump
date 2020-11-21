@@ -84,9 +84,15 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 
 	rootCmd.SilenceUsage = true
 	rootCmd.SetArgs(args)
-	rootCmd.SetOutput(ui.ErrorWriter())
-	rootCmd.AddCommand(newVersionCmd(ui))
-	rootCmd.AddCommand(newHkpCmd(ui))
+	rootCmd.SetIn(ui.Reader())       //Stdin
+	rootCmd.SetOut(ui.ErrorWriter()) //Stdout -> Stderr
+	rootCmd.SetErr(ui.ErrorWriter()) //Stderr
+	rootCmd.AddCommand(
+		newVersionCmd(ui),
+		newHkpCmd(ui),
+		newGitHubCmd(ui),
+		newFetchCmd(ui),
+	)
 
 	return rootCmd
 }

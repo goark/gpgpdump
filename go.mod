@@ -3,10 +3,10 @@ module github.com/spiegel-im-spiegel/gpgpdump
 go 1.15
 
 require (
-	github.com/spf13/cobra v1.0.1-0.20201006035406-b97b5ead31f7
+	github.com/spf13/cobra v1.1.1
 	github.com/spiegel-im-spiegel/errs v1.0.2
 	github.com/spiegel-im-spiegel/gocli v0.10.3
-	golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee
+	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9
 )
 
 replace github.com/coreos/etcd v3.3.13+incompatible => github.com/coreos/etcd v3.3.25+incompatible
