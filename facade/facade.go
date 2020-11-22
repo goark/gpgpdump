@@ -71,8 +71,8 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
 	rootCmd.Flags().StringVarP(&filePath, "file", "f", "", "path of OpenPGP file")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
-	rootCmd.PersistentFlags().IntVarP(&indentSize, "indent", "", 0, "indent size for output string")
-	rootCmd.PersistentFlags().BoolP(context.ARMOR.String(), "a", false, "accepts ASCII input only")
+	rootCmd.PersistentFlags().IntVarP(&indentSize, "indent", "", 0, "indent size for output text")
+	rootCmd.PersistentFlags().BoolP(context.ARMOR.String(), "a", false, "accepts ASCII armor text only")
 	rootCmd.PersistentFlags().BoolP(context.CERT.String(), "c", false, "dumps attested certification in signature packets (tag 2)")
 	rootCmd.PersistentFlags().BoolP(context.DEBUG.String(), "", false, "for debug") //not use
 	//rootCmd.PersistentFlags().BoolP(context.GDUMP.String(), "g", false, "selects alternate (GnuPG type) dump format") //not use

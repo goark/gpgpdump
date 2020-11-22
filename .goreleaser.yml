@@ -42,6 +42,7 @@ archives:
   files:
   - LICENSE*
   - README*
+  - dependency.png
 
 changelog:
   sort: asc

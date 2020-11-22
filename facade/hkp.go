@@ -21,13 +21,13 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 	hkpCmd := &cobra.Command{
 		Use:     "hkp [flags] <user ID or key ID>",
 		Aliases: []string{"h"},
-		Short:   "Dumps from OpenPGP key server",
-		Long:    "Dumps from OpenPGP key server",
+		Short:   "Dumps OpenPGP packets from the key server",
+		Long:    "Dumps OpenPGP packets from the key server.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cxt := parseContext(cmd)
 			//user id
-			if len(args) == 0 {
-				return debugPrint(ui, ecode.ErrUserID)
+			if len(args) != 1 {
+				return debugPrint(ui, errs.Wrap(os.ErrInvalid, errs.WithContext("args", args)))
 			}
 			userID := args[0]
 

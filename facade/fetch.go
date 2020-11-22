@@ -8,7 +8,6 @@ import (
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gocli/signal"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 	"github.com/spiegel-im-spiegel/gpgpdump/fetch"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse"
 )
@@ -18,13 +17,13 @@ func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 	fetchCmd := &cobra.Command{
 		Use:     "fetch [flags] <URL>",
 		Aliases: []string{"fch", "f"},
-		Short:   "Dumps OpenPGP packets form Web",
-		Long:    "Dumps OpenPGP packets form Web.",
+		Short:   "Dumps OpenPGP packets form the Web",
+		Long:    "Dumps OpenPGP packets form the Web.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cxt := parseContext(cmd)
 			//user id
-			if len(args) == 0 {
-				return debugPrint(ui, ecode.ErrNoURL)
+			if len(args) != 1 {
+				return debugPrint(ui, errs.Wrap(os.ErrInvalid, errs.WithContext("args", args)))
 			}
 			urlStr := args[0]
 
@@ -62,7 +61,7 @@ func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 			return debugPrint(ui, ui.WriteFrom(r))
 		},
 	}
-	fetchCmd.Flags().BoolP("raw", "", false, "output raw text from GitHub")
+	fetchCmd.Flags().BoolP("raw", "", false, "output raw data")
 
 	return fetchCmd
 }

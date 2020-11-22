@@ -9,8 +9,7 @@ import (
 
 var versionStrings = []string{ //output message of version
 	Name + " " + Version,
-	"Copyright 2016-2020 Spiegel (based on pgpdump design by kazu-yamamoto)",
-	"Licensed under Apache License, Version 2.0",
+	"repository: https://github.com/spiegel-im-spiegel/gpgpdump",
 }
 
 func getVersion() string {

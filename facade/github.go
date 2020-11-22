@@ -26,8 +26,8 @@ func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cxt := parseContext(cmd)
 			//user id
-			if len(args) == 0 {
-				return debugPrint(ui, ecode.ErrGitHubUserID)
+			if len(args) != 1 {
+				return debugPrint(ui, errs.Wrap(os.ErrInvalid, errs.WithContext("args", args)))
 			}
 			userID := args[0]
 
@@ -76,7 +76,7 @@ func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 		},
 	}
 	githubCmd.Flags().StringP("keyid", "", "", "OpenPGP key ID")
-	githubCmd.Flags().BoolP("raw", "", false, "output raw text from GitHub")
+	githubCmd.Flags().BoolP("raw", "", false, "output raw text (ASCII armor text)")
 
 	return githubCmd
 }
