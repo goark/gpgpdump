@@ -91,7 +91,7 @@ func TestPubKeyTimeItem(t *testing.T) {
 	if err != nil {
 		t.Errorf("NewDateTime() = \"%+v\", want nil error.", err)
 	}
-	itm := PubKeyTimeItem(dt, true)
+	itm := PubKeyTimeItem(dt, true) //for debug
 	if itm.Name != name {
 		t.Errorf("FileTimeItem() = \"%v\", want \"%v\".", itm.Name, name)
 	}

@@ -31,17 +31,19 @@ Usage:
   gpgpdump [command]
 
 Available Commands:
+  fetch       Dumps OpenPGP packets form the Web
+  github      Dumps OpenPGP keys registered on GitHub
   help        Help about any command
-  hkp         Dumps from OpenPGP key server
+  hkp         Dumps OpenPGP packets from the key server
   version     Print the version number
 
 Flags:
-  -a, --armor         accepts ASCII input only
+  -a, --armor         accepts ASCII armor text only
   -c, --cert          dumps attested certification in signature packets (tag 2)
       --debug         for debug
   -f, --file string   path of OpenPGP file
   -h, --help          help for gpgpdump
-      --indent int    indent size for output string
+      --indent int    indent size for output text
   -i, --int           dumps multi-precision integers
   -j, --json          output with JSON format
   -l, --literal       dumps literal packets (tag 11)
@@ -141,10 +143,13 @@ $ cat testdata/eccsig.asc | gpgpdump -j -u | jq .
 
 ```
 $ gpgpdump hkp -h
-Dumps from OpenPGP key server
+Dumps OpenPGP packets from the key server.
 
 Usage:
   gpgpdump hkp [flags] <user ID or key ID>
+
+Aliases:
+  hkp, h
 
 Flags:
   -h, --help               help for hkp
@@ -154,10 +159,10 @@ Flags:
       --secure             enable HKP over HTTPS
 
 Global Flags:
-  -a, --armor        accepts ASCII input only
+  -a, --armor        accepts ASCII armor text only
   -c, --cert         dumps attested certification in signature packets (tag 2)
       --debug        for debug
-      --indent int   indent size for output string
+      --indent int   indent size for output text
   -i, --int          dumps multi-precision integers
   -j, --json         output with JSON format
   -l, --literal      dumps literal packets (tag 11)
@@ -169,91 +174,95 @@ $ gpgpdump hkp -u --indent 2 0x44ce6900e2b307a4
 Public-Key Packet (tag 6) (269 bytes)
   Version: 4 (current)
   Public key creation time: 2009-11-08T15:20:55Z
-    4a f6 e1 d7
   Public-key Algorithm: RSA (Encrypt or Sign) (pub 1)
   RSA public modulus n (2048 bits)
   RSA public encryption exponent e (17 bits)
-User ID Packet (tag 13) (25 bytes)
-  User ID: Alice <alice@example.com>
-Signature Packet (tag 2) (140 bytes)
-  Version: 4 (current)
-  Signiture Type: Generic certification of a User ID and Public-Key packet (0x10)
-  Public-key Algorithm: EdDSA (pub 22)
-  Hash Algorithm: SHA2-256 (hash 8)
-  Hashed Subpacket (52 bytes)
-    Issuer Fingerprint (sub 33) (21 bytes)
-      Version: 4 (need 20 octets length)
-      Fingerprint (20 bytes)
-        3b cc c7 cf d2 59 7e 53 44 dd 96 4a 72 9b 52 3d 11 f3 a8 d7
-    Signature Creation Time (sub 2): 2020-06-22T01:57:38Z
-    Notation Data (sub 20) (21 bytes)
-      Flag: Human-readable
-      Name: rem@gnupg.org
-      Value (0 byte)
-  Unhashed Subpacket (10 bytes)
-    Issuer (sub 16): 0x729b523d11f3a8d7
-  Hash left 2 bytes
-    b1 15
-  EdDSA compressed value r (256 bits)
-  EdDSA compressed value s (256 bits)
-Signature Packet (tag 2) (312 bytes)
-  Version: 4 (current)
-  Signiture Type: Positive certification of a User ID and Public-Key packet (0x13)
-  Public-key Algorithm: RSA (Encrypt or Sign) (pub 1)
-  Hash Algorithm: SHA-1 (hash 2)
-  Hashed Subpacket (34 bytes)
-    Signature Creation Time (sub 2): 2009-11-08T15:20:55Z
-    Key Flags (sub 27) (1 bytes)
-      Flag: This key may be used to certify other keys.
-      Flag: This key may be used to sign data.
-    Preferred Symmetric Algorithms (sub 11) (5 bytes)
-      Symmetric Algorithm: AES with 256-bit key (sym 9)
-      Symmetric Algorithm: AES with 192-bit key (sym 8)
-      Symmetric Algorithm: AES with 128-bit key (sym 7)
-      Symmetric Algorithm: CAST5 (128 bit key, as per) (sym 3)
-      Symmetric Algorithm: TripleDES (168 bit key derived from 192) (sym 2)
-    Preferred Hash Algorithms (sub 21) (5 bytes)
-      Hash Algorithm: SHA2-256 (hash 8)
-      Hash Algorithm: SHA-1 (hash 2)
-      Hash Algorithm: SHA2-384 (hash 9)
-      Hash Algorithm: SHA2-512 (hash 10)
-      Hash Algorithm: SHA2-224 (hash 11)
-    Preferred Compression Algorithms (sub 22) (3 bytes)
-      Compression Algorithm: ZLIB <RFC1950> (comp 2)
-      Compression Algorithm: BZip2 (comp 3)
-      Compression Algorithm: ZIP <RFC1951> (comp 1)
-    Features (sub 30) (1 bytes)
-      Flag: Modification Detection (packets 18 and 19)
-    Key Server Preferences (sub 23) (1 bytes)
-      Flag: No-modify
-  Unhashed Subpacket (10 bytes)
-    Issuer (sub 16): 0x44ce6900e2b307a4
-  Hash left 2 bytes
-    93 62
-  RSA signature value m^d mod n (2045 bits)
-Public-Subkey Packet (tag 14) (269 bytes)
-  Version: 4 (current)
-  Public key creation time: 2009-11-08T15:20:55Z
-    4a f6 e1 d7
-  Public-key Algorithm: RSA (Encrypt or Sign) (pub 1)
-  RSA public modulus n (2048 bits)
-  RSA public encryption exponent e (17 bits)
-Signature Packet (tag 2) (287 bytes)
-  Version: 4 (current)
-  Signiture Type: Subkey Binding Signature (0x18)
-  Public-key Algorithm: RSA (Encrypt or Sign) (pub 1)
-  Hash Algorithm: SHA-1 (hash 2)
-  Hashed Subpacket (9 bytes)
-    Signature Creation Time (sub 2): 2009-11-08T15:20:55Z
-    Key Flags (sub 27) (1 bytes)
-      Flag: This key may be used to encrypt communications.
-      Flag: This key may be used to encrypt storage.
-  Unhashed Subpacket (10 bytes)
-    Issuer (sub 16): 0x44ce6900e2b307a4
-  Hash left 2 bytes
-    66 f3
-  RSA signature value m^d mod n (2048 bits)
+...
 ```
+
+### GitHub Access Mode
+
+```
+$ gpgpdump github -h
+Dumps OpenPGP keys registered on GitHub.
+
+Usage:
+  gpgpdump github [flags] <GitHub user ID>
+
+Aliases:
+  github, gh, g
+
+Flags:
+  -h, --help           help for github
+      --keyid string   OpenPGP key ID
+      --raw            output raw text (ASCII armor text)
+
+Global Flags:
+  -a, --armor        accepts ASCII armor text only
+  -c, --cert         dumps attested certification in signature packets (tag 2)
+      --debug        for debug
+      --indent int   indent size for output text
+  -i, --int          dumps multi-precision integers
+  -j, --json         output with JSON format
+  -l, --literal      dumps literal packets (tag 11)
+  -m, --marker       dumps marker packets (tag 10)
+  -p, --private      dumps private packets (tag 60-63)
+  -u, --utc          output with UTC time
+
+$ gpgpdump github spiegel-im-spiegel --keyid 0x3b460ba9a59048c9 -u --indent 2
+Public-Key Packet (tag 6) (51 bytes)
+  Version: 4 (current)
+  Public key creation time: 2020-10-27T06:20:19Z
+  Public-key Algorithm: EdDSA (pub 22)
+  ECC Curve OID: ed25519 (256bits key size)
+    2b 06 01 04 01 da 47 0f 01
+  EdDSA EC point (Native point format of the curve follows) (263 bits)
+...
+```
+
+### Fetch from the Web
+
+```
+$ gpgpdump fetch -h
+Dumps OpenPGP packets form the Web.
+
+Usage:
+  gpgpdump fetch [flags] <URL>
+
+Aliases:
+  fetch, fch, f
+
+Flags:
+  -h, --help   help for fetch
+      --raw    output raw data
+
+Global Flags:
+  -a, --armor        accepts ASCII armor text only
+  -c, --cert         dumps attested certification in signature packets (tag 2)
+      --debug        for debug
+      --indent int   indent size for output text
+  -i, --int          dumps multi-precision integers
+  -j, --json         output with JSON format
+  -l, --literal      dumps literal packets (tag 11)
+  -m, --marker       dumps marker packets (tag 10)
+  -p, --private      dumps private packets (tag 60-63)
+  -u, --utc          output with UTC time
+
+$ gpgpdump fetch https://github.com/spiegel-im-spiegel.gpg -u --indent 2
+Public-Key Packet (tag 6) (1198 bytes)
+  Version: 4 (current)
+  Public key creation time: 2013-04-28T10:29:43Z
+  Public-key Algorithm: DSA (Digital Signature Algorithm) (pub 17)
+  DSA p (3072 bits)
+  DSA q (q is a prime divisor of p-1) (256 bits)
+  DSA g (3070 bits)
+  DSA y (= g^x mod p where x is secret) (3067 bits)
+...
+```
+
+## Modules Requirement Graph
+
+[![dependency.png](./dependency.png)](./dependency.png)
 
 [gpgpdump]: https://github.com/spiegel-im-spiegel/gpgpdump "spiegel-im-spiegel/gpgpdump: gpgpdump - OpenPGP packet visualizer"
 [RFC 4880]: https://tools.ietf.org/html/rfc4880

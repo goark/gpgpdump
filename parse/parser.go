@@ -1,15 +1,13 @@
 package parse
 
 import (
-	"bufio"
 	"bytes"
-	"fmt"
 	"io"
-	"strings"
 
 	"golang.org/x/crypto/openpgp/armor"
 
 	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/gpgpdump/armtext"
 	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
@@ -59,44 +57,15 @@ func newParser(cxt *context.Context, reader io.Reader, info *result.Info) (*Pars
 }
 
 func newReaderArmor(r io.Reader) (io.Reader, error) {
-	buf := getASCIIArmorText(r)
-	if buf == nil {
-		return nil, errs.Wrap(ecode.ErrArmorText)
+	buf, err := armtext.Get(r)
+	if err != nil {
+		return nil, errs.Wrap(err)
 	}
 	block, err := armor.Decode(buf)
 	if err != nil {
 		return nil, errs.Wrap(err)
 	}
 	return block.Body, nil
-}
-
-const (
-	armorBoundery       = "-----BEGIN PGP"
-	armorBounderyExcept = "-----BEGIN PGP SIGNED"
-)
-
-func getASCIIArmorText(r io.Reader) *bytes.Buffer {
-	buf := new(bytes.Buffer)
-	armorFlag := false
-	scn := bufio.NewScanner(r)
-	for scn.Scan() {
-		str := scn.Text()
-		if !armorFlag {
-			if strings.HasPrefix(str, armorBoundery) && !strings.HasPrefix(str, armorBounderyExcept) {
-				armorFlag = true
-			}
-		}
-		if armorFlag {
-			fmt.Fprintln(buf, str)
-		}
-	}
-	if err := scn.Err(); err != nil {
-		return nil
-	}
-	if !armorFlag {
-		return nil
-	}
-	return buf
 }
 
 /* Copyright 2017-2020 Spiegel

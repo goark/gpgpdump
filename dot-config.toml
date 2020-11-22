@@ -1,0 +1,4 @@
+[node]
+  fontname = "Inconsolata"
+[edge]
+  color = "red"
