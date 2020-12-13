@@ -23,7 +23,8 @@ func TestNumError(t *testing.T) {
 		{err: ErrInvalidRequest, str: "invalid request"},
 		{err: ErrEmptyKeyServer, str: "empty name of key serve"},
 		{err: ErrHTTPStatus, str: "bad HTTP(S) status"},
-		{err: ECode(13), str: "unknown error (13)"},
+		{err: ErrTooLarge, str: "too laege decompressed data"},
+		{err: ECode(14), str: "unknown error (14)"},
 	}
 
 	for _, tc := range testCases {

@@ -18,6 +18,7 @@ const (
 	ErrInvalidRequest
 	ErrHTTPStatus
 	ErrEmptyKeyServer
+	ErrTooLarge
 )
 
 var errMessage = map[ECode]string{
@@ -33,6 +34,7 @@ var errMessage = map[ECode]string{
 	ErrInvalidRequest: "invalid request",
 	ErrEmptyKeyServer: "empty name of key serve",
 	ErrHTTPStatus:     "bad HTTP(S) status",
+	ErrTooLarge:       "too laege decompressed data",
 }
 
 func (e ECode) Error() string {

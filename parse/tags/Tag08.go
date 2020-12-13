@@ -7,8 +7,10 @@ import (
 	"compress/zlib"
 	"io"
 	"io/ioutil"
+	"strings"
 
 	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
@@ -37,13 +39,14 @@ func (t *Tag08) Parse() (*result.Item, error) {
 	rootInfo.Add(cid.ToItem(t.cxt.Debug()))
 
 	if t.reader.Rest() > 0 {
-		rootInfo.Add(values.RawData(t.reader, "Compressed data", t.cxt.Debug()))
+		item := values.RawData(t.reader, "Compressed data", t.cxt.Debug())
 		var err error
 		switch compID {
 		case 0: //Uncompressed
 			var zd []byte
 			zd, err = t.reader.Read2EOF()
 			if err != nil {
+				rootInfo.Add(item)
 				return rootInfo, errs.New("illegal compressed data", errs.WithCause(err))
 			}
 			t.data = bytes.NewReader(zd)
@@ -55,6 +58,11 @@ func (t *Tag08) Parse() (*result.Item, error) {
 			t.data, err = t.extractBzip2()
 		default:
 		}
+		if err != nil && errs.Is(err, ecode.ErrTooLarge) {
+			item.Value = strings.Join([]string{"(", err.Error(), ")"}, "")
+			err = nil
+		}
+		rootInfo.Add(item)
 		return rootInfo, errs.Wrap(err)
 	}
 	return rootInfo, nil
@@ -65,15 +73,16 @@ func (t *Tag08) Reader() io.Reader {
 	return t.data
 }
 
+const maxDecompressionDataSize = 1024 * 1024 * 1024 //1GB
+
 func (t *Tag08) extractZip() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
 		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
 	}
 	zr := flate.NewReader(bytes.NewReader(zd))
-	buf := new(bytes.Buffer)
-	_, err = io.Copy(buf, zr)
-	return buf, errs.Wrap(err)
+	defer zr.Close()
+	return copyFrom(zr)
 }
 
 func (t *Tag08) extractZLib() (io.Reader, error) {
@@ -85,9 +94,8 @@ func (t *Tag08) extractZLib() (io.Reader, error) {
 	if err != nil {
 		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
 	}
-	buf := new(bytes.Buffer)
-	_, err = io.Copy(buf, zr)
-	return buf, err
+	defer zr.Close()
+	return copyFrom(zr)
 }
 
 func (t *Tag08) extractBzip2() (io.Reader, error) {
@@ -95,10 +103,18 @@ func (t *Tag08) extractBzip2() (io.Reader, error) {
 	if err != nil {
 		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
 	}
-	zr := bzip2.NewReader(bytes.NewReader(zd))
-	buf := new(bytes.Buffer)
-	_, err = io.Copy(buf, zr)
-	return buf, errs.Wrap(err)
+	return copyFrom(bzip2.NewReader(bytes.NewReader(zd)))
+}
+
+func copyFrom(r io.Reader) (*bytes.Buffer, error) {
+	buf := &bytes.Buffer{}
+	if _, err := io.CopyN(buf, r, maxDecompressionDataSize); err != nil {
+		if errs.Is(err, io.EOF) {
+			return buf, nil
+		}
+		return nil, errs.Wrap(err)
+	}
+	return nil, errs.Wrap(ecode.ErrTooLarge)
 }
 
 /* Copyright 2016-2020 Spiegel
