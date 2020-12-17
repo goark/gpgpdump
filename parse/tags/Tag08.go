@@ -59,7 +59,7 @@ func (t *Tag08) Parse() (*result.Item, error) {
 		default:
 		}
 		if err != nil && errs.Is(err, ecode.ErrTooLarge) {
-			item.Value = strings.Join([]string{"(", err.Error(), ")"}, "")
+			item.Value = strings.Join([]string{"<", err.Error(), ">"}, "")
 			err = nil
 		}
 		rootInfo.Add(item)
@@ -78,7 +78,7 @@ const maxDecompressionDataSize = 1024 * 1024 * 1024 //1GB
 func (t *Tag08) extractZip() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
+		return nil, errs.Wrap(err)
 	}
 	zr := flate.NewReader(bytes.NewReader(zd))
 	defer zr.Close()
@@ -88,11 +88,11 @@ func (t *Tag08) extractZip() (io.Reader, error) {
 func (t *Tag08) extractZLib() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
+		return nil, errs.Wrap(err)
 	}
 	zr, err := zlib.NewReader(bytes.NewReader(zd))
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
+		return nil, errs.Wrap(err)
 	}
 	defer zr.Close()
 	return copyFrom(zr)
@@ -101,12 +101,12 @@ func (t *Tag08) extractZLib() (io.Reader, error) {
 func (t *Tag08) extractBzip2() (io.Reader, error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), errs.Wrap(err)
+		return nil, errs.Wrap(err)
 	}
 	return copyFrom(bzip2.NewReader(bytes.NewReader(zd)))
 }
 
-func copyFrom(r io.Reader) (*bytes.Buffer, error) {
+func copyFrom(r io.Reader) (io.Reader, error) {
 	buf := &bytes.Buffer{}
 	if _, err := io.CopyN(buf, r, maxDecompressionDataSize); err != nil {
 		if errs.Is(err, io.EOF) {
