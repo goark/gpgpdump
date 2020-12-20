@@ -10,6 +10,8 @@ import (
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gocli/exitcode"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
+	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
+	"github.com/spiegel-im-spiegel/gpgpdump/facade/clipboard"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
@@ -25,6 +27,7 @@ var (
 var (
 	versionFlag bool //version flag
 	jsonFlag    bool //output with JSON format
+	cbFlag      bool //input from clipboard
 	debugFlag   bool //debug flag
 	indentSize  int
 	filePath    string
@@ -33,7 +36,9 @@ var (
 //newRootCmd returns cobra.Command instance for root command
 func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use: Name,
+		Use:   Name,
+		Short: "OpenPGP packet visualizer",
+		Long:  "OpenPGP (RFC 4880) packet visualizer by golang.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			//options options
 			if versionFlag {
@@ -42,14 +47,27 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 			cxt := parseContext(cmd)
 
 			//open PGP file
-			r := ui.Reader()
-			if len(filePath) > 0 {
+			if cbFlag && len(filePath) > 0 {
+				return debugPrint(ui, errs.Wrap(ecode.ErrClipboard))
+			}
+			var r io.Reader
+			switch {
+			case cbFlag:
+				cb, err := clipboard.NewReader()
+				if err != nil {
+					return debugPrint(ui, errs.Wrap(err))
+				}
+				r = cb
+				cxt.Set(context.ARMOR, true) //ASCII armor text only
+			case len(filePath) > 0:
 				file, err := os.Open(filePath)
 				if err != nil {
 					return debugPrint(ui, errs.Wrap(err))
 				}
 				defer file.Close()
 				r = file
+			default:
+				r = ui.Reader()
 			}
 
 			//options OpenPGP packets
@@ -70,6 +88,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	}
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
 	rootCmd.Flags().StringVarP(&filePath, "file", "f", "", "path of OpenPGP file")
+	rootCmd.Flags().BoolVarP(&cbFlag, "clipboard", "", false, "input from clipboard (ASCII armor text only)")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
 	rootCmd.PersistentFlags().IntVarP(&indentSize, "indent", "", 0, "indent size for output text")
 	rootCmd.PersistentFlags().BoolP(context.ARMOR.String(), "a", false, "accepts ASCII armor text only")

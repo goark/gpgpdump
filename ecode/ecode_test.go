@@ -24,7 +24,8 @@ func TestNumError(t *testing.T) {
 		{err: ErrEmptyKeyServer, str: "empty name of key serve"},
 		{err: ErrHTTPStatus, str: "bad HTTP(S) status"},
 		{err: ErrTooLarge, str: "too laege decompressed data"},
-		{err: ECode(14), str: "unknown error (14)"},
+		{err: ErrClipboard, str: "cannot set --clipborad and --file options at onece"},
+		{err: ECode(15), str: "unknown error (15)"},
 	}
 
 	for _, tc := range testCases {

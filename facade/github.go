@@ -3,14 +3,12 @@ package facade
 import (
 	"bytes"
 	"context"
-	"errors"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gocli/signal"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 	"github.com/spiegel-im-spiegel/gpgpdump/fetch"
 	"github.com/spiegel-im-spiegel/gpgpdump/github"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse"
@@ -50,9 +48,6 @@ func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 				keyid,
 			)
 			if err != nil {
-				if errors.Is(err, ecode.ErrArmorText) {
-					return debugPrint(ui, ui.WriteFrom(bytes.NewReader(resp)))
-				}
 				return debugPrint(ui, err)
 			}
 			if rawFlag {

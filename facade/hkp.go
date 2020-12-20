@@ -3,7 +3,6 @@ package facade
 import (
 	"bytes"
 	"context"
-	"errors"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -68,9 +67,6 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 				userID,
 			)
 			if err != nil {
-				if errors.Is(err, ecode.ErrArmorText) {
-					return debugPrint(ui, ui.WriteFrom(bytes.NewReader(resp)))
-				}
 				return debugPrint(ui, err)
 			}
 			if rawFlag {
