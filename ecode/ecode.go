@@ -19,6 +19,7 @@ const (
 	ErrHTTPStatus
 	ErrEmptyKeyServer
 	ErrTooLarge
+	ErrClipboard
 )
 
 var errMessage = map[ECode]string{
@@ -35,6 +36,7 @@ var errMessage = map[ECode]string{
 	ErrEmptyKeyServer: "empty name of key serve",
 	ErrHTTPStatus:     "bad HTTP(S) status",
 	ErrTooLarge:       "too laege decompressed data",
+	ErrClipboard:       "cannot set --clipborad and --file options at onece",
 }
 
 func (e ECode) Error() string {
