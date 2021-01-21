@@ -3,8 +3,8 @@ package values
 import (
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 )
 
 var tagNames = Msgs{

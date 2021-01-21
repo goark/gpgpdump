@@ -111,6 +111,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 		newHkpCmd(ui),
 		newGitHubCmd(ui),
 		newFetchCmd(ui),
+		newCompletionCmd(ui, rootCmd),
 	)
 
 	return rootCmd

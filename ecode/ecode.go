@@ -1,52 +1,25 @@
 package ecode
 
-import "fmt"
+import "errors"
 
-//ECode is error codes for gpgpdump
-type ECode int
-
-const (
-	ErrNullPointer ECode = iota + 1
-	ErrInvalidOption
-	ErrArmorText
-	ErrInvalidWhence
-	ErrInvalidOffset
-	ErrUserID
-	ErrGitHubUserID
-	ErrNoKey
-	ErrNoURL
-	ErrInvalidRequest
-	ErrHTTPStatus
-	ErrEmptyKeyServer
-	ErrTooLarge
-	ErrClipboard
+var (
+	ErrNullPointer    = errors.New("null reference instance")
+	ErrInvalidOption  = errors.New("invalid option")
+	ErrArmorText      = errors.New("cannot find OpenPGP armor boundary")
+	ErrInvalidWhence  = errors.New("invalid whence")
+	ErrInvalidOffset  = errors.New("invalid offset")
+	ErrUserID         = errors.New("no user id")
+	ErrGitHubUserID   = errors.New("no GitHub user id")
+	ErrNoKey          = errors.New("not exist OpenPGP key")
+	ErrNoURL          = errors.New("no URL")
+	ErrInvalidRequest = errors.New("invalid request")
+	ErrEmptyKeyServer = errors.New("empty name of key serve")
+	ErrHTTPStatus     = errors.New("bad HTTP(S) status")
+	ErrTooLarge       = errors.New("too laege decompressed data")
+	ErrClipboard      = errors.New("cannot set --clipborad and --file options at onece")
 )
 
-var errMessage = map[ECode]string{
-	ErrNullPointer:    "null reference instance",
-	ErrInvalidOption:  "invalid option",
-	ErrArmorText:      "cannot find OpenPGP armor boundary",
-	ErrInvalidWhence:  "invalid whence",
-	ErrInvalidOffset:  "invalid offset",
-	ErrUserID:         "no user id",
-	ErrGitHubUserID:   "no GitHub user id",
-	ErrNoKey:          "not exist OpenPGP key",
-	ErrNoURL:          "no URL",
-	ErrInvalidRequest: "invalid request",
-	ErrEmptyKeyServer: "empty name of key serve",
-	ErrHTTPStatus:     "bad HTTP(S) status",
-	ErrTooLarge:       "too laege decompressed data",
-	ErrClipboard:       "cannot set --clipborad and --file options at onece",
-}
-
-func (e ECode) Error() string {
-	if s, ok := errMessage[e]; ok {
-		return s
-	}
-	return fmt.Sprintf("unknown error (%d)", int(e))
-}
-
-/* Copyright 2019 Spiegel
+/* Copyright 2019-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
