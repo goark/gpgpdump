@@ -7,11 +7,12 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/fetch"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gocli/signal"
-	"github.com/spiegel-im-spiegel/gpgpdump/fetch"
 	"github.com/spiegel-im-spiegel/gpgpdump/github"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse"
+	contxt "github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 )
 
 //newHkpCmd returns cobra.Command instance for show sub-command
@@ -23,6 +24,7 @@ func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 		Long:    "Dumps OpenPGP keys registered on GitHub.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cxt := parseContext(cmd)
+			cxt.Set(contxt.ARMOR, true)
 			//user id
 			if len(args) != 1 {
 				return debugPrint(ui, errs.Wrap(os.ErrInvalid, errs.WithContext("args", args)))
@@ -41,9 +43,8 @@ func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 
 			//Fetch OpenPGP packets
 			resp, err := github.GetKey(
-				fetch.New(
-					fetch.WithContext(signal.Context(context.Background(), os.Interrupt)),
-				),
+				signal.Context(context.Background(), os.Interrupt),
+				fetch.New(),
 				userID,
 				keyid,
 			)
@@ -76,7 +77,7 @@ func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 	return githubCmd
 }
 
-/* Copyright 2019,2020 Spiegel
+/* Copyright 2019-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

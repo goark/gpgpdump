@@ -2,15 +2,18 @@ package github_test
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"testing"
 
+	"github.com/spiegel-im-spiegel/fetch"
 	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
 	"github.com/spiegel-im-spiegel/gpgpdump/github"
 )
@@ -110,37 +113,43 @@ P1FRChSHTwsazDVjP0AKzttqhGYxNw==
 `
 )
 
-type testReader struct {
-	reader *strings.Reader
+type testResponse struct {
+	text   string
+	reader io.ReadCloser
 }
 
-func newTestReader(str string) io.ReadCloser {
-	return &testReader{reader: strings.NewReader(str)}
+func newtestResponse1() *testResponse {
+	return &testResponse{text: inputText1, reader: ioutil.NopCloser(strings.NewReader(inputText1))}
 }
-func (r *testReader) Read(b []byte) (n int, err error) {
-	return r.reader.Read(b)
+func newtestResponse2() *testResponse {
+	return &testResponse{text: inputText2, reader: ioutil.NopCloser(strings.NewReader(inputText2))}
 }
-func (r *testReader) Close() error { return nil }
+func (r *testResponse) Request() *http.Request            { return nil }
+func (r *testResponse) Header() http.Header               { return nil }
+func (r *testResponse) Close()                            {}
+func (r *testResponse) Body() io.ReadCloser               { return r.reader }
+func (r *testResponse) DumpBodyAndClose() ([]byte, error) { return []byte(r.text), nil }
 
-type testClient1 struct{}
+var _ fetch.Response = (*testResponse)(nil)
 
-func (c *testClient1) Get(string) (io.ReadCloser, error) { return newTestReader(inputText1), nil }
-func (c *testClient1) Request(method string, u *url.URL) (*http.Request, error) {
-	return http.NewRequest(method, u.String(), nil)
-}
-func (c *testClient1) Fetch(*http.Request) (io.ReadCloser, error) {
-	return newTestReader(inputText1), nil
+type testClient struct {
+	resp fetch.Response
 }
 
-type testClient2 struct{}
+func newtestClient1() *testClient {
+	return &testClient{resp: newtestResponse1()}
+}
+func newtestClient2() *testClient {
+	return &testClient{resp: newtestResponse2()}
+}
+func (c *testClient) Get(u *url.URL, opts ...fetch.RequestOpts) (fetch.Response, error) {
+	return c.resp, nil
+}
+func (c *testClient) Post(u *url.URL, payload io.Reader, opts ...fetch.RequestOpts) (fetch.Response, error) {
+	return c.resp, nil
+}
 
-func (c *testClient2) Get(string) (io.ReadCloser, error) { return newTestReader(inputText2), nil }
-func (c *testClient2) Request(method string, u *url.URL) (*http.Request, error) {
-	return http.NewRequest(method, u.String(), nil)
-}
-func (c *testClient2) Fetch(*http.Request) (io.ReadCloser, error) {
-	return newTestReader(inputText2), nil
-}
+var _ fetch.Client = (*testClient)(nil)
 
 func TestGet(t *testing.T) {
 	testCases := []struct {
@@ -150,7 +159,7 @@ func TestGet(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		b, err := github.GetKey(&testClient1{}, tc.username, "")
+		b, err := github.GetKey(context.Background(), newtestClient1(), tc.username, "")
 		if err != nil {
 			t.Errorf("github.Get() is \"%+v\", want nil", err)
 			fmt.Printf("Info: %+v\n", err)
@@ -173,7 +182,7 @@ func TestGetKey(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		b, err := github.GetKey(&testClient2{}, tc.username, tc.kid)
+		b, err := github.GetKey(context.Background(), newtestClient2(), tc.username, tc.kid)
 		if !errors.Is(err, tc.err) {
 			t.Errorf("github.Get() is \"%+v\", want \"%+v\"", err, tc.err)
 			fmt.Printf("Info: %+v\n", err)
@@ -183,7 +192,7 @@ func TestGetKey(t *testing.T) {
 	}
 }
 
-/* Copyright 2020 Spiegel
+/* Copyright 2020-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

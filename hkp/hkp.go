@@ -1,14 +1,14 @@
 package hkp
 
 import (
+	"context"
 	"fmt"
-	"net/http"
+	"io"
 	"net/url"
 
 	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/armtext"
+	"github.com/spiegel-im-spiegel/fetch"
 	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
-	"github.com/spiegel-im-spiegel/gpgpdump/fetch"
 )
 
 //Protocol is kind of HKP protocols
@@ -80,7 +80,7 @@ func (s *Server) URL() *url.URL {
 	return &url.URL{Scheme: s.prt.String(), Host: fmt.Sprintf("%s:%d", s.host, s.port)}
 }
 
-func (s *Server) Fetch(cli fetch.Client, userID string) ([]byte, error) {
+func (s *Server) Fetch(ctx context.Context, cli fetch.Client, userID string) (io.ReadCloser, error) {
 	values := url.Values{
 		"search": {userID},
 		"op":     {"get"},
@@ -89,24 +89,14 @@ func (s *Server) Fetch(cli fetch.Client, userID string) ([]byte, error) {
 	u.Path = "/pks/lookup"
 	u.RawQuery = values.Encode()
 
-	req, err := cli.Request(http.MethodGet, u)
+	resp, err := cli.Get(u, fetch.WithContext(ctx))
 	if err != nil {
 		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("url", u.String()))
 	}
-	r, err := cli.Fetch(req)
-	if err != nil {
-		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("url", u.String()))
-	}
-	defer r.Close()
-
-	buf, err := armtext.Get(r)
-	if err != nil {
-		return nil, errs.Wrap(err, errs.WithContext("url", u.String()))
-	}
-	return buf.Bytes(), nil
+	return resp.Body(), nil
 }
 
-/* Copyright 2019 Spiegel
+/* Copyright 2019-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

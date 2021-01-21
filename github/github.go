@@ -1,17 +1,16 @@
 package github
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/armtext"
+	"github.com/spiegel-im-spiegel/fetch"
 	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
-	"github.com/spiegel-im-spiegel/gpgpdump/fetch"
 )
 
 const maxKeys = 100
@@ -19,31 +18,30 @@ const maxKeys = 100
 var maxKeysStr = strconv.Itoa(maxKeys)
 
 //Get returns OpenPGP ASCII armor text from GitHub user profile
-func Get(cli fetch.Client, username string) ([]byte, error) {
-	r, err := cli.Get(makeURL(username))
+func Get(ctx context.Context, cli fetch.Client, username string) ([]byte, error) {
+	resp, err := cli.Get(makeURL(username), fetch.WithContext(ctx))
 	if err != nil {
 		return nil, errs.Wrap(err, errs.WithContext("username", username))
 	}
-	defer r.Close()
-
-	buf, err := armtext.Get(r)
+	b, err := resp.DumpBodyAndClose()
 	if err != nil {
 		return nil, errs.Wrap(err, errs.WithContext("username", username))
 	}
-	return buf.Bytes(), nil
+	return b, nil
 }
 
-func makeURL(username string) string {
-	return fmt.Sprintf("https://github.com/%s.gpg", username)
+func makeURL(username string) *url.URL {
+	u, _ := fetch.URL(fmt.Sprintf("https://github.com/%s.gpg", username))
+	return u
 }
 
 //GetKey returns JSON text for GitHub OpenPGP API
-func GetKey(cli fetch.Client, username string, keyID string) ([]byte, error) {
+func GetKey(ctx context.Context, cli fetch.Client, username string, keyID string) ([]byte, error) {
 	if len(keyID) == 0 {
-		return Get(cli, username)
+		return Get(ctx, cli, username)
 	}
 	for i := 1; ; i++ {
-		keys, err := getInPage(cli, username, i)
+		keys, err := getInPage(ctx, cli, username, i)
 		if err != nil {
 			return nil, errs.Wrap(err, errs.WithContext("username", username), errs.WithContext("keyID", keyID))
 		}
@@ -52,11 +50,7 @@ func GetKey(cli fetch.Client, username string, keyID string) ([]byte, error) {
 				if k.RawKey == nil {
 					return nil, errs.Wrap(ecode.ErrNoKey, errs.WithContext("username", username), errs.WithContext("keyID", keyID))
 				}
-				buf, err := armtext.Get(strings.NewReader(*k.RawKey))
-				if err != nil {
-					return nil, errs.Wrap(ecode.ErrNoKey, errs.WithContext("username", username), errs.WithContext("keyID", keyID))
-				}
-				return buf.Bytes(), nil
+				return []byte(*k.RawKey), nil
 			}
 		}
 		if len(keys) < maxKeys {
@@ -66,24 +60,23 @@ func GetKey(cli fetch.Client, username string, keyID string) ([]byte, error) {
 	return nil, errs.Wrap(ecode.ErrNoKey, errs.WithContext("username", username), errs.WithContext("keyID", keyID))
 }
 
-func getInPage(cli fetch.Client, username string, page int) ([]*OpenPGPKey, error) {
+func getInPage(ctx context.Context, cli fetch.Client, username string, page int) ([]*OpenPGPKey, error) {
 	u, err := makeURLAPI(username, page)
 	if err != nil {
 		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("username", username), errs.WithContext("page", page))
 	}
-	req, err := cli.Request(http.MethodGet, u)
+	resp, err := cli.Get(
+		u,
+		fetch.WithContext(ctx),
+		fetch.WithRequestHeaderSet("Accept", "application/vnd.github.v3+json"),
+	)
 	if err != nil {
-		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("url", u.String()))
+		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("username", username), errs.WithContext("page", page))
 	}
-	req.Header.Add("Accept", "application/vnd.github.v3+json")
-	r, err := cli.Fetch(req)
-	if err != nil {
-		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("url", u.String()))
-	}
-	defer r.Close()
+	defer resp.Close()
 
 	var keys []*OpenPGPKey
-	if err := json.NewDecoder(r).Decode(&keys); err != nil {
+	if err := json.NewDecoder(resp.Body()).Decode(&keys); err != nil {
 		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("url", u.String()))
 	}
 	return keys, nil
@@ -104,7 +97,7 @@ func makeURLAPI(username string, page int) (*url.URL, error) {
 	return u, nil
 }
 
-/* Copyright 2020 Spiegel
+/* Copyright 2020-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
