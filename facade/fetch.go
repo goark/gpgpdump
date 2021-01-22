@@ -6,16 +6,16 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/fetch"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gocli/signal"
-	"github.com/spiegel-im-spiegel/gpgpdump/fetch"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse"
 )
 
 //newHkpCmd returns cobra.Command instance for show sub-command
 func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 	fetchCmd := &cobra.Command{
-		Use:     "fetch [flags] <URL>",
+		Use:     "fetch [flags] URL",
 		Aliases: []string{"fch", "f"},
 		Short:   "Dumps OpenPGP packets form the Web",
 		Long:    "Dumps OpenPGP packets form the Web.",
@@ -25,7 +25,10 @@ func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 			if len(args) != 1 {
 				return debugPrint(ui, errs.Wrap(os.ErrInvalid, errs.WithContext("args", args)))
 			}
-			urlStr := args[0]
+			u, err := fetch.URL(args[0])
+			if err != nil {
+				return debugPrint(ui, err)
+			}
 
 			//options
 			rawFlag, err := cmd.Flags().GetBool("raw")
@@ -34,19 +37,20 @@ func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 			}
 
 			//Fetch OpenPGP packets
-			resp, err := fetch.New(
+			resp, err := fetch.New().Get(
+				u,
 				fetch.WithContext(signal.Context(context.Background(), os.Interrupt)),
-			).Get(urlStr)
+			)
 			if err != nil {
 				return debugPrint(ui, err)
 			}
 			defer resp.Close()
 			if rawFlag {
-				return debugPrint(ui, ui.WriteFrom(resp))
+				return debugPrint(ui, ui.WriteFrom(resp.Body()))
 			}
 
 			//parse OpenPGP packets
-			p, err := parse.New(cxt, resp)
+			p, err := parse.New(cxt, resp.Body())
 			if err != nil {
 				return debugPrint(ui, err)
 			}
@@ -66,7 +70,7 @@ func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 	return fetchCmd
 }
 
-/* Copyright 2019,2020 Spiegel
+/* Copyright 2019-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

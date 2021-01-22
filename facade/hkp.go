@@ -1,29 +1,30 @@
 package facade
 
 import (
-	"bytes"
 	"context"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/fetch"
 	"github.com/spiegel-im-spiegel/gocli/rwi"
 	"github.com/spiegel-im-spiegel/gocli/signal"
 	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
-	"github.com/spiegel-im-spiegel/gpgpdump/fetch"
 	"github.com/spiegel-im-spiegel/gpgpdump/hkp"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse"
+	contxt "github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 )
 
 //newHkpCmd returns cobra.Command instance for show sub-command
 func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 	hkpCmd := &cobra.Command{
-		Use:     "hkp [flags] <user ID or key ID>",
+		Use:     "hkp [flags] {userID | keyID}",
 		Aliases: []string{"h"},
 		Short:   "Dumps OpenPGP packets from the key server",
 		Long:    "Dumps OpenPGP packets from the key server.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cxt := parseContext(cmd)
+			cxt.Set(contxt.ARMOR, true)
 			//user id
 			if len(args) != 1 {
 				return debugPrint(ui, errs.Wrap(os.ErrInvalid, errs.WithContext("args", args)))
@@ -61,20 +62,20 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 				hkp.WithProtocol(prt),
 				hkp.WithPort(port),
 			).Fetch(
-				fetch.New(
-					fetch.WithContext(signal.Context(context.Background(), os.Interrupt)),
-				),
+				signal.Context(context.Background(), os.Interrupt),
+				fetch.New(),
 				userID,
 			)
 			if err != nil {
 				return debugPrint(ui, err)
 			}
+			defer resp.Close()
 			if rawFlag {
-				return debugPrint(ui, ui.WriteFrom(bytes.NewReader(resp)))
+				return debugPrint(ui, ui.WriteFrom(resp))
 			}
 
 			//parse OpenPGP packets
-			p, err := parse.NewBytes(cxt, resp)
+			p, err := parse.New(cxt, resp)
 			if err != nil {
 				return debugPrint(ui, err)
 			}
@@ -97,7 +98,7 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 	return hkpCmd
 }
 
-/* Copyright 2019,2020 Spiegel
+/* Copyright 2019-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

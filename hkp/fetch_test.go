@@ -1,9 +1,10 @@
 package hkp_test
 
 import (
-	"bytes"
+	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/spiegel-im-spiegel/errs"
+	"github.com/spiegel-im-spiegel/fetch"
 	"github.com/spiegel-im-spiegel/gpgpdump/hkp"
 )
 
@@ -62,25 +64,31 @@ P1FRChSHTwsazDVjP0AKzttqhGYxNw==
 </body></html>
 `
 
-type testReader struct {
-	reader *strings.Reader
+type testResponse struct {
+	reader io.ReadCloser
 }
 
-func newTestReader() io.ReadCloser {
-	return &testReader{reader: strings.NewReader(inputText)}
+func newtestResponse() *testResponse {
+	return &testResponse{reader: ioutil.NopCloser(strings.NewReader(inputText))}
 }
-func (r *testReader) Read(b []byte) (n int, err error) {
-	return r.reader.Read(b)
-}
-func (r *testReader) Close() error { return nil }
+func (r *testResponse) Request() *http.Request            { return nil }
+func (r *testResponse) Header() http.Header               { return nil }
+func (r *testResponse) Close()                            {}
+func (r *testResponse) Body() io.ReadCloser               { return r.reader }
+func (r *testResponse) DumpBodyAndClose() ([]byte, error) { return []byte(inputText), nil }
+
+var _ fetch.Response = (*testResponse)(nil)
 
 type testClient struct{}
 
-func (c *testClient) Get(string) (io.ReadCloser, error) { return newTestReader(), nil }
-func (c *testClient) Request(method string, u *url.URL) (*http.Request, error) {
-	return http.NewRequest(method, u.String(), nil)
+var _ fetch.Client = (*testClient)(nil)
+
+func (c *testClient) Get(u *url.URL, opts ...fetch.RequestOpts) (fetch.Response, error) {
+	return newtestResponse(), nil
 }
-func (c *testClient) Fetch(*http.Request) (io.ReadCloser, error) { return newTestReader(), nil }
+func (c *testClient) Post(u *url.URL, payload io.Reader, opts ...fetch.RequestOpts) (fetch.Response, error) {
+	return newtestResponse(), nil
+}
 
 func TestFetch(t *testing.T) {
 	testCases := []struct {
@@ -91,17 +99,18 @@ func TestFetch(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		b, err := hkp.New(tc.host).Fetch(&testClient{}, tc.uid)
+		r, err := hkp.New(tc.host).Fetch(context.Background(), &testClient{}, tc.uid)
 		if err != nil {
 			t.Errorf("Client.Get(\"%v\") is \"%v\", want nil", tc.uid, errs.Cause(err))
 			fmt.Printf("Info: %+v\n", err)
 		} else {
-			_, _ = bytes.NewReader(b).WriteTo(os.Stdout)
+			_, _ = io.Copy(os.Stdout, r)
+			r.Close()
 		}
 	}
 }
 
-/* Copyright 2019,2020 Spiegel
+/* Copyright 2019-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

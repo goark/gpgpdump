@@ -33,6 +33,7 @@ Usage:
   gpgpdump [command]
 
 Available Commands:
+  completion  Generate completion script
   fetch       Dumps OpenPGP packets form the Web
   github      Dumps OpenPGP keys registered on GitHub
   help        Help about any command
@@ -149,7 +150,7 @@ $ gpgpdump hkp -h
 Dumps OpenPGP packets from the key server.
 
 Usage:
-  gpgpdump hkp [flags] <user ID or key ID>
+  gpgpdump hkp [flags] {userID | keyID}
 
 Aliases:
   hkp, h
@@ -190,7 +191,7 @@ $ gpgpdump github -h
 Dumps OpenPGP keys registered on GitHub.
 
 Usage:
-  gpgpdump github [flags] <GitHub user ID>
+  gpgpdump github [flags] GitHubUserID
 
 Aliases:
   github, gh, g
@@ -230,7 +231,7 @@ $ gpgpdump fetch -h
 Dumps OpenPGP packets form the Web.
 
 Usage:
-  gpgpdump fetch [flags] <URL>
+  gpgpdump fetch [flags] URL
 
 Aliases:
   fetch, fch, f
@@ -261,6 +262,40 @@ Public-Key Packet (tag 6) (1198 bytes)
   DSA g (3070 bits)
   DSA y (= g^x mod p where x is secret) (3067 bits)
 ...
+```
+
+### Generate Shell Script for Command Completion
+
+Help for “gpgpdump completion -h”
+
+#### Bash
+
+```
+$ source <(gpgpdump completion bash)
+```
+
+or
+
+```
+$ gpgpdump completion bash > /etc/bash_completion.d/gpgpdump
+```
+
+#### Zsh
+
+```
+$ gpgpdump completion zsh > "${fpath[1]}/_gpgpdump"
+```
+
+#### Fish
+
+```
+$ gpgpdump completion fish > ~/.config/fish/completions/gpgpdump.fish
+```
+
+#### PowerShell
+
+```
+PS> gpgpdump completion powershell | Out-String | Invoke-Expression
 ```
 
 ## Modules Requirement Graph
