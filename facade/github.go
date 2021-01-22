@@ -18,7 +18,7 @@ import (
 //newHkpCmd returns cobra.Command instance for show sub-command
 func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 	githubCmd := &cobra.Command{
-		Use:     "github [flags] <GitHub user ID>",
+		Use:     "github [flags] GitHubUserID",
 		Aliases: []string{"gh", "g"},
 		Short:   "Dumps OpenPGP keys registered on GitHub",
 		Long:    "Dumps OpenPGP keys registered on GitHub.",

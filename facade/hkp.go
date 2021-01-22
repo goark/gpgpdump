@@ -18,7 +18,7 @@ import (
 //newHkpCmd returns cobra.Command instance for show sub-command
 func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 	hkpCmd := &cobra.Command{
-		Use:     "hkp [flags] <user ID or key ID>",
+		Use:     "hkp [flags] {userID | keyID}",
 		Aliases: []string{"h"},
 		Short:   "Dumps OpenPGP packets from the key server",
 		Long:    "Dumps OpenPGP packets from the key server.",

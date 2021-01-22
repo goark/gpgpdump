@@ -15,7 +15,7 @@ import (
 //newHkpCmd returns cobra.Command instance for show sub-command
 func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 	fetchCmd := &cobra.Command{
-		Use:     "fetch [flags] <URL>",
+		Use:     "fetch [flags] URL",
 		Aliases: []string{"fch", "f"},
 		Short:   "Dumps OpenPGP packets form the Web",
 		Long:    "Dumps OpenPGP packets form the Web.",

@@ -150,7 +150,7 @@ $ gpgpdump hkp -h
 Dumps OpenPGP packets from the key server.
 
 Usage:
-  gpgpdump hkp [flags] <user ID or key ID>
+  gpgpdump hkp [flags] {userID | keyID}
 
 Aliases:
   hkp, h
@@ -191,7 +191,7 @@ $ gpgpdump github -h
 Dumps OpenPGP keys registered on GitHub.
 
 Usage:
-  gpgpdump github [flags] <GitHub user ID>
+  gpgpdump github [flags] GitHubUserID
 
 Aliases:
   github, gh, g
@@ -231,7 +231,7 @@ $ gpgpdump fetch -h
 Dumps OpenPGP packets form the Web.
 
 Usage:
-  gpgpdump fetch [flags] <URL>
+  gpgpdump fetch [flags] URL
 
 Aliases:
   fetch, fch, f

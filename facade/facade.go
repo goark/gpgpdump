@@ -88,6 +88,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	}
 	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "output version of "+Name)
 	rootCmd.Flags().StringVarP(&filePath, "file", "f", "", "path of OpenPGP file")
+	_ = rootCmd.MarkFlagFilename("file")
 	rootCmd.Flags().BoolVarP(&cbFlag, "clipboard", "", false, "input from clipboard (ASCII armor text only)")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "output with JSON format")
 	rootCmd.PersistentFlags().IntVarP(&indentSize, "indent", "", 0, "indent size for output text")
@@ -177,7 +178,7 @@ func Execute(ui *rwi.RWI, args []string) (exit exitcode.ExitCode) {
 	return
 }
 
-/* Copyright 2017-2020 Spiegel
+/* Copyright 2017-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
