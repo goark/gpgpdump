@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -119,10 +118,10 @@ type testResponse struct {
 }
 
 func newtestResponse1() *testResponse {
-	return &testResponse{text: inputText1, reader: ioutil.NopCloser(strings.NewReader(inputText1))}
+	return &testResponse{text: inputText1, reader: io.NopCloser(strings.NewReader(inputText1))}
 }
 func newtestResponse2() *testResponse {
-	return &testResponse{text: inputText2, reader: ioutil.NopCloser(strings.NewReader(inputText2))}
+	return &testResponse{text: inputText2, reader: io.NopCloser(strings.NewReader(inputText2))}
 }
 func (r *testResponse) Request() *http.Request            { return nil }
 func (r *testResponse) Header() http.Header               { return nil }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -69,7 +68,7 @@ type testResponse struct {
 }
 
 func newtestResponse() *testResponse {
-	return &testResponse{reader: ioutil.NopCloser(strings.NewReader(inputText))}
+	return &testResponse{reader: io.NopCloser(strings.NewReader(inputText))}
 }
 func (r *testResponse) Request() *http.Request            { return nil }
 func (r *testResponse) Header() http.Header               { return nil }

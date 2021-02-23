@@ -6,7 +6,6 @@ import (
 	"compress/flate"
 	"compress/zlib"
 	"io"
-	"io/ioutil"
 	"strings"
 
 	"github.com/spiegel-im-spiegel/errs"
@@ -25,7 +24,7 @@ type Tag08 struct {
 
 //newTag08 return tag08 instance
 func newTag08(cxt *context.Context, tag values.TagID, body []byte) Tags {
-	return &Tag08{tagInfo: tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}, data: ioutil.NopCloser(bytes.NewReader(nil))}
+	return &Tag08{tagInfo: tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}, data: io.NopCloser(bytes.NewReader(nil))}
 }
 
 // Parse parsing Compressed Data Packet
@@ -117,7 +116,7 @@ func copyFrom(r io.Reader) (io.Reader, error) {
 	return nil, errs.Wrap(ecode.ErrTooLarge)
 }
 
-/* Copyright 2016-2020 Spiegel
+/* Copyright 2016-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
