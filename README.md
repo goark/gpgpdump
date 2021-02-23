@@ -12,10 +12,12 @@
 - Support [RFC 5581] and [RFC 6637]
 - Support a part of [RFC 4880bis]
 
+This package is required Go 1.16 or later.
+
 ## Download and Build
 
 ```
-$ go get github.com/spiegel-im-spiegel/gpgpdump@latest
+$ go install github.com/spiegel-im-spiegel/gpgpdump@latest
 ```
 
 ## Binaries
