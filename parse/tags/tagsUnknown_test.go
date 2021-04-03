@@ -3,8 +3,8 @@ package tags
 import (
 	"testing"
 
+	"github.com/ProtonMail/go-crypto/openpgp/packet"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
-	"golang.org/x/crypto/openpgp/packet"
 )
 
 func TestTagUnknown(t *testing.T) {

@@ -1,11 +1,11 @@
 package tags
 
 import (
+	"github.com/ProtonMail/go-crypto/openpgp/packet"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
-	"golang.org/x/crypto/openpgp/packet"
 )
 
 //tagInfo class as packet result. for all tags

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io"
 
-	"golang.org/x/crypto/openpgp/armor"
+	"github.com/ProtonMail/go-crypto/openpgp/armor"
 
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/armtext"
