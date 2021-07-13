@@ -17,5 +17,6 @@
 # Other files and directories
 *.bak
 dist/
+.task/
 pgpdump/
 work/
