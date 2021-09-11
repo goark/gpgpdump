@@ -3,6 +3,7 @@ package values
 import (
 	"encoding/binary"
 	"fmt"
+	"math"
 
 	"github.com/spiegel-im-spiegel/errs"
 	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
@@ -37,7 +38,7 @@ func (e *Expire) ToItem(name string, dumpFlag bool) *result.Item {
 	}
 	return result.NewItem(
 		result.Name(name),
-		result.Value(fmt.Sprintf("%v days after", float64(exp)/86400.0)),
+		result.Value(fmt.Sprintf("%v days after", math.Ceil(float64(exp)/86400.0))),
 		result.Note(endDay),
 		result.DumpStr(DumpBytes(e.day, dumpFlag).String()),
 	)

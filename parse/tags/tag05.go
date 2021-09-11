@@ -20,6 +20,7 @@ func newTag05(cxt *context.Context, tag values.TagID, body []byte) Tags {
 
 // Parse parsing Secret-Key Packet
 func (t *tag05) Parse() (*result.Item, error) {
+	t.cxt.KeyCreationTime = nil //clear key creation time
 	rootInfo := t.ToItem()
 	// [00] One-octet version number.
 	v, err := t.reader.ReadByte()

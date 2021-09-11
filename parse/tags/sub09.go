@@ -25,7 +25,7 @@ func (s *sub09) Parse() (*result.Item, error) {
 	if err != nil {
 		return rootInfo, errs.New("illegal Key Expiration Time", errs.WithCause(err))
 	}
-	s.cxt.KeyCreationTime = nil
+	//s.cxt.KeyCreationTime = nil // never clear key creation time
 	return exp.ToItem(rootInfo.Name, s.cxt.Debug()), nil
 }
 
