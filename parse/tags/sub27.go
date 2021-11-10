@@ -43,8 +43,8 @@ func (s *sub27) Parse() (*result.Item, error) {
 		if err != nil {
 			return rootInfo, errs.New("illegal flag", errs.WithCause(err))
 		}
-		rootInfo.Add(values.Flag2Item(flag&0x04, "This key may be used as an additional decryption subkey (ADSK)."))
-		rootInfo.Add(values.Flag2Item(flag&0x08, "This key may be used for timestamping."))
+		rootInfo.Add(values.Flag2Item(flag&0x04, "Reserved (ADSK)."))
+		rootInfo.Add(values.Flag2Item(flag&0x08, "Reserved (timestamping)."))
 		rootInfo.Add(values.Flag2Item(flag&0xf3, fmt.Sprintf("Unknown flag2(%#02x)", flag&0xf3)))
 	}
 
@@ -58,7 +58,7 @@ func (s *sub27) Parse() (*result.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2020 Spiegel
+/* Copyright 2016-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

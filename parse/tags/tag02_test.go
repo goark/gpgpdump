@@ -251,7 +251,7 @@ const (
 				07
 			Symmetric Algorithm: TripleDES (168 bit key derived from 192) (sym 2)
 				02
-		Preferred AEAD Algorithms (sub 34) (2 bytes)
+		Reserved (Preferred AEAD Algorithms) (sub 34) (2 bytes)
 			02 01
 			AEAD Algorithm: OCB mode <RFC7253> (aead 2)
 				02
@@ -280,8 +280,8 @@ const (
 		Features (sub 30) (1 bytes)
 			07
 			Flag: Modification Detection (packets 18 and 19)
-			Flag: AEAD Encrypted Data Packet (packet 20) and version 5 Symmetric-Key Encrypted Session Key Packets (packet 3)
-			Flag: Version 5 Public-Key Packet format and corresponding new fingerprint format
+			Flag: AEAD Encrypted Data (packet 20)
+			Flag: Reserved
 		Key Server Preferences (sub 23) (1 bytes)
 			80
 			Flag: No-modify
@@ -376,7 +376,7 @@ func TestTag02(t *testing.T) {
 	}
 }
 
-/* Copyright 2017-2020 Spiegel
+/* Copyright 2017-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
