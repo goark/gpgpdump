@@ -39,6 +39,7 @@ func (s *S2K) Parse(parent *result.Item, dumpFlag bool) error {
 		//0x00: Simple S2K
 		//0x01: Salted S2K
 		//0x03: Iterated and Salted S2K
+		//0x04: Argon2
 		hashid, err := s.reader.ReadByte()
 		if err != nil {
 			return errs.New("invalid hash ID", errs.WithCause(err))
@@ -61,6 +62,28 @@ func (s *S2K) Parse(parent *result.Item, dumpFlag bool) error {
 			}
 			itm.Add(values.Stretch(ct).ToItem())
 		}
+	case 0x04:
+		//0x04: Argon2
+		salt, err := s.reader.ReadBytes(16)
+		if err != nil {
+			return errs.New("salt value", errs.WithCause(err))
+		}
+		itm.Add(values.Salt(salt).ToItem(true))
+		t, err := s.reader.ReadByte()
+		if err != nil {
+			return errs.New("invalid stretch count ID", errs.WithCause(err))
+		}
+		itm.Add(values.Argon2Params(t).ToItem("number of passes t"))
+		p, err := s.reader.ReadByte()
+		if err != nil {
+			return errs.New("invalid stretch count ID", errs.WithCause(err))
+		}
+		itm.Add(values.Argon2Params(p).ToItem("degree of parallelism p"))
+		m, err := s.reader.ReadByte()
+		if err != nil {
+			return errs.New("invalid stretch count ID", errs.WithCause(err))
+		}
+		itm.Add(values.Argon2Params(m).ToItem("exponent indicating the memory size m"))
 	case 101:
 		//Private/Experimental algorithm (s2k 101)
 		//GNU-divert-to-card S2K format
@@ -110,7 +133,7 @@ func (s *S2K) HasIV() bool {
 	return s.hasIV
 }
 
-/* Copyright 2016-2020 Spiegel
+/* Copyright 2016-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

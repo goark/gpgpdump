@@ -42,11 +42,11 @@ var testSubpacketNames = []string{
 	"Signature Target (sub 31)",                       //31
 	"Embedded Signature (sub 32)",                     //32
 	"Issuer Fingerprint (sub 33)",                     //33
-	"Preferred AEAD Algorithms (sub 34)",              //34
+	"Reserved (Preferred AEAD Algorithms) (sub 34)",   //34
 	"Intended Recipient Fingerprint (sub 35)",         //35
 	"Reserved (sub 36)",                               //36
-	"Attested Certifications (sub 37)",                //37
-	"Key Block (sub 38)",                              //38
+	"Reserved (Attested Certifications) (sub 37)",     //37
+	"Reserved (Key Block) (sub 38)",                   //38
 	"Unknown (sub 39)",                                //39
 }
 
@@ -108,11 +108,11 @@ var testSubpacketNamesCritical = []string{
 	"Signature Target <critical> (sub 31)",                       //31
 	"Embedded Signature <critical> (sub 32)",                     //32
 	"Issuer Fingerprint <critical> (sub 33)",                     //33
-	"Preferred AEAD Algorithms <critical> (sub 34)",              //34
+	"Reserved (Preferred AEAD Algorithms) <critical> (sub 34)",   //34
 	"Intended Recipient Fingerprint <critical> (sub 35)",         //35
 	"Reserved <critical> (sub 36)",                               //36
-	"Attested Certifications <critical> (sub 37)",                //37
-	"Key Block <critical> (sub 38)",                              //38
+	"Reserved (Attested Certifications) <critical> (sub 37)",     //37
+	"Reserved (Key Block) <critical> (sub 38)",                   //38
 	"Unknown <critical> (sub 39)",                                //39
 }
 
@@ -139,7 +139,7 @@ func TestSubpacketIDCritical(t *testing.T) {
 	}
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

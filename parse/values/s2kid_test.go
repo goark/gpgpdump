@@ -10,11 +10,12 @@ var testS2kIDNames = []string{
 	"Salted S2K (s2k 1)",
 	"Reserved (s2k 2)",
 	"Iterated and Salted S2K (s2k 3)",
-	"Unknown (s2k 4)",
+	"Argon2 (s2k 4)",
+	"Unknown (s2k 5)",
 }
 
 func TestS2KID(t *testing.T) {
-	for tag := 0; tag <= 4; tag++ {
+	for tag := 0; tag <= 5; tag++ {
 		i := S2KID(tag).ToItem(false)
 		if i.Name != "String-to-Key (S2K) Algorithm" {
 			t.Errorf("S2KID.Name = \"%s\", want \"String-to-Key (S2K) Algorithm\".", i.Name)
@@ -63,7 +64,7 @@ func TestStretch(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

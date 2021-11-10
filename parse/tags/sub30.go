@@ -28,8 +28,8 @@ func (s *sub30) Parse() (*result.Item, error) {
 		return rootInfo, errs.New("illegal flag", errs.WithCause(err))
 	}
 	rootInfo.Add(values.Flag2Item(flag&0x01, "Modification Detection (packets 18 and 19)"))
-	rootInfo.Add(values.Flag2Item(flag&0x02, "AEAD Encrypted Data Packet (packet 20) and version 5 Symmetric-Key Encrypted Session Key Packets (packet 3)"))
-	rootInfo.Add(values.Flag2Item(flag&0x04, "Version 5 Public-Key Packet format and corresponding new fingerprint format"))
+	rootInfo.Add(values.Flag2Item(flag&0x02, "AEAD Encrypted Data (packet 20)"))
+	rootInfo.Add(values.Flag2Item(flag&0x04, "Reserved"))
 	rootInfo.Add(values.Flag2Item(flag&0xf8, fmt.Sprintf("Unknown flag1(%#02x)", flag&0xf8)))
 	if s.reader.Rest() > 0 {
 		flags, _ := s.reader.Read2EOF()
@@ -40,7 +40,7 @@ func (s *sub30) Parse() (*result.Item, error) {
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2020 Spiegel
+/* Copyright 2016-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

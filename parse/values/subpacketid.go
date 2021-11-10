@@ -42,11 +42,11 @@ var subpacketNames = Msgs{
 	31: "Signature Target",                       //31
 	32: "Embedded Signature",                     //32
 	33: "Issuer Fingerprint",                     //33
-	34: "Preferred AEAD Algorithms",              //34
+	34: "Reserved (Preferred AEAD Algorithms)",   //34
 	35: "Intended Recipient Fingerprint",         //35
 	36: "Reserved",                               //36
-	37: "Attested Certifications",                //37
-	38: "Key Block",                              //38
+	37: "Reserved (Attested Certifications)",     //37
+	38: "Reserved (Key Block)",                   //38
 }
 
 //SuboacketID is sub-packet type ID
@@ -76,7 +76,7 @@ func (s SuboacketID) String() string {
 	return fmt.Sprintf("%s (sub %d)", name+c, s)
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

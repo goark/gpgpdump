@@ -29,7 +29,9 @@ var testPubIDNames = []string{
 	"Reserved (formerly Elgamal Encrypt or Sign) (pub 20)",
 	"Reserved for Diffie-Hellman (pub 21)",
 	"EdDSA (pub 22)",
-	"Unknown (pub 23)",
+	"Reserved (AEDH) (pub 23)",
+	"Reserved (AEDSA) (pub 24)",
+	"Unknown (pub 25)",
 }
 
 func TestPubID(t *testing.T) {
@@ -153,7 +155,7 @@ func TestPubIDEdDSA(t *testing.T) {
 	}
 }
 
-/* Copyright 2016 Spiegel
+/* Copyright 2016-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -55,9 +55,19 @@ func TestEccOID(t *testing.T) {
 			dump:  "2b 06 01 04 01 da 47 0f 01",
 		},
 		{
+			data:  []byte{0x03, 0x2B, 0x65, 0x71},
+			value: "ed448 (448bits key size)",
+			dump:  "2b 65 71",
+		},
+		{
 			data:  []byte{0x0a, 0x2B, 0x06, 0x01, 0x04, 0x01, 0x97, 0x55, 0x01, 0x05, 0x01},
 			value: "cv25519 (256bits key size)",
 			dump:  "2b 06 01 04 01 97 55 01 05 01",
+		},
+		{
+			data:  []byte{0x03, 0x2B, 0x65, 0x6F},
+			value: "x448 (448bits key size)",
+			dump:  "2b 65 6f",
 		},
 	}
 

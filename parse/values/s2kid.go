@@ -12,6 +12,7 @@ var s2kIDNames = Msgs{
 	1: "Salted S2K",
 	2: "Reserved",
 	3: "Iterated and Salted S2K",
+	4: "Argon2",
 }
 
 //S2KID is S2K Algorithm ID
@@ -63,7 +64,20 @@ func (c Stretch) ToItem() *result.Item {
 	)
 }
 
-/* Copyright 2016 Spiegel
+//Argon2Params parameters for Argon2
+type Argon2Params byte
+
+// ToItem returns Item instance
+func (c Argon2Params) ToItem(name string) *result.Item {
+	count := (uint32(16) + (uint32(c) & 0x0f)) << ((uint32(c) >> 4) + S2KEXPBIAS)
+	return result.NewItem(
+		result.Name(name),
+		result.Value(strconv.Itoa(int(count))),
+		result.DumpStr(DumpByteString(byte(c), true)),
+	)
+}
+
+/* Copyright 2016-2021 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

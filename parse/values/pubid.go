@@ -17,6 +17,8 @@ var pubIDNames = Msgs{
 	20: "Reserved (formerly Elgamal Encrypt or Sign)",
 	21: "Reserved for Diffie-Hellman",
 	22: "EdDSA",
+	23: "Reserved (AEDH)",
+	24: "Reserved (AEDSA)",
 }
 
 //PubID is Public-Key Algorithm ID
