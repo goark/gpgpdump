@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
+	"github.com/goark/gpgpdump/ecode"
 )
 
 var (

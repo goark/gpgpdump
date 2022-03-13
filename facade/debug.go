@@ -3,7 +3,7 @@ package facade
 import (
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/gocli/rwi"
+	"github.com/goark/gocli/rwi"
 )
 
 func debugPrint(ui *rwi.RWI, err error) error {

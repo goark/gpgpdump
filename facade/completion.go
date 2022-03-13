@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/goark/gocli/rwi"
 	"github.com/spf13/cobra"
-	"github.com/spiegel-im-spiegel/gocli/rwi"
 )
 
 var longDescription = `To load completions:

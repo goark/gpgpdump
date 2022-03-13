@@ -12,9 +12,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/fetch"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
-	"github.com/spiegel-im-spiegel/gpgpdump/github"
+	"github.com/goark/fetch"
+	"github.com/goark/gpgpdump/ecode"
+	"github.com/goark/gpgpdump/github"
 )
 
 var (

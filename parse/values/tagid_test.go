@@ -3,7 +3,7 @@ package values
 import (
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/reader"
 )
 
 var testTagNames = []string{

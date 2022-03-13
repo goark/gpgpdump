@@ -6,7 +6,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
+	"github.com/goark/gpgpdump/ecode"
 )
 
 var buffer = []byte{0x01, 0x02, 0x03, 0x04}

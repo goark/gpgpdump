@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
+	"github.com/goark/gpgpdump/parse/values"
 )
 
 //Context class fir parsing packets

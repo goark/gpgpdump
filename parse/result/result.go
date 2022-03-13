@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/spiegel-im-spiegel/errs"
+	"github.com/goark/errs"
 )
 
 //Info is information class for OpenPGP packets

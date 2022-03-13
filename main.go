@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/spiegel-im-spiegel/gocli/rwi"
-	"github.com/spiegel-im-spiegel/gpgpdump/facade"
+	"github.com/goark/gocli/rwi"
+	"github.com/goark/gpgpdump/facade"
 )
 
 func main() {

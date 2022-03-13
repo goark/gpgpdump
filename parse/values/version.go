@@ -3,7 +3,7 @@ package values
 import (
 	"strconv"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/result"
 )
 
 //Version - information version

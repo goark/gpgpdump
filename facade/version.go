@@ -3,13 +3,13 @@ package facade
 import (
 	"strings"
 
+	"github.com/goark/gocli/rwi"
 	"github.com/spf13/cobra"
-	"github.com/spiegel-im-spiegel/gocli/rwi"
 )
 
 var versionStrings = []string{ //output message of version
 	Name + " " + Version,
-	"repository: https://github.com/spiegel-im-spiegel/gpgpdump",
+	"repository: https://github.com/goark/gpgpdump",
 }
 
 func getVersion() string {

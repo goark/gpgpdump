@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gocli/exitcode"
-	"github.com/spiegel-im-spiegel/gocli/rwi"
+	"github.com/goark/gocli/exitcode"
+	"github.com/goark/gocli/rwi"
 )
 
 func TestVersionMin(t *testing.T) {
-	result := "gpgpdump dev-version\nrepository: https://github.com/spiegel-im-spiegel/gpgpdump\n"
+	result := "gpgpdump dev-version\nrepository: https://github.com/goark/gpgpdump\n"
 
 	outBuf := new(bytes.Buffer)
 	outErrBuf := new(bytes.Buffer)

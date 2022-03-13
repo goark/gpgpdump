@@ -6,15 +6,16 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/goark/errs"
+
+	"github.com/goark/gocli/exitcode"
+	"github.com/goark/gocli/rwi"
+	"github.com/goark/gpgpdump/ecode"
+	"github.com/goark/gpgpdump/facade/clipboard"
+	"github.com/goark/gpgpdump/parse"
+	"github.com/goark/gpgpdump/parse/context"
+	"github.com/goark/gpgpdump/parse/result"
 	"github.com/spf13/cobra"
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gocli/exitcode"
-	"github.com/spiegel-im-spiegel/gocli/rwi"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
-	"github.com/spiegel-im-spiegel/gpgpdump/facade/clipboard"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
 )
 
 var (
