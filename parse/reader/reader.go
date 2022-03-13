@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
+	"github.com/goark/errs"
+
+	"github.com/goark/gpgpdump/ecode"
 )
 
 //Reader class as reading stream for []byte buffer

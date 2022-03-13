@@ -6,12 +6,13 @@ import (
 
 	"github.com/ProtonMail/go-crypto/openpgp/armor"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/armtext"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/tags"
+	"github.com/goark/errs"
+
+	"github.com/goark/gpgpdump/armtext"
+	"github.com/goark/gpgpdump/ecode"
+	"github.com/goark/gpgpdump/parse/context"
+	"github.com/goark/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/tags"
 )
 
 //Parser class for pasing packet

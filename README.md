@@ -1,9 +1,9 @@
 # [gpgpdump] - OpenPGP packet visualizer
 
-[![check vulns](https://github.com/spiegel-im-spiegel/gpgpdump/workflows/vulns/badge.svg)](https://github.com/spiegel-im-spiegel/gpgpdump/actions)
-[![lint status](https://github.com/spiegel-im-spiegel/gpgpdump/workflows/lint/badge.svg)](https://github.com/spiegel-im-spiegel/gpgpdump/actions)
-[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/spiegel-im-spiegel/gpgpdump/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/release/spiegel-im-spiegel/gpgpdump.svg)](https://github.com/spiegel-im-spiegel/gpgpdump/releases/latest)
+[![check vulns](https://github.com/goark/gpgpdump/workflows/vulns/badge.svg)](https://github.com/goark/gpgpdump/actions)
+[![lint status](https://github.com/goark/gpgpdump/workflows/lint/badge.svg)](https://github.com/goark/gpgpdump/actions)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/goark/gpgpdump/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/goark/gpgpdump.svg)](https://github.com/goark/gpgpdump/releases/latest)
 
 [gpgpdump] is a OpenPGP ([RFC 4880]) packet visualizer by [golang](https://golang.org/).
 
@@ -14,15 +14,17 @@
 
 This package is required Go 1.16 or later.
 
+**Migrated repository to [github.com/goark/gpgpdump][gpgpdump]**
+
 ## Download and Build
 
 ```
-$ go install github.com/spiegel-im-spiegel/gpgpdump@latest
+$ go install github.com/goark/gpgpdump@latest
 ```
 
 ## Binaries
 
-See [latest release](https://github.com/spiegel-im-spiegel/gpgpdump/releases/latest).
+See [latest release](https://github.com/goark/gpgpdump/releases/latest).
 
 ## Usage
 
@@ -304,7 +306,7 @@ PS> gpgpdump completion powershell | Out-String | Invoke-Expression
 
 [![dependency.png](./dependency.png)](./dependency.png)
 
-[gpgpdump]: https://github.com/spiegel-im-spiegel/gpgpdump "spiegel-im-spiegel/gpgpdump: gpgpdump - OpenPGP packet visualizer"
+[gpgpdump]: https://github.com/goark/gpgpdump "goark/gpgpdump: gpgpdump - OpenPGP packet visualizer"
 [RFC 4880]: https://tools.ietf.org/html/rfc4880
 [RFC 4880bis]: https://datatracker.ietf.org/doc/draft-ietf-openpgp-rfc4880bis/
 [RFC 5581]: http://tools.ietf.org/html/rfc5581

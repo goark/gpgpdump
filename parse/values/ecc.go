@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
+	"github.com/goark/errs"
+
+	"github.com/goark/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/result"
 )
 
 //OID class as ECC OID

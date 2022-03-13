@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/reader"
 )
 
 var testSubpacketNames = []string{

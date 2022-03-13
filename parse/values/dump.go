@@ -3,7 +3,7 @@ package values
 import (
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/reader"
 )
 
 //Dumpdata - raw data for dump

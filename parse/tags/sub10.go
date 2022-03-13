@@ -1,10 +1,10 @@
 package tags
 
 import (
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
+	"github.com/goark/gpgpdump/parse/context"
+	"github.com/goark/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/values"
 )
 
 //sub10 class for Placeholder for backward compatibility Sub-packet

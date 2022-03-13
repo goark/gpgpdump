@@ -3,9 +3,10 @@ package pubkey
 import (
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
+	"github.com/goark/errs"
+
+	"github.com/goark/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/values"
 )
 
 //ParsePub multi-precision integers of Public-key packet

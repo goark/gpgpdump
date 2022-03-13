@@ -3,8 +3,8 @@ package parse_test
 import (
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
+	"github.com/goark/gpgpdump/parse"
+	"github.com/goark/gpgpdump/parse/context"
 )
 
 const (

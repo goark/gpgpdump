@@ -4,8 +4,9 @@ import (
 	"io"
 	"strings"
 
+	"github.com/goark/errs"
+
 	cpbd "github.com/atotto/clipboard"
-	"github.com/spiegel-im-spiegel/errs"
 )
 
 //NewReader returns string stream from clipboard

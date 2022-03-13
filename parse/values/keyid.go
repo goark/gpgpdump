@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/result"
 )
 
 // KeyID is Key ID

@@ -3,10 +3,10 @@ package pubkey
 import (
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
+	"github.com/goark/gpgpdump/parse/context"
+	"github.com/goark/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/values"
 )
 
 var (

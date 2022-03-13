@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/fetch"
-	"github.com/spiegel-im-spiegel/gpgpdump/hkp"
+	"github.com/goark/errs"
+	"github.com/goark/fetch"
+	"github.com/goark/gpgpdump/hkp"
 )
 
 var inputText = `<?xml version="1.0" encoding="utf-8"?>
