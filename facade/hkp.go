@@ -4,15 +4,16 @@ import (
 	"context"
 	"os"
 
+	"github.com/goark/errs"
+
+	"github.com/goark/fetch"
+	"github.com/goark/gocli/rwi"
+	"github.com/goark/gocli/signal"
+	"github.com/goark/gpgpdump/ecode"
+	"github.com/goark/gpgpdump/hkp"
+	"github.com/goark/gpgpdump/parse"
+	contxt "github.com/goark/gpgpdump/parse/context"
 	"github.com/spf13/cobra"
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/fetch"
-	"github.com/spiegel-im-spiegel/gocli/rwi"
-	"github.com/spiegel-im-spiegel/gocli/signal"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
-	"github.com/spiegel-im-spiegel/gpgpdump/hkp"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse"
-	contxt "github.com/spiegel-im-spiegel/gpgpdump/parse/context"
 )
 
 //newHkpCmd returns cobra.Command instance for show sub-command

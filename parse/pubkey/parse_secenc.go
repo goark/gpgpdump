@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
+	"github.com/goark/errs"
+
+	"github.com/goark/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/values"
 )
 
 //ParseSecEnc multi-precision integers of public key algorithm for Secret-Key Packet (encrypted)

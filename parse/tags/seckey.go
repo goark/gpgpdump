@@ -4,13 +4,14 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/pubkey"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/s2k"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
+	"github.com/goark/errs"
+
+	"github.com/goark/gpgpdump/parse/context"
+	"github.com/goark/gpgpdump/parse/pubkey"
+	"github.com/goark/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/s2k"
+	"github.com/goark/gpgpdump/parse/values"
 )
 
 //seckeyInfo class for parsing Secret-key in Tag05

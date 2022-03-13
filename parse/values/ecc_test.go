@@ -5,7 +5,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/reader"
 )
 
 func TestEccOID(t *testing.T) {

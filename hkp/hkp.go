@@ -6,9 +6,10 @@ import (
 	"io"
 	"net/url"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/fetch"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
+	"github.com/goark/errs"
+
+	"github.com/goark/fetch"
+	"github.com/goark/gpgpdump/ecode"
 )
 
 //Protocol is kind of HKP protocols

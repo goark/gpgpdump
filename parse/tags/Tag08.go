@@ -8,12 +8,13 @@ import (
 	"io"
 	"strings"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/values"
+	"github.com/goark/errs"
+
+	"github.com/goark/gpgpdump/ecode"
+	"github.com/goark/gpgpdump/parse/context"
+	"github.com/goark/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/values"
 )
 
 //Tag08 class for Compressed Data Packet

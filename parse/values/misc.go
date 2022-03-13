@@ -1,6 +1,6 @@
 package values
 
-import "github.com/spiegel-im-spiegel/gpgpdump/parse/result"
+import "github.com/goark/gpgpdump/parse/result"
 
 const (
 	//Unknown string

@@ -3,8 +3,9 @@ package parse
 import (
 	"io"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
+	"github.com/goark/errs"
+
+	"github.com/goark/gpgpdump/parse/result"
 )
 
 //Parse returns packet result.

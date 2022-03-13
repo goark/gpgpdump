@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/reader"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
+	"github.com/goark/gpgpdump/parse/reader"
+	"github.com/goark/gpgpdump/parse/result"
 )
 
 func TestS2KNil(t *testing.T) {

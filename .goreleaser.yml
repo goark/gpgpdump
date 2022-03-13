@@ -1,7 +1,7 @@
 project_name: gpgpdump
 release:
   github:
-    owner: spiegel-im-spiegel
+    owner: goark
     name: gpgpdump
 
 builds:
@@ -20,7 +20,7 @@ builds:
   main: ./
   flags:
   - -trimpath
-  ldflags: -s -w -X github.com/spiegel-im-spiegel/gpgpdump/facade.Version=v{{ .Version }}
+  ldflags: -s -w -X github.com/goark/gpgpdump/facade.Version=v{{ .Version }}
   binary: gpgpdump
 
 archives:

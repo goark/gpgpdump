@@ -5,10 +5,11 @@ import (
 
 	"github.com/ProtonMail/go-crypto/openpgp/packet"
 
-	"github.com/spiegel-im-spiegel/errs"
-	"github.com/spiegel-im-spiegel/gpgpdump/ecode"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/context"
-	"github.com/spiegel-im-spiegel/gpgpdump/parse/result"
+	"github.com/goark/errs"
+
+	"github.com/goark/gpgpdump/ecode"
+	"github.com/goark/gpgpdump/parse/context"
+	"github.com/goark/gpgpdump/parse/result"
 )
 
 //Packets class is context data for OpenPGP packets
