@@ -18,7 +18,7 @@ tasks:
     cmds:
       - go mod verify
       - go test -shuffle on ./...
-      - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.44.2 golangci-lint run --enable gosec --timeout 3m0s ./...
+      - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.50.1 golangci-lint run --enable gosec --timeout 3m0s ./...
     sources:
       - ./go.mod
       - '**/*.go'
@@ -37,7 +37,7 @@ tasks:
       - rm -f ./go.sum
       - go clean -cache
       - go clean -modcache
-      - go mod tidy -v -go=1.17
+      - go mod tidy -v -go=1.19
 
   graph:
     desc: Make grapth of dependency modules.
