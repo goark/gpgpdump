@@ -217,11 +217,27 @@ func TestOneSigVer3(t *testing.T) {
 	}
 }
 
+func TestOneSigVer5(t *testing.T) {
+	i := OneSigVer(5).ToItem(true)
+
+	if i.Note != "draft" {
+		t.Errorf("Version.Note = \"%v\", want \"draft\"", i.Note)
+	}
+}
+
 func TestPubSessKeyVer3(t *testing.T) {
 	i := PubSessKeyVer(3).ToItem(true)
 
 	if i.Note != "current" {
 		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
+	}
+}
+
+func TestPubSessKeyVer5(t *testing.T) {
+	i := PubSessKeyVer(5).ToItem(true)
+
+	if i.Note != "draft" {
+		t.Errorf("Version.Note = \"%v\", want \"draft\"", i.Note)
 	}
 }
 
@@ -249,7 +265,7 @@ func TestAEADVer1(t *testing.T) {
 	}
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

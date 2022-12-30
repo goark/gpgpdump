@@ -14,7 +14,7 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//pubkeyInfo class for parsing Public-key packet in Tag05 and Tag06
+// pubkeyInfo class for parsing Public-key packet in Tag05 and Tag06
 type pubkeyInfo struct {
 	cxt    *context.Context
 	reader *reader.Reader
@@ -22,12 +22,12 @@ type pubkeyInfo struct {
 	pubID  values.PubID
 }
 
-//newPubkey returns pubkey instance
+// newPubkey returns pubkey instance
 func newPubkey(cxt *context.Context, reader *reader.Reader, pubVer *values.Version) *pubkeyInfo {
 	return &pubkeyInfo{cxt: cxt, reader: reader, pubVer: pubVer}
 }
 
-//Parse Public-key packet
+// Parse Public-key packet
 func (p *pubkeyInfo) Parse(parent *result.Item) error {
 	switch true {
 	case p.pubVer.IsDraft():
@@ -45,7 +45,7 @@ func (p *pubkeyInfo) Parse(parent *result.Item) error {
 	return nil
 }
 
-//parseV3 parses V3 packet
+// parseV3 parses V3 packet
 func (p *pubkeyInfo) parseV3(parent *result.Item) error {
 	//Structure of Signiture Packet (Ver3)
 	// [01] four-octet number denoting the time that the key was created.
@@ -76,7 +76,7 @@ func (p *pubkeyInfo) parseV3(parent *result.Item) error {
 	return pubkey.New(p.cxt, p.pubID, p.reader).ParsePub(parent)
 }
 
-//parseV4 parses V4 packet
+// parseV4 parses V4 packet
 func (p *pubkeyInfo) parseV4(parent *result.Item) error {
 	//Structure of Signiture Packet (Ver4)
 	// [01] four-octet number denoting the time that the key was created.
@@ -97,7 +97,7 @@ func (p *pubkeyInfo) parseV4(parent *result.Item) error {
 	return pubkey.New(p.cxt, p.pubID, p.reader).ParsePub(parent)
 }
 
-//parseV5 parses V5 packet
+// parseV5 parses V5 packet
 func (p *pubkeyInfo) parseV5(parent *result.Item) error {
 	//Structure of Signiture Packet (Ver5)
 	// [01] four-octet number denoting the time that the key was created.
@@ -125,10 +125,10 @@ func (p *pubkeyInfo) parseV5(parent *result.Item) error {
 		return errs.New(fmt.Sprintf("illegal key material data (size: %d bytes)", sz64), errs.WithCause(err))
 	}
 	// [10] series of multiprecision integers comprising the key material.
-	return pubkey.New(p.cxt, p.pubID, reader.New(b)).ParsePub(parent) //TODO: new logic for key material
+	return pubkey.New(p.cxt, p.pubID, reader.New(b)).ParsePub(parent)
 }
 
-//PubID returns pubID
+// PubID returns pubID
 func (p *pubkeyInfo) PubID() values.PubID {
 	return p.pubID
 }

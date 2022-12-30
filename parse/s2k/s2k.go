@@ -12,18 +12,18 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//S2K - information of S2K packet
+// S2K - information of S2K packet
 type S2K struct {
 	reader *reader.Reader
 	hasIV  bool
 }
 
-//New returns new Pubkey instance
+// New returns new Pubkey instance
 func New(r *reader.Reader) *S2K {
 	return &S2K{reader: r, hasIV: true}
 }
 
-//Parse is parsing S2K packet
+// Parse is parsing S2K packet
 func (s *S2K) Parse(parent *result.Item, dumpFlag bool) error {
 	if s == nil {
 		return nil
@@ -40,7 +40,6 @@ func (s *S2K) Parse(parent *result.Item, dumpFlag bool) error {
 		//0x00: Simple S2K
 		//0x01: Salted S2K
 		//0x03: Iterated and Salted S2K
-		//0x04: Argon2
 		hashid, err := s.reader.ReadByte()
 		if err != nil {
 			return errs.New("invalid hash ID", errs.WithCause(err))
@@ -67,22 +66,22 @@ func (s *S2K) Parse(parent *result.Item, dumpFlag bool) error {
 		//0x04: Argon2
 		salt, err := s.reader.ReadBytes(16)
 		if err != nil {
-			return errs.New("salt value", errs.WithCause(err))
+			return errs.New("invalid salt value for Argon2", errs.WithCause(err))
 		}
 		itm.Add(values.Salt(salt).ToItem(true))
 		t, err := s.reader.ReadByte()
 		if err != nil {
-			return errs.New("invalid stretch count ID", errs.WithCause(err))
+			return errs.New("invalid number of passes t for Argon2", errs.WithCause(err))
 		}
-		itm.Add(values.Argon2Params(t).ToItem("number of passes t"))
+		itm.Add(values.Argon2Params(t).ToItem("number of passes t for Argon2"))
 		p, err := s.reader.ReadByte()
 		if err != nil {
-			return errs.New("invalid stretch count ID", errs.WithCause(err))
+			return errs.New("invalid degree of parallelism p for Argon2", errs.WithCause(err))
 		}
 		itm.Add(values.Argon2Params(p).ToItem("degree of parallelism p"))
 		m, err := s.reader.ReadByte()
 		if err != nil {
-			return errs.New("invalid stretch count ID", errs.WithCause(err))
+			return errs.New("invalid exponent indicating the memory size m for Argon2", errs.WithCause(err))
 		}
 		itm.Add(values.Argon2Params(m).ToItem("exponent indicating the memory size m"))
 	case 101:
@@ -129,7 +128,7 @@ func (s *S2K) Parse(parent *result.Item, dumpFlag bool) error {
 	return nil
 }
 
-//HasIV returns true if it has IV
+// HasIV returns true if it has IV
 func (s *S2K) HasIV() bool {
 	return s.hasIV
 }

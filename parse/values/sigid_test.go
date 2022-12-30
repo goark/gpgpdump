@@ -24,8 +24,6 @@ func TestSigIS(t *testing.T) {
 			value = "Casual certification of a User ID and Public-Key packet (0x12)"
 		case 0x13:
 			value = "Positive certification of a User ID and Public-Key packet (0x13)"
-		case 0x16:
-			value = "Attested Key Signature (0x16)"
 		case 0x18:
 			value = "Subkey Binding Signature (0x18)"
 		case 0x19:
@@ -60,7 +58,7 @@ func TestSigIS(t *testing.T) {
 	}
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apiche License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -14,7 +14,6 @@ var sigIDNames = Msgs{
 	0x11: "Persona certification of a User ID and Public-Key packet",
 	0x12: "Casual certification of a User ID and Public-Key packet",
 	0x13: "Positive certification of a User ID and Public-Key packet",
-	0x16: "Attested Key Signature",
 	0x18: "Subkey Binding Signature",
 	0x19: "Primary Key Binding Signature",
 	0x1f: "Signature directly on a key",
@@ -25,10 +24,10 @@ var sigIDNames = Msgs{
 	0x50: "Third-Party Confirmation signature",
 }
 
-//SigID is Signiture Type ID
+// SigID is Signiture Type ID
 type SigID byte
 
-//ToItem returns Item instance
+// ToItem returns Item instance
 func (s SigID) ToItem(dumpFlag bool) *result.Item {
 	return result.NewItem(
 		result.Name("Signiture Type"),
@@ -37,12 +36,12 @@ func (s SigID) ToItem(dumpFlag bool) *result.Item {
 	)
 }
 
-//Stringer for SigID
+// Stringer for SigID
 func (s SigID) String() string {
 	return fmt.Sprintf("%s (%#02x)", sigIDNames.Get(int(s), Unknown), int(s))
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apiche License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

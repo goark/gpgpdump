@@ -14,7 +14,7 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//seckeyInfo class for parsing Secret-key in Tag05
+// seckeyInfo class for parsing Secret-key in Tag05
 type seckeyInfo struct {
 	cxt    *context.Context
 	reader *reader.Reader
@@ -22,12 +22,12 @@ type seckeyInfo struct {
 	pubID  values.PubID
 }
 
-//newSeckey returns seckeyInfo instance
+// newSeckey returns seckeyInfo instance
 func newSeckey(cxt *context.Context, reader *reader.Reader, pubVer *values.Version, pubID values.PubID) *seckeyInfo {
 	return &seckeyInfo{cxt: cxt, reader: reader, pubVer: pubVer, pubID: pubID}
 }
 
-//Parse Secret-key packet
+// Parse Secret-key packet
 func (p *seckeyInfo) Parse(parent *result.Item) error {
 	usage, err := p.reader.ReadByte()
 	if err != nil {
@@ -62,6 +62,16 @@ func (p *seckeyInfo) Parse(parent *result.Item) error {
 				)
 			}
 			parent.Add(values.AEADID(alg).ToItem(p.cxt.Debug()))
+		}
+		// [Optional] Only for a version 5 packet, and if string-to-key usage octet was 255, 254, or 253, an one-octet count of the following field.
+		if p.pubVer.Number() == 5 {
+			switch usage {
+			case 253, 254, 255:
+				_, err := rOpt.ReadByte()
+				if err != nil {
+					return errs.New("illegal count data", errs.WithCause(err))
+				}
+			}
 		}
 		//[Optional] If string-to-key usage octet was 255, 254, or 253, a string-to-key specifier.
 		hasIV := false
@@ -153,7 +163,7 @@ func (p *seckeyInfo) Parse(parent *result.Item) error {
 	return nil
 }
 
-//getField1 returns reader.Reader for optional fields
+// getField1 returns reader.Reader for optional fields
 func (p *seckeyInfo) getField1() (*reader.Reader, error) {
 	if p.pubVer.Number() == 5 {
 		l, err := p.reader.ReadByte()
@@ -172,7 +182,7 @@ func (p *seckeyInfo) getField1() (*reader.Reader, error) {
 	return p.reader, nil
 }
 
-//getField2 returns reader.Reader for secret key material
+// getField2 returns reader.Reader for secret key material
 func (p *seckeyInfo) getField2() (*reader.Reader, error) {
 	if p.pubVer.Number() == 5 {
 		l, err := p.reader.ReadBytes(4)
@@ -192,7 +202,7 @@ func (p *seckeyInfo) getField2() (*reader.Reader, error) {
 	return p.reader, nil
 }
 
-//iv returns context.Item for Initialization Vector
+// iv returns context.Item for Initialization Vector
 func (p *seckeyInfo) iv(symid values.SymID, isAEAD bool) (*result.Item, error) {
 	sz64 := int64(symid.IVLen())
 	iv, err := p.reader.ReadBytes(sz64)
@@ -212,7 +222,7 @@ func (p *seckeyInfo) iv(symid values.SymID, isAEAD bool) (*result.Item, error) {
 	), nil
 }
 
-/* Copyright 2016-2020 Spiegel
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

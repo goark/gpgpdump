@@ -16,18 +16,18 @@ var (
 const (
 	tag18Result11 = `Sym. Encrypted Integrity Protected Data Packet (tag 18) (81 bytes)
 	01 6a e6 71 ca ff f6 b1 ff 3f 71 c8 77 45 88 51 ff e3 f2 c3 95 57 e7 29 80 e8 e5 86 7c ea 98 f4 04 b3 8a f8 88 c8 91 f7 56 7b cb ad 75 40 48 d1 5a 3f 3f 2c 1d e4 36 bb e9 f7 77 b2 b8 2a 44 03 be 78 e2 05 3b 44 b6 d8 4e 61 a5 43 05 76 8a 3c 64
-	Encrypted data (81 bytes)
-		01 6a e6 71 ca ff f6 b1 ff 3f 71 c8 77 45 88 51 ff e3 f2 c3 95 57 e7 29 80 e8 e5 86 7c ea 98 f4 04 b3 8a f8 88 c8 91 f7 56 7b cb ad 75 40 48 d1 5a 3f 3f 2c 1d e4 36 bb e9 f7 77 b2 b8 2a 44 03 be 78 e2 05 3b 44 b6 d8 4e 61 a5 43 05 76 8a 3c 64
+	Encrypted data (80 bytes)
+		6a e6 71 ca ff f6 b1 ff 3f 71 c8 77 45 88 51 ff e3 f2 c3 95 57 e7 29 80 e8 e5 86 7c ea 98 f4 04 b3 8a f8 88 c8 91 f7 56 7b cb ad 75 40 48 d1 5a 3f 3f 2c 1d e4 36 bb e9 f7 77 b2 b8 2a 44 03 be 78 e2 05 3b 44 b6 d8 4e 61 a5 43 05 76 8a 3c 64
 `
 	tag18Result12 = `Sym. Encrypted Integrity Protected Data Packet (tag 18) (81 bytes)
 	01 6a e6 71 ca ff f6 b1 ff 3f 71 c8 77 45 88 51 ff e3 f2 c3 95 57 e7 29 80 e8 e5 86 7c ea 98 f4 04 b3 8a f8 88 c8 91 f7 56 7b cb ad 75 40 48 d1 5a 3f 3f 2c 1d e4 36 bb e9 f7 77 b2 b8 2a 44 03 be 78 e2 05 3b 44 b6 d8 4e 61 a5 43 05 76 8a 3c 64
 	Encrypted data (plain text + MDC SHA1(20 bytes); sym alg is specified in pub-key encrypted session key)
-		01 6a e6 71 ca ff f6 b1 ff 3f 71 c8 77 45 88 51 ff e3 f2 c3 95 57 e7 29 80 e8 e5 86 7c ea 98 f4 04 b3 8a f8 88 c8 91 f7 56 7b cb ad 75 40 48 d1 5a 3f 3f 2c 1d e4 36 bb e9 f7 77 b2 b8 2a 44 03 be 78 e2 05 3b 44 b6 d8 4e 61 a5 43 05 76 8a 3c 64
+		6a e6 71 ca ff f6 b1 ff 3f 71 c8 77 45 88 51 ff e3 f2 c3 95 57 e7 29 80 e8 e5 86 7c ea 98 f4 04 b3 8a f8 88 c8 91 f7 56 7b cb ad 75 40 48 d1 5a 3f 3f 2c 1d e4 36 bb e9 f7 77 b2 b8 2a 44 03 be 78 e2 05 3b 44 b6 d8 4e 61 a5 43 05 76 8a 3c 64
 `
 	tag18Result13 = `Sym. Encrypted Integrity Protected Data Packet (tag 18) (81 bytes)
 	01 6a e6 71 ca ff f6 b1 ff 3f 71 c8 77 45 88 51 ff e3 f2 c3 95 57 e7 29 80 e8 e5 86 7c ea 98 f4 04 b3 8a f8 88 c8 91 f7 56 7b cb ad 75 40 48 d1 5a 3f 3f 2c 1d e4 36 bb e9 f7 77 b2 b8 2a 44 03 be 78 e2 05 3b 44 b6 d8 4e 61 a5 43 05 76 8a 3c 64
 	Encrypted data (plain text + MDC SHA1(20 bytes); sym alg is specified in sym-key encrypted session key)
-		01 6a e6 71 ca ff f6 b1 ff 3f 71 c8 77 45 88 51 ff e3 f2 c3 95 57 e7 29 80 e8 e5 86 7c ea 98 f4 04 b3 8a f8 88 c8 91 f7 56 7b cb ad 75 40 48 d1 5a 3f 3f 2c 1d e4 36 bb e9 f7 77 b2 b8 2a 44 03 be 78 e2 05 3b 44 b6 d8 4e 61 a5 43 05 76 8a 3c 64
+		6a e6 71 ca ff f6 b1 ff 3f 71 c8 77 45 88 51 ff e3 f2 c3 95 57 e7 29 80 e8 e5 86 7c ea 98 f4 04 b3 8a f8 88 c8 91 f7 56 7b cb ad 75 40 48 d1 5a 3f 3f 2c 1d e4 36 bb e9 f7 77 b2 b8 2a 44 03 be 78 e2 05 3b 44 b6 d8 4e 61 a5 43 05 76 8a 3c 64
 `
 )
 

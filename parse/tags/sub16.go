@@ -9,17 +9,17 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//sub16 class for Issuer Sub-packet
+// sub16 class for Issuer Key ID Sub-packet
 type sub16 struct {
 	subInfo
 }
 
-//newSub16 return sub16 instance
+// newSub16 return sub16 instance
 func newSub16(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
 	return &sub16{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
 
-// Parse parsing Issuer Sub-packet
+// Parse parsing Issuer Key ID Sub-packet
 func (s *sub16) Parse() (*result.Item, error) {
 	rootInfo := s.ToItem()
 	keyid, err := s.reader.ReadBytes(8)

@@ -7,26 +7,25 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-// sub11 class for Preferred Symmetric Ciphers for v1 SEIPD Sub-packet
-type sub11 struct {
-	subInfo
+// tag21 class for Padding Packet
+type tag21 struct {
+	tagInfo
 }
 
-// newSub11 return sub11 instance
-func newSub11(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
-	return &sub11{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
+// newTag21 return tag21 instance
+func newTag21(cxt *context.Context, tag values.TagID, body []byte) Tags {
+	return &tag21{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
 
-// Parse parsing Preferred Symmetric Ciphers for v1 SEIPD Sub-packet
-func (s *sub11) Parse() (*result.Item, error) {
-	rootInfo := s.ToItem()
-	for _, alg := range s.reader.GetBody() {
-		rootInfo.Add(values.SymID(alg).ToItem(s.cxt.Debug()))
-	}
+// Parse parsing Unknown Packet
+func (t *tag21) Parse() (*result.Item, error) {
+	rootInfo := t.ToItem()
+	itm := values.RawData(t.reader, "Padding data", t.cxt.Debug())
+	rootInfo.Add(itm)
 	return rootInfo, nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

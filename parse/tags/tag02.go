@@ -18,7 +18,7 @@ type tag02 struct {
 	tagInfo
 }
 
-//newTag02 return tag02 instance
+// newTag02 return tag02 instance
 func newTag02(cxt *context.Context, tag values.TagID, body []byte) Tags {
 	return &tag02{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
@@ -68,7 +68,7 @@ func (t *tag02) parseV3(rootInfo *result.Item) (*result.Item, error) {
 	//      [03] Four-octet creation time.
 	sz, err := t.reader.ReadByte()
 	if err != nil {
-		return rootInfo, errs.New("illegal hashed material", errs.WithCause(err))
+		return rootInfo, errs.New("illegal length of hashed material", errs.WithCause(err))
 	}
 	hm := result.NewItem(
 		result.Name("Hashed material"),
@@ -163,7 +163,7 @@ func (t *tag02) parseV4(rootInfo *result.Item) (*result.Item, error) {
 		}
 		itm, err := subpcket.Parse()
 		if err != nil {
-			return rootInfo, errs.Wrap(err)
+			return rootInfo, errs.New("illegal length of unhashed subpacket", errs.WithCause(err))
 		}
 		rootInfo.Add(itm)
 	}
@@ -203,7 +203,86 @@ func (t *tag02) parseV4(rootInfo *result.Item) (*result.Item, error) {
 }
 
 func (t *tag02) parseV5(rootInfo *result.Item) (*result.Item, error) {
-	return t.parseV4(rootInfo)
+	// [00] One-octet version number (4).
+	// [01] One-octet signature type.
+	sig, err := t.reader.ReadByte()
+	if err != nil {
+		return rootInfo, errs.New("illegal sigid", errs.WithCause(err))
+	}
+	rootInfo.Add(values.SigID(sig).ToItem(t.cxt.Debug()))
+	// [02] One-octet public-key algorithm.
+	pubid, err := t.reader.ReadByte()
+	if err != nil {
+		return rootInfo, errs.New("illegal pubid", errs.WithCause(err))
+	}
+	rootInfo.Add(values.PubID(pubid).ToItem(t.cxt.Debug()))
+	// [03] One-octet hash algorithm.
+	hashid, err := t.reader.ReadByte()
+	if err != nil {
+		return rootInfo, errs.New("illegal hashid", errs.WithCause(err))
+	}
+	rootInfo.Add(values.HashID(hashid).ToItem(t.cxt.Debug()))
+	// [04] Four-octet scalar octet count for following hashed subpacket data.(= HS)
+	s, err := t.reader.ReadBytes(4)
+	if err != nil {
+		return rootInfo, errs.New("illegal length of hashed subpacket", errs.WithCause(err))
+	}
+	sizeHS := binary.BigEndian.Uint32(s)
+	// [08] Hashed subpacket data set (zero or more subpackets).
+	if sizeHS > 0 {
+		sp, err := t.reader.ReadBytes(int64(sizeHS))
+		if err != nil {
+			return rootInfo, errs.New(fmt.Sprintf("illegal hashed subpacket (size: %d bytes)", int64(sizeHS)), errs.WithCause(err))
+		}
+		subpcket, err := newSubparser(t.cxt, t.tag, "Hashed Subpacket", sp)
+		if err != nil {
+			return rootInfo, errs.New("illegal subpacket", errs.WithCause(err))
+		}
+		itm, err := subpcket.Parse()
+		if err != nil {
+			return rootInfo, errs.Wrap(err)
+		}
+		rootInfo.Add(itm)
+	}
+	// [08+HS] Four-octet scalar octet count for the following unhashed subpacket data.(= US)
+	s, err = t.reader.ReadBytes(4)
+	if err != nil {
+		return rootInfo, errs.New("illegal length of unhashed subpacket", errs.WithCause(err))
+	}
+	sizeUS := binary.BigEndian.Uint32(s)
+	// [12+HS] Unhashed subpacket data set (zero or more subpackets).
+	if sizeUS > 0 {
+		sp, err := t.reader.ReadBytes(int64(sizeUS))
+		if err != nil {
+			return rootInfo, errs.New(fmt.Sprintf("illegal unhashed subpacket (size: %d bytes)", int64(sizeUS)), errs.WithCause(err))
+		}
+		subpcket, err := newSubparser(t.cxt, t.tag, "Unhashed Subpacket", sp)
+		if err != nil {
+			return rootInfo, errs.New("illegal subpacket", errs.WithCause(err))
+		}
+		itm, err := subpcket.Parse()
+		if err != nil {
+			return rootInfo, errs.Wrap(err)
+		}
+		rootInfo.Add(itm)
+	}
+	// [12+HS+US] Two-octet field holding the left 16 bits of the signed hash value.
+	hv, err := t.reader.ReadBytes(2)
+	if err != nil {
+		return rootInfo, errs.New("illegal hash value", errs.WithCause(err))
+	}
+	rootInfo.Add(t.hashLeft2(hv))
+	// [14+HS+US] a 16 octet field containing random values used as salt.
+	rv, err := t.reader.ReadBytes(16)
+	if err != nil {
+		return rootInfo, errs.New("illegal random value", errs.WithCause(err))
+	}
+	rootInfo.Add(t.randomValue(rv))
+	// [30+HS+US] One or more multiprecision integers comprising the signature.
+	if err := pubkey.New(t.cxt, values.PubID(pubid), t.reader).ParseSig(rootInfo); err != nil {
+		return rootInfo, errs.Wrap(err)
+	}
+	return rootInfo, nil
 }
 
 func (t *tag02) hashLeft2(hv []byte) *result.Item {
@@ -213,7 +292,14 @@ func (t *tag02) hashLeft2(hv []byte) *result.Item {
 	)
 }
 
-/* Copyright 2016-2020 Spiegel
+func (t *tag02) randomValue(rv []byte) *result.Item {
+	return result.NewItem(
+		result.Name("Random values used as salt"),
+		result.DumpStr(values.DumpBytes(rv, true).String()),
+	)
+}
+
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -6,19 +6,19 @@ import (
 	"github.com/goark/gpgpdump/parse/result"
 )
 
-//Version - information version
+// Version - information version
 type Version struct {
 	ver   byte //version number
 	cur   byte //current version in RFC4880
 	draft byte //draft version in RFC4880bis
 }
 
-//NewVersion returns new Version instance
+// NewVersion returns new Version instance
 func NewVersion(ver, cur, draft byte) *Version {
 	return &Version{ver: ver, cur: cur, draft: draft}
 }
 
-//Number returns number of version
+// Number returns number of version
 func (v *Version) Number() int {
 	if v == nil {
 		return 0
@@ -26,7 +26,7 @@ func (v *Version) Number() int {
 	return int(v.ver)
 }
 
-//IsOld return true if old version
+// IsOld return true if old version
 func (v *Version) IsOld() bool {
 	if v == nil {
 		return false
@@ -34,7 +34,7 @@ func (v *Version) IsOld() bool {
 	return v.ver < v.cur
 }
 
-//IsCurrent return true if current version
+// IsCurrent return true if current version
 func (v *Version) IsCurrent() bool {
 	if v == nil {
 		return false
@@ -42,7 +42,7 @@ func (v *Version) IsCurrent() bool {
 	return v.ver == v.cur
 }
 
-//IsDraft return true if draft version
+// IsDraft return true if draft version
 func (v *Version) IsDraft() bool {
 	if v == nil {
 		return false
@@ -53,12 +53,12 @@ func (v *Version) IsDraft() bool {
 	return v.ver == v.draft
 }
 
-//IsUnknown return true if unknown version
+// IsUnknown return true if unknown version
 func (v *Version) IsUnknown() bool {
 	return !v.IsOld() && !v.IsCurrent() && !v.IsDraft()
 }
 
-//ToItem returns Item instance
+// ToItem returns Item instance
 func (v *Version) ToItem(dumpFlag bool) *result.Item {
 	if v == nil {
 		return nil
@@ -98,12 +98,12 @@ func SigVer(ver byte) *Version {
 
 // OneSigVer is One-Pass Signature Packet Version
 func OneSigVer(ver byte) *Version {
-	return NewVersion(ver, 3, 0)
+	return NewVersion(ver, 3, 5)
 }
 
 // PubSessKeyVer is Public-Key Encrypted Session Key Packet Version
 func PubSessKeyVer(ver byte) *Version {
-	return NewVersion(ver, 3, 0)
+	return NewVersion(ver, 3, 5)
 }
 
 // SymSessKeyVer is Symmetric-Key Encrypted Session Key Packet Version
@@ -116,7 +116,7 @@ func AEADVer(ver byte) *Version {
 	return NewVersion(ver, 1, 0)
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -8,30 +8,30 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//subInfo class as Sub-packet result.
+// subInfo class as Sub-packet result.
 type subInfo struct {
 	cxt    *context.Context
 	subID  values.SuboacketID
 	reader *reader.Reader
 }
 
-//ToItem returns result.Item instance
+// ToItem returns result.Item instance
 func (s *subInfo) ToItem() *result.Item {
 	return s.subID.ToItem(s.reader, s.cxt.Debug())
 }
 
-//Subs is parsing interface
+// Subs is parsing interface
 type Subs interface {
 	Parse() (*result.Item, error)
 }
 
-//NewSubpacket is function value of parsing Sub-packet
+// NewSubpacket is function value of parsing Sub-packet
 type NewSubpacket func(*context.Context, values.SuboacketID, []byte) Subs
 
-//SubFuncMap is type of NewPacket function list.
+// SubFuncMap is type of NewPacket function list.
 type SubFuncMap map[int]NewSubpacket
 
-//Get returns NewSubpacket function.
+// Get returns NewSubpacket function.
 func (fm SubFuncMap) Get(i int, defFunc NewSubpacket) NewSubpacket {
 	if f, ok := fm[i]; ok {
 		return f
@@ -69,13 +69,14 @@ var newFunctionsSub02 = SubFuncMap{
 	35: newSub35, //Intended Recipient Fingerprint
 	37: newSub37, //Attested Certifications
 	// 38: newSub38, //Key Block (with recursive call)
+	39: newSub39, //Preferred AEAD Ciphersuites
 }
 
 var newFunctionsSub17 = SubFuncMap{
 	1: newSub01, //Image Attribute
 }
 
-//NewSubs returns Tags instance for pasing
+// NewSubs returns Tags instance for pasing
 func NewSubs(cxt *context.Context, osp *packet.OpaqueSubpacket, tagID values.TagID) Subs {
 	st := osp.SubType & 0x7f
 	if tagID == 2 {
