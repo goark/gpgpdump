@@ -11,12 +11,12 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//sub30 class for Features Sub-packet
+// sub30 class for Features Sub-packet
 type sub30 struct {
 	subInfo
 }
 
-//newSub30 return sub30 instance
+// newSub30 return sub30 instance
 func newSub30(cxt *context.Context, subID values.SuboacketID, body []byte) Subs {
 	return &sub30{subInfo{cxt: cxt, subID: subID, reader: reader.New(body)}}
 }
@@ -28,10 +28,11 @@ func (s *sub30) Parse() (*result.Item, error) {
 	if err != nil {
 		return rootInfo, errs.New("illegal flag", errs.WithCause(err))
 	}
-	rootInfo.Add(values.Flag2Item(flag&0x01, "Modification Detection (packets 18 and 19)"))
-	rootInfo.Add(values.Flag2Item(flag&0x02, "AEAD Encrypted Data (packet 20)"))
+	rootInfo.Add(values.Flag2Item(flag&0x01, "Symmetrically Encrypted Integrity Protected Data packet version 1"))
+	rootInfo.Add(values.Flag2Item(flag&0x02, "Reserved"))
 	rootInfo.Add(values.Flag2Item(flag&0x04, "Reserved"))
-	rootInfo.Add(values.Flag2Item(flag&0xf8, fmt.Sprintf("Unknown flag1(%#02x)", flag&0xf8)))
+	rootInfo.Add(values.Flag2Item(flag&0x08, "Symmetrically Encrypted Integrity Protected Data packet version 2"))
+	rootInfo.Add(values.Flag2Item(flag&0xf0, fmt.Sprintf("Unknown flag1(%#02x)", flag&0xf8)))
 	if s.reader.Rest() > 0 {
 		flags, _ := s.reader.Read2EOF()
 		for i, flag := range flags {

@@ -9,7 +9,8 @@ var testAEADIDNames = []string{
 	"Unknown (aead 0)",
 	"EAX mode (aead 1)",
 	"OCB mode <RFC7253> (aead 2)",
-	"Unknown (aead 3)",
+	"GCM mode <SP800-38D> (aead 3)",
+	"Unknown (aead 4)",
 }
 
 func TestAEADID(t *testing.T) {
@@ -37,7 +38,7 @@ func TestAEADID(t *testing.T) {
 	}
 }
 
-/* Copyright 2019 Spiegel
+/* Copyright 2019-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

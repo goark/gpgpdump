@@ -9,19 +9,22 @@ import (
 var aeadIDNames = Msgs{
 	1: "EAX mode",
 	2: "OCB mode <RFC7253>",
+	3: "GCM mode <SP800-38D>",
 }
 
 var aeadIDIVLen = map[int]int{
 	1: 16, //EAX mode
-	2: 16, //OCB mode
+	2: 15, //OCB mode
+	3: 12, //GCM mode
 }
 
 var aeadIDTagLen = map[int]int{
 	1: 16, //EAX mode
 	2: 16, //OCB mode
+	3: 16, //OCB mode
 }
 
-//AEADID is AEAD Algorithm ID
+// AEADID is AEAD Algorithm ID
 type AEADID byte
 
 // ToItem returns Item instance
@@ -59,7 +62,7 @@ func (aa AEADID) TagLen() int {
 	return 0
 }
 
-/* Copyright 2019 Spiegel
+/* Copyright 2019-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

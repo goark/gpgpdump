@@ -41,7 +41,7 @@ Symmetrically Encrypted Data Packet (tag 9) (56 bytes)
 	Hashed Subpacket (6 bytes)
 		Signature Creation Time (sub 2): 2015-01-24T02:52:15Z
 	Unhashed Subpacket (10 bytes)
-		Issuer (sub 16): 0x31fbfda95fbbfa18
+		Issuer Key ID (sub 16): 0x31fbfda95fbbfa18
 	Hash left 2 bytes
 		36 1f
 	ECDSA value r (256 bits)

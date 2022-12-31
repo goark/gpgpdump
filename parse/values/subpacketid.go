@@ -8,51 +8,51 @@ import (
 )
 
 var subpacketNames = Msgs{
-	0:  "Reserved",                               //00
-	1:  "Image Attribute",                        //01
-	2:  "Signature Creation Time",                //02
-	3:  "Signature Expiration Time",              //03
-	4:  "Exportable Certification",               //04
-	5:  "Trust Signature",                        //05
-	6:  "Regular Expression",                     //06
-	7:  "Revocable",                              //07
-	8:  "Reserved",                               //08
-	9:  "Key Expiration Time",                    //09
-	10: "Placeholder for backward compatibility", //10
-	11: "Preferred Symmetric Algorithms",         //11
-	12: "Revocation Key",                         //12
-	13: "Reserved",                               //13
-	14: "Reserved",                               //14
-	15: "Reserved",                               //15
-	16: "Issuer",                                 //16
-	17: "Reserved",                               //17
-	18: "Reserved",                               //18
-	19: "Reserved",                               //19
-	20: "Notation Data",                          //20
-	21: "Preferred Hash Algorithms",              //21
-	22: "Preferred Compression Algorithms",       //22
-	23: "Key Server Preferences",                 //23
-	24: "Preferred Key Server",                   //24
-	25: "Primary User ID",                        //25
-	26: "Policy URI",                             //26
-	27: "Key Flags",                              //27
-	28: "Signer's User ID",                       //28
-	29: "Reason for Revocation",                  //29
-	30: "Features",                               //30
-	31: "Signature Target",                       //31
-	32: "Embedded Signature",                     //32
-	33: "Issuer Fingerprint",                     //33
-	34: "Reserved (Preferred AEAD Algorithms)",   //34
-	35: "Intended Recipient Fingerprint",         //35
-	36: "Reserved",                               //36
-	37: "Reserved (Attested Certifications)",     //37
-	38: "Reserved (Key Block)",                   //38
+	0:  "Reserved",                                 //00
+	1:  "Image Attribute",                          //01
+	2:  "Signature Creation Time",                  //02
+	3:  "Signature Expiration Time",                //03
+	4:  "Exportable Certification",                 //04
+	5:  "Trust Signature",                          //05
+	6:  "Regular Expression",                       //06
+	7:  "Revocable",                                //07
+	8:  "Reserved",                                 //08
+	9:  "Key Expiration Time",                      //09
+	10: "Placeholder for backward compatibility",   //10
+	11: "Preferred Symmetric Ciphers for v1 SEIPD", //11
+	12: "Revocation Key",                           //12
+	13: "Reserved",                                 //13
+	14: "Reserved",                                 //14
+	15: "Reserved",                                 //15
+	16: "Issuer Key ID",                            //16
+	17: "Reserved",                                 //17
+	18: "Reserved",                                 //18
+	19: "Reserved",                                 //19
+	20: "Notation Data",                            //20
+	21: "Preferred Hash Algorithms",                //21
+	22: "Preferred Compression Algorithms",         //22
+	23: "Key Server Preferences",                   //23
+	24: "Preferred Key Server",                     //24
+	25: "Primary User ID",                          //25
+	26: "Policy URI",                               //26
+	27: "Key Flags",                                //27
+	28: "Signer's User ID",                         //28
+	29: "Reason for Revocation",                    //29
+	30: "Features",                                 //30
+	31: "Signature Target",                         //31
+	32: "Embedded Signature",                       //32
+	33: "Issuer Fingerprint",                       //33
+	34: "Reserved",                                 //34
+	35: "Intended Recipient Fingerprint",           //35
+	37: "Reserved (Attested Certifications)",       //37
+	38: "Reserved (Key Block)",                     //38
+	39: "Preferred AEAD Ciphersuites",              //39
 }
 
-//SuboacketID is sub-packet type ID
+// SuboacketID is sub-packet type ID
 type SuboacketID byte
 
-//ToItem returns Item instance
+// ToItem returns Item instance
 func (s SuboacketID) ToItem(r *reader.Reader, dumpFlag bool) *result.Item {
 	return result.NewItem(
 		result.Name(s.String()),
@@ -76,7 +76,7 @@ func (s SuboacketID) String() string {
 	return fmt.Sprintf("%s (sub %d)", name+c, s)
 }
 
-/* Copyright 2016-2021 Spiegel
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

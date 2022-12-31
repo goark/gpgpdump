@@ -1,8 +1,8 @@
 package tags
 
 import (
-	"encoding/binary"
 	"fmt"
+	"strconv"
 
 	"github.com/goark/errs"
 
@@ -14,7 +14,7 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//seckeyInfo class for parsing Secret-key in Tag05
+// seckeyInfo class for parsing Secret-key in Tag05
 type seckeyInfo struct {
 	cxt    *context.Context
 	reader *reader.Reader
@@ -22,24 +22,27 @@ type seckeyInfo struct {
 	pubID  values.PubID
 }
 
-//newSeckey returns seckeyInfo instance
+// newSeckey returns seckeyInfo instance
 func newSeckey(cxt *context.Context, reader *reader.Reader, pubVer *values.Version, pubID values.PubID) *seckeyInfo {
 	return &seckeyInfo{cxt: cxt, reader: reader, pubVer: pubVer, pubID: pubID}
 }
 
-//Parse Secret-key packet
+// Parse Secret-key packet
 func (p *seckeyInfo) Parse(parent *result.Item) error {
+	//One octet indicating string-to-key usage conventions
 	usage, err := p.reader.ReadByte()
 	if err != nil {
 		return errs.New("illegal s2k usage", errs.WithCause(err))
 	}
 
-	if rOpt, err := p.getField1(); err != nil {
+	//Only for a version 5 packet where the secret key material is encrypted (that is, where the previous octet is not zero), a one-octet scalar octet count of the cumulative length of all the following optional string-to-key parameter fields.
+	if rOpt, err := p.getField1(usage); err != nil {
 		return err
 	} else if rOpt != nil {
 		//[Optional] If string-to-key usage octet was 255, 254, or 253, a one-octet symmetric encryption algorithm.
 		var symid values.SymID
-		if usage != 0 { //encrypted secret-key
+		switch usage {
+		case 253, 254, 255:
 			alg, err := rOpt.ReadByte()
 			if err != nil {
 				return errs.New(
@@ -52,6 +55,7 @@ func (p *seckeyInfo) Parse(parent *result.Item) error {
 			parent.Add(symid.ToItem(p.cxt.Debug()))
 		}
 		//[Optional] If string-to-key usage octet was 253, a one-octet AEAD algorithm.
+		var aeadid values.AEADID
 		if usage == 253 {
 			alg, err := rOpt.ReadByte()
 			if err != nil {
@@ -61,7 +65,22 @@ func (p *seckeyInfo) Parse(parent *result.Item) error {
 					errs.WithCause(err),
 				)
 			}
-			parent.Add(values.AEADID(alg).ToItem(p.cxt.Debug()))
+			aeadid = values.AEADID(alg)
+			parent.Add(aeadid.ToItem(p.cxt.Debug()))
+		}
+		// [Optional] Only for a version 5 packet, and if string-to-key usage octet was 255, 254, or 253, an one-octet count of the following field.
+		if p.pubVer.Number() == 5 {
+			switch usage {
+			case 253, 254, 255:
+				ct, err := rOpt.ReadByte()
+				if err != nil {
+					return errs.New("illegal count data", errs.WithCause(err))
+				}
+				parent.Add(result.NewItem(
+					result.Name("count of the following field"),
+					result.Value(strconv.Itoa(int(ct))),
+				))
+			}
 		}
 		//[Optional] If string-to-key usage octet was 255, 254, or 253, a string-to-key specifier.
 		hasIV := false
@@ -80,82 +99,81 @@ func (p *seckeyInfo) Parse(parent *result.Item) error {
 		default:
 			hasIV = true
 		}
-		//[Optional] If secret data is encrypted (string-to-key usage octet not zero), an Initial Vector (IV) of the same length as the cipher's block size.
+		//[Optional] If string-to-key usage octet was 253 (that is, the secret data is AEAD-encrypted), an initialization vector (IV) of size specified by the AEAD algorithm (see Section 5.13.2), which is used as the nonce for the AEAD algorithm.
+		//[Optional] If string-to-key usage octet was 255, 254, or a cipher algorithm identifier (that is, the secret data is CFB-encrypted), an initialization vector (IV) of the same length as the cipher's block size.
 		if usage != 0 && hasIV {
-			iv, err := p.iv(values.SymID(symid), usage == 253)
+			iv, err := p.iv(rOpt, usage, symid, aeadid)
 			if err != nil {
 				return err
 			}
 			parent.Add(iv)
 		}
 
-		if p.pubVer.Number() == 5 {
+		if p.pubVer.Number() == 5 && usage != 0 {
 			if rOpt.Rest() > 0 {
 				parent.Add(values.RawData(rOpt, "Unknown data", p.cxt.Debug()))
 			}
 		}
 	}
 
-	if rOpt, err := p.getField2(); err != nil {
-		return err
-	} else if rOpt != nil {
-		switch usage {
-		case 0:
-			parent.Note = "s2k usage 0; plain secret-key material"
-			//parse plain key material
-			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecPlain(parent); err != nil {
-				return errs.Wrap(err, errs.WithContext("s2k_usage", usage))
-			}
-			//checksum
-			chk, err := p.reader.ReadBytes(2)
-			if err != nil {
-				return errs.New("illegal checksum value", errs.WithCause(err))
-			}
-			parent.Add(result.NewItem(
-				result.Name("2-octet checksum"),
-				result.DumpStr(values.DumpBytes(chk, true).String()),
-			))
-		case 253:
-			parent.Note = "s2k usage 253; encrypted secret-key material and AEAD authentication tag"
-			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecEnc(parent); err != nil {
-				return errs.New(
-					"illegal pubkey",
-					errs.WithContext("s2k_usage", usage),
-					errs.WithCause(err),
-				)
-			}
-		case 254:
-			parent.Note = "s2k usage 254; encrypted secret-key material and 20-octet SHA-1 hash"
-			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecEnc(parent); err != nil {
-				return errs.New(
-					"illegal pubkey",
-					errs.WithContext("s2k_usage", usage),
-					errs.WithCause(err),
-				)
-			}
-		default:
-			parent.Note = fmt.Sprintf("s2k usage %d; encrypted secret-key material and 2-octet checksum", usage)
-			if err := pubkey.New(p.cxt, p.pubID, rOpt).ParseSecEnc(parent); err != nil {
-				return errs.New(
-					"illegal pubkey",
-					errs.WithContext("s2k_usage", usage),
-					errs.WithCause(err),
-				)
-			}
+	//Plain or encrypted multiprecision integers comprising the secret key data.
+	switch usage {
+	case 0:
+		parent.Note = "s2k usage 0; plain secret-key material"
+		//parse plain key material
+		if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecPlain(parent); err != nil {
+			return errs.Wrap(err, errs.WithContext("s2k_usage", usage))
 		}
+		//checksum
+		chk, err := p.reader.ReadBytes(2)
+		if err != nil {
+			return errs.New("illegal checksum value", errs.WithCause(err))
+		}
+		parent.Add(result.NewItem(
+			result.Name("2-octet checksum"),
+			result.DumpStr(values.DumpBytes(chk, true).String()),
+		))
+	case 253:
+		parent.Note = "s2k usage 253; encrypted secret-key material and AEAD authentication tag"
+		if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecEnc(parent); err != nil {
+			return errs.New(
+				"illegal pubkey",
+				errs.WithContext("s2k_usage", usage),
+				errs.WithCause(err),
+			)
+		}
+	case 254:
+		parent.Note = "s2k usage 254; encrypted secret-key material and 20-octet SHA-1 hash"
+		if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecEnc(parent); err != nil {
+			return errs.New(
+				"illegal pubkey",
+				errs.WithContext("s2k_usage", usage),
+				errs.WithCause(err),
+			)
+		}
+	default:
+		parent.Note = fmt.Sprintf("s2k usage %d; encrypted secret-key material and 2-octet checksum", usage)
+		if err := pubkey.New(p.cxt, p.pubID, p.reader).ParseSecEnc(parent); err != nil {
+			return errs.New(
+				"illegal pubkey",
+				errs.WithContext("s2k_usage", usage),
+				errs.WithCause(err),
+			)
+		}
+	}
 
-		if p.pubVer.Number() == 5 {
-			if rOpt.Rest() > 0 {
-				parent.Add(values.RawData(rOpt, "Unknown data", p.cxt.Debug()))
-			}
+	if p.pubVer.Number() == 5 {
+		if p.reader.Rest() > 0 {
+			parent.Add(values.RawData(p.reader, "Unknown data", p.cxt.Debug()))
 		}
 	}
 	return nil
 }
 
-//getField1 returns reader.Reader for optional fields
-func (p *seckeyInfo) getField1() (*reader.Reader, error) {
-	if p.pubVer.Number() == 5 {
+// getField1 returns reader.Reader for optional fields
+func (p *seckeyInfo) getField1(usage byte) (*reader.Reader, error) {
+	// Only for a version 5 packet where the secret key material is encrypted (that is, where the previous octet is not zero), a one-octet scalar octet count of the cumulative length of all the following optional string-to-key parameter fields.
+	if p.pubVer.Number() == 5 && usage != 0 {
 		l, err := p.reader.ReadByte()
 		if err != nil {
 			return nil, errs.New("illegal length of option field", errs.WithCause(err))
@@ -163,6 +181,7 @@ func (p *seckeyInfo) getField1() (*reader.Reader, error) {
 		if l == 0 {
 			return nil, nil
 		}
+		fmt.Println(int(l))
 		b, err := p.reader.ReadBytes(int64(l))
 		if err != nil {
 			return nil, errs.New("illegal option field", errs.WithCause(err))
@@ -172,37 +191,20 @@ func (p *seckeyInfo) getField1() (*reader.Reader, error) {
 	return p.reader, nil
 }
 
-//getField2 returns reader.Reader for secret key material
-func (p *seckeyInfo) getField2() (*reader.Reader, error) {
-	if p.pubVer.Number() == 5 {
-		l, err := p.reader.ReadBytes(4)
-		ll := binary.BigEndian.Uint32(l)
-		if err != nil {
-			return nil, errs.New("illegal length of key materia", errs.WithCause(err))
-		}
-		if ll == 0 {
-			return nil, nil
-		}
-		b, err := p.reader.ReadBytes(int64(ll))
-		if err != nil {
-			return nil, errs.New("illegal key materia", errs.WithCause(err))
-		}
-		return reader.New(b), nil
-	}
-	return p.reader, nil
-}
-
-//iv returns context.Item for Initialization Vector
-func (p *seckeyInfo) iv(symid values.SymID, isAEAD bool) (*result.Item, error) {
+// iv returns context.Item for Initialization Vector
+func (p *seckeyInfo) iv(rOpt *reader.Reader, usage byte, symid values.SymID, aeadid values.AEADID) (*result.Item, error) {
 	sz64 := int64(symid.IVLen())
-	iv, err := p.reader.ReadBytes(sz64)
+	isAEAD := usage == 253 && aeadid.IVLen() > 0
+	if isAEAD {
+		sz64 = int64(aeadid.IVLen())
+	}
+	iv, err := rOpt.ReadBytes(sz64)
 	if err != nil {
 		return nil, errs.New(fmt.Sprintf("illegal s2k iv (length: %d bytes)", sz64), errs.WithCause(err))
 	}
 	var name string
 	if isAEAD {
 		name = "nonce for the AEAD"
-
 	} else {
 		name = "IV"
 	}
@@ -212,7 +214,7 @@ func (p *seckeyInfo) iv(symid values.SymID, isAEAD bool) (*result.Item, error) {
 	), nil
 }
 
-/* Copyright 2016-2020 Spiegel
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

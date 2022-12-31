@@ -8,30 +8,30 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//tagInfo class as packet result. for all tags
+// tagInfo class as packet result. for all tags
 type tagInfo struct {
 	cxt    *context.Context
 	tag    values.TagID
 	reader *reader.Reader
 }
 
-//ToItem returns result.Item instance
+// ToItem returns result.Item instance
 func (t *tagInfo) ToItem() *result.Item {
 	return t.tag.ToItem(t.reader, t.cxt.Debug())
 }
 
-//Tags parsing interface
+// Tags parsing interface
 type Tags interface {
 	Parse() (*result.Item, error)
 }
 
-//NewPacket is function value of parsing Packet
+// NewPacket is function value of parsing Packet
 type NewPacket func(*context.Context, values.TagID, []byte) Tags
 
-//FuncMap is type of NewPacket function list.
+// FuncMap is type of NewPacket function list.
 type FuncMap map[int]NewPacket
 
-//Get returns NewPacket function.
+// Get returns NewPacket function.
 func (fm FuncMap) Get(i int, defFunc NewPacket) NewPacket {
 	if f, ok := fm[i]; ok {
 		return f
@@ -58,13 +58,14 @@ var newFunctions = FuncMap{
 	18: newTag18,      //Sym. Encrypted Integrity Protected Data Packet
 	19: newTag19,      //Modification Detection Code Packet
 	20: newTag20,      //AEAD Encrypted Data Packet Packet
+	21: newTag21,      //Padding Packet
 	60: newTagPrivate, //Private or Experimental Values
 	61: newTagPrivate, //Private or Experimental Values
 	62: newTagPrivate, //Private or Experimental Values
 	63: newTagPrivate, //Private or Experimental Values
 }
 
-//NewTag returns Tags instance for pasing
+// NewTag returns Tags instance for pasing
 func NewTag(op *packet.OpaquePacket, cxt *context.Context) Tags {
 	if op.Tag == 2 {
 		// recursive call in tag02.Parse() -> sub32.Parse()
@@ -73,7 +74,7 @@ func NewTag(op *packet.OpaquePacket, cxt *context.Context) Tags {
 	return newFunctions.Get(int(op.Tag), newTagUnknown)(cxt, values.TagID(op.Tag), op.Contents)
 }
 
-/* Copyright 2016-2018 Spiegel
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

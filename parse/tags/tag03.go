@@ -12,12 +12,12 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//tag03 class for Symmetric-Key Encrypted Session Key Packet
+// tag03 class for Symmetric-Key Encrypted Session Key Packet
 type tag03 struct {
 	tagInfo
 }
 
-//newTag03 return tag03 instance
+// newTag03 return tag03 instance
 func newTag03(cxt *context.Context, tag values.TagID, body []byte) Tags {
 	return &tag03{tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}}
 }
@@ -34,12 +34,13 @@ func (t *tag03) Parse() (*result.Item, error) {
 	version := values.SymSessKeyVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
-	if version.IsCurrent() {
+	switch true {
+	case version.IsCurrent():
 		_, err := t.parseV4(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)
 		}
-	} else if version.IsDraft() {
+	case version.IsDraft():
 		_, err := t.parseV5(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)
@@ -65,25 +66,38 @@ func (t *tag03) parseV4(rootInfo *result.Item) (*result.Item, error) {
 	if err := s2k.Parse(rootInfo, t.cxt.Debug()); err != nil {
 		return rootInfo, errs.New("illegal s2k", errs.WithCause(err))
 	}
+	if t.reader.Rest() > 0 {
+		rootInfo.Add(values.RawData(t.reader, "Encrypted session key", t.cxt.Debug()))
+	}
 	return rootInfo, nil
 }
 
 func (t *tag03) parseV5(rootInfo *result.Item) (*result.Item, error) {
 	// [00] one-octet version number
-	// [01] one-octet cipher algorithm.
+	// [01] one-octet scalar octet count of the following 5 fields.
+	_, err := t.reader.ReadByte()
+	if err != nil {
+		return rootInfo, errs.New("illegal count data", errs.WithCause(err))
+	}
+	// [02] one-octet symmetric cipher algorithm identifier.
 	symid, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, errs.New("illegal symid", errs.WithCause(err))
 	}
 	rootInfo.Add(values.SymID(symid).ToItem(t.cxt.Debug()))
-	// [02] one-octet AEAD algorithm.
+	// [03] one-octet AEAD algorithm identifier.
 	aeadalg, err := t.reader.ReadByte()
 	if err != nil {
 		return rootInfo, errs.New("illegal aeadid", errs.WithCause(err))
 	}
 	aeadid := values.AEADID(aeadalg)
 	rootInfo.Add(aeadid.ToItem(t.cxt.Debug()))
-	// [03] string-to-key (S2K) specifier
+	// [04] one-octet scalar octet count of the following field.
+	_, err = t.reader.ReadByte()
+	if err != nil {
+		return rootInfo, errs.New("illegal count data", errs.WithCause(err))
+	}
+	// [05] string-to-key (S2K) specifier
 	s2k := s2k.New(t.reader)
 	if err := s2k.Parse(rootInfo, t.cxt.Debug()); err != nil {
 		return rootInfo, errs.New("illegal s2k", errs.WithCause(err))
@@ -98,7 +112,7 @@ func (t *tag03) parseV5(rootInfo *result.Item) (*result.Item, error) {
 	// [NN] The encrypted session key itself, which is decrypted with the string-to-key object using the given cipher and AEAD mode.
 	// [NN] An authentication tag for the AEAD mode.
 	if t.reader.Rest() > 0 {
-		rootInfo.Add(values.RawData(t.reader, "Encrypted data and authentication tag", t.cxt.Debug()))
+		rootInfo.Add(values.RawData(t.reader, "Encrypted session key and authentication tag", t.cxt.Debug()))
 	}
 
 	return rootInfo, nil
@@ -116,7 +130,7 @@ func (t *tag03) iv(aeadid values.AEADID) (*result.Item, error) {
 	), nil
 }
 
-/* Copyright 2016-2021 Spiegel
+/* Copyright 2016-2022 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
