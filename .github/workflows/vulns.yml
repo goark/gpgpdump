@@ -14,7 +14,7 @@ jobs:
         with:
           go-version: ^1.19
       - name: install depm
-        run: go install github.com/goark/depm@latest
+        run: go install github.com/goark/depm@v1.0.42
       - name: WriteGoList
         run: depm list --json > go.list
       - name: Nancy
