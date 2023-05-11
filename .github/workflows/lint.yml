@@ -44,3 +44,7 @@ jobs:
           # skip-build-cache: true
       - name: testing
         run: go test -shuffle on ./...
+      - name: install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+      - name: running govulncheck
+        run: govulncheck ./...

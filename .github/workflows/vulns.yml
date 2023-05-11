@@ -19,5 +19,3 @@ jobs:
         run: depm list --json > go.list
       - name: Nancy
         uses: sonatype-nexus-community/nancy-github-action@main
-        with:
-          nancyVersion: "v1.0.42"
