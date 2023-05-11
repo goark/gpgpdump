@@ -3,7 +3,7 @@ version: '3'
 tasks:
   default:
     cmds:
-      - task: clean
+      - task: prepare
       - task: test
       - task: nancy
       - task: graph
@@ -11,14 +11,15 @@ tasks:
   build-all:
     desc: Build executable binary with GoReleaser.
     cmds:
-      - goreleaser --snapshot --skip-publish --rm-dist
+      - goreleaser --snapshot --skip-publish --clean
 
   test:
     desc: Test and lint.
     cmds:
       - go mod verify
       - go test -shuffle on ./...
-      - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.50.1 golangci-lint run --enable gosec --timeout 3m0s ./...
+      - govulncheck ./...
+      - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.52.1 golangci-lint run --enable gosec --timeout 10m0s ./...
     sources:
       - ./go.mod
       - '**/*.go'
@@ -31,13 +32,15 @@ tasks:
       - ./go.mod
       - '**/*.go'
 
+  prepare:
+      - go mod tidy -v -go=1.20
+
   clean:
     desc: Initialize module and build cache, and remake go.sum file.
     cmds:
       - rm -f ./go.sum
       - go clean -cache
       - go clean -modcache
-      - go mod tidy -v -go=1.19
 
   graph:
     desc: Make grapth of dependency modules.

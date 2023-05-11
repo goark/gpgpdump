@@ -10,7 +10,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/goark/errs"
 	"github.com/goark/fetch"
 	"github.com/goark/gpgpdump/hkp"
 )
@@ -100,7 +99,7 @@ func TestFetch(t *testing.T) {
 	for _, tc := range testCases {
 		r, err := hkp.New(tc.host).Fetch(context.Background(), &testClient{}, tc.uid)
 		if err != nil {
-			t.Errorf("Client.Get(\"%v\") is \"%v\", want nil", tc.uid, errs.Cause(err))
+			t.Errorf("Client.Get(\"%v\") is \"%+v\", want nil", tc.uid, err)
 			fmt.Printf("Info: %+v\n", err)
 		} else {
 			_, _ = io.Copy(os.Stdout, r)
