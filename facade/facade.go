@@ -1,8 +1,10 @@
 package facade
 
 import (
+	cntxt "context"
 	"io"
 	"os"
+	"os/signal"
 	"runtime"
 	"strings"
 
@@ -34,7 +36,7 @@ var (
 	filePath    string
 )
 
-//newRootCmd returns cobra.Command instance for root command
+// newRootCmd returns cobra.Command instance for root command
 func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   Name,
@@ -104,6 +106,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd.PersistentFlags().BoolP(context.UTC.String(), "u", false, "output with UTC time")
 
 	rootCmd.SilenceUsage = true
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	rootCmd.SetArgs(args)
 	rootCmd.SetIn(ui.Reader())       //Stdin
 	rootCmd.SetOut(ui.ErrorWriter()) //Stdout -> Stderr
@@ -113,7 +116,6 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 		newHkpCmd(ui),
 		newGitHubCmd(ui),
 		newFetchCmd(ui),
-		newCompletionCmd(ui, rootCmd),
 	)
 
 	return rootCmd
@@ -154,7 +156,7 @@ func parseContext(cmd *cobra.Command) *context.Context {
 	return cxt
 }
 
-//Execute is called from main function
+// Execute is called from main function
 func Execute(ui *rwi.RWI, args []string) (exit exitcode.ExitCode) {
 	defer func() {
 		//panic hundling
@@ -171,15 +173,19 @@ func Execute(ui *rwi.RWI, args []string) (exit exitcode.ExitCode) {
 		}
 	}()
 
+	// create interrupt SIGNAL
+	ctx, cancel := signal.NotifyContext(cntxt.Background(), os.Interrupt)
+	defer cancel()
+
 	//execution
 	exit = exitcode.Normal
-	if err := newRootCmd(ui, args).Execute(); err != nil {
+	if err := newRootCmd(ui, args).ExecuteContext(ctx); err != nil {
 		exit = exitcode.Abnormal
 	}
 	return
 }
 
-/* Copyright 2017-2021 Spiegel
+/* Copyright 2017-2023 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

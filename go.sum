@@ -9,8 +9,8 @@ github.com/cloudflare/circl v1.3.3/go.mod h1:5XYMA4rFBvNIrhs50XuiBJ15vF2pZn4nnUK
 github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/goark/errs v1.2.2 h1:UrMZZJL0WaOzaO+ErSV+nz/k/+bmW2wUiFe5V7pUeEo=
 github.com/goark/errs v1.2.2/go.mod h1:ZsQucxaDFVfSB8I99j4bxkDRfNOrlKINwg72QMuRWKw=
-github.com/goark/fetch v0.3.0 h1:2m32EGOLBi99RzI5urFfmv5++CMqfenVw7NH8z/lbX8=
-github.com/goark/fetch v0.3.0/go.mod h1:sqDdPbbHeIjDVeHrgvzhHpkUr8X9pVC9DgJoVwU02x0=
+github.com/goark/fetch v0.4.1 h1:Y59g9sAdgqjPS7UADdLIoQGRxJE1WMo5ixlJi/ZcCfc=
+github.com/goark/fetch v0.4.1/go.mod h1:umZxLIJHa15J8EQSp5zft1dHDv0VGwmQL6pOfaJ60FY=
 github.com/goark/gocli v0.13.0 h1:hR/5E4JGMEcbQxkSqR7K/0XnYY2Hd6GDpuazXGC3jn4=
 github.com/goark/gocli v0.13.0/go.mod h1:pFYWXAXZ5G4QqPcXsDTSFbCuVg0qO40NYkp2XKthc18=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=

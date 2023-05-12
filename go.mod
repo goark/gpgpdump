@@ -6,7 +6,7 @@ require (
 	github.com/ProtonMail/go-crypto v0.0.0-20230426101702-58e86b294756
 	github.com/atotto/clipboard v0.1.4
 	github.com/goark/errs v1.2.2
-	github.com/goark/fetch v0.3.0
+	github.com/goark/fetch v0.4.1
 	github.com/goark/gocli v0.13.0
 	github.com/spf13/cobra v1.7.0
 )

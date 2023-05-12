@@ -1,14 +1,12 @@
 package facade
 
 import (
-	"context"
 	"os"
 
 	"github.com/goark/errs"
 
 	"github.com/goark/fetch"
 	"github.com/goark/gocli/rwi"
-	"github.com/goark/gocli/signal"
 	"github.com/goark/gpgpdump/ecode"
 	"github.com/goark/gpgpdump/hkp"
 	"github.com/goark/gpgpdump/parse"
@@ -16,7 +14,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//newHkpCmd returns cobra.Command instance for show sub-command
+// newHkpCmd returns cobra.Command instance for show sub-command
 func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 	hkpCmd := &cobra.Command{
 		Use:     "hkp [flags] {userID | keyID}",
@@ -63,7 +61,7 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 				hkp.WithProtocol(prt),
 				hkp.WithPort(port),
 			).Fetch(
-				signal.Context(context.Background(), os.Interrupt),
+				cmd.Context(),
 				fetch.New(),
 				userID,
 			)
@@ -99,7 +97,7 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 	return hkpCmd
 }
 
-/* Copyright 2019-2021 Spiegel
+/* Copyright 2019-2023 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
