@@ -2,21 +2,19 @@ package facade
 
 import (
 	"bytes"
-	"context"
 	"os"
 
 	"github.com/goark/errs"
 
 	"github.com/goark/fetch"
 	"github.com/goark/gocli/rwi"
-	"github.com/goark/gocli/signal"
 	"github.com/goark/gpgpdump/github"
 	"github.com/goark/gpgpdump/parse"
 	contxt "github.com/goark/gpgpdump/parse/context"
 	"github.com/spf13/cobra"
 )
 
-//newHkpCmd returns cobra.Command instance for show sub-command
+// newHkpCmd returns cobra.Command instance for show sub-command
 func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 	githubCmd := &cobra.Command{
 		Use:     "github [flags] GitHubUserID",
@@ -44,7 +42,7 @@ func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 
 			//Fetch OpenPGP packets
 			resp, err := github.GetKey(
-				signal.Context(context.Background(), os.Interrupt),
+				cmd.Context(),
 				fetch.New(),
 				userID,
 				keyid,
@@ -78,7 +76,7 @@ func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 	return githubCmd
 }
 
-/* Copyright 2019-2021 Spiegel
+/* Copyright 2019-2023 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -12,7 +12,7 @@ import (
 	"github.com/goark/gpgpdump/ecode"
 )
 
-//Protocol is kind of HKP protocols
+// Protocol is kind of HKP protocols
 type Protocol int
 
 const (
@@ -32,14 +32,14 @@ func (p Protocol) String() string {
 	return protocolMap[HKP]
 }
 
-//Server is information of OpenPGP key server
+// Server is information of OpenPGP key server
 type Server struct {
 	prt  Protocol //HKP protocol
 	host string   //OpenPGP key server host name
 	port int      //port number of OpenPGP key server
 }
 
-//ServerOptFunc is self-referential function for functional options pattern
+// ServerOptFunc is self-referential function for functional options pattern
 type ServerOptFunc func(*Server)
 
 // New returns a new Server instance
@@ -51,14 +51,14 @@ func New(host string, opts ...ServerOptFunc) *Server {
 	return s
 }
 
-//WithProtocol returns function for setting Reader
+// WithProtocol returns function for setting Reader
 func WithProtocol(p Protocol) ServerOptFunc {
 	return func(s *Server) {
 		s.prt = p
 	}
 }
 
-//WithPort returns function for setting Reader
+// WithPort returns function for setting Reader
 func WithPort(port int) ServerOptFunc {
 	return func(s *Server) {
 		s.port = port
@@ -73,7 +73,7 @@ func (s *Server) String() string {
 	return u.String()
 }
 
-//URL returns url.URL instance
+// URL returns url.URL instance
 func (s *Server) URL() *url.URL {
 	if s == nil {
 		s = nil
@@ -90,14 +90,14 @@ func (s *Server) Fetch(ctx context.Context, cli fetch.Client, userID string) (io
 	u.Path = "/pks/lookup"
 	u.RawQuery = values.Encode()
 
-	resp, err := cli.Get(u, fetch.WithContext(ctx))
+	resp, err := cli.GetWithContext(ctx, u)
 	if err != nil {
 		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("url", u.String()))
 	}
 	return resp.Body(), nil
 }
 
-/* Copyright 2019-2021 Spiegel
+/* Copyright 2019-2023 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

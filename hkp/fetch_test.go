@@ -84,7 +84,13 @@ var _ fetch.Client = (*testClient)(nil)
 func (c *testClient) Get(u *url.URL, opts ...fetch.RequestOpts) (fetch.Response, error) {
 	return newtestResponse(), nil
 }
+func (c *testClient) GetWithContext(ctx context.Context, u *url.URL, opts ...fetch.RequestOpts) (fetch.Response, error) {
+	return newtestResponse(), nil
+}
 func (c *testClient) Post(u *url.URL, payload io.Reader, opts ...fetch.RequestOpts) (fetch.Response, error) {
+	return newtestResponse(), nil
+}
+func (c *testClient) PostWithContext(ctx context.Context, u *url.URL, payload io.Reader, opts ...fetch.RequestOpts) (fetch.Response, error) {
 	return newtestResponse(), nil
 }
 

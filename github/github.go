@@ -18,9 +18,9 @@ const maxKeys = 100
 
 var maxKeysStr = strconv.Itoa(maxKeys)
 
-//Get returns OpenPGP ASCII armor text from GitHub user profile
+// Get returns OpenPGP ASCII armor text from GitHub user profile
 func Get(ctx context.Context, cli fetch.Client, username string) ([]byte, error) {
-	resp, err := cli.Get(makeURL(username), fetch.WithContext(ctx))
+	resp, err := cli.GetWithContext(ctx, makeURL(username))
 	if err != nil {
 		return nil, errs.Wrap(err, errs.WithContext("username", username))
 	}
@@ -36,7 +36,7 @@ func makeURL(username string) *url.URL {
 	return u
 }
 
-//GetKey returns JSON text for GitHub OpenPGP API
+// GetKey returns JSON text for GitHub OpenPGP API
 func GetKey(ctx context.Context, cli fetch.Client, username string, keyID string) ([]byte, error) {
 	if len(keyID) == 0 {
 		return Get(ctx, cli, username)
@@ -66,9 +66,9 @@ func getInPage(ctx context.Context, cli fetch.Client, username string, page int)
 	if err != nil {
 		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("username", username), errs.WithContext("page", page))
 	}
-	resp, err := cli.Get(
+	resp, err := cli.GetWithContext(
+		ctx,
 		u,
-		fetch.WithContext(ctx),
 		fetch.WithRequestHeaderSet("Accept", "application/vnd.github.v3+json"),
 	)
 	if err != nil {
@@ -98,7 +98,7 @@ func makeURLAPI(username string, page int) (*url.URL, error) {
 	return u, nil
 }
 
-/* Copyright 2020-2021 Spiegel
+/* Copyright 2020-2023 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
