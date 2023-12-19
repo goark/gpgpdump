@@ -1,14 +1,16 @@
 module github.com/goark/gpgpdump
 
-go 1.20
+go 1.21
+
+toolchain go1.21.5
 
 require (
-	github.com/ProtonMail/go-crypto v0.0.0-20230426101702-58e86b294756
+	github.com/ProtonMail/go-crypto v0.0.0-20230923063757-afb1ddc0824c
 	github.com/atotto/clipboard v0.1.4
-	github.com/goark/errs v1.2.2
+	github.com/goark/errs v1.3.2
 	github.com/goark/fetch v0.4.1
 	github.com/goark/gocli v0.13.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 )
 
 require (
