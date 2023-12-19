@@ -11,7 +11,7 @@ tasks:
   build-all:
     desc: Build executable binary with GoReleaser.
     cmds:
-      - goreleaser --snapshot --skip-publish --clean
+      - goreleaser --snapshot --skip=publish --clean
 
   test:
     desc: Test and lint.
