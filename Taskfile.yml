@@ -19,7 +19,7 @@ tasks:
       - go mod verify
       - go test -shuffle on ./...
       - govulncheck ./...
-      - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.55.2 golangci-lint run --enable gosec --timeout 10m0s ./...
+      - golangci-lint run --enable gosec --timeout 10m0s ./...
     sources:
       - ./go.mod
       - '**/*.go'
@@ -33,7 +33,7 @@ tasks:
       - '**/*.go'
 
   prepare:
-      - go mod tidy -v -go=1.21
+      - go mod tidy -v -go=1.23
 
   clean:
     desc: Initialize module and build cache, and remake go.sum file.
