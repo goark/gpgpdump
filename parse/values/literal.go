@@ -19,10 +19,10 @@ var literalFormatNames = Msgs{
 	0x6c: "local",      //'l'
 }
 
-//LiteralFormat is format of literal data
+// LiteralFormat is format of literal data
 type LiteralFormat byte
 
-//ToItem returns Item instance
+// ToItem returns Item instance
 func (l LiteralFormat) ToItem() *result.Item {
 	return result.NewItem(
 		result.Name("Literal data format"),
@@ -35,18 +35,18 @@ func (l LiteralFormat) String() string {
 	return string(l)
 }
 
-//Text is literal text
+// Text is literal text
 type Text struct {
 	name string
 	body []byte
 }
 
-//NewText returns new Text instance
+// NewText returns new Text instance
 func NewText(body []byte, name string) *Text {
 	return &Text{name: name, body: body}
 }
 
-//NewLiteralFname returns new Text instance for file name of literal data
+// NewLiteralFname returns new Text instance for file name of literal data
 func NewLiteralFname(r *reader.Reader, l int64) (*Text, error) {
 	name := "File name"
 	if r == nil {
@@ -68,7 +68,7 @@ func (t *Text) ToItem(dumpFlag bool) *result.Item {
 			result.Note("null"),
 		)
 	}
-	if t.body == nil || len(t.body) == 0 {
+	if len(t.body) == 0 {
 		return result.NewItem(
 			result.Name(t.name),
 			result.Note("0 byte"),
@@ -97,7 +97,7 @@ func (t *Text) ToItem(dumpFlag bool) *result.Item {
 	)
 }
 
-//RawData returns result.Item instance for raw data
+// RawData returns result.Item instance for raw data
 func RawData(r *reader.Reader, name string, dumpFlag bool) *result.Item {
 	rst := r.Rest()
 	return result.NewItem(

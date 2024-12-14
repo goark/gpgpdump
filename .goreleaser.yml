@@ -1,3 +1,5 @@
+version: 2
+
 project_name: gpgpdump
 release:
   github:
@@ -24,8 +26,6 @@ builds:
   ldflags: -s -w -X github.com/goark/gpgpdump/facade.Version=v{{ .Version }}
   binary: gpgpdump
 
-source:
-  rlcp: true
 archives:
 -
   format: tar.gz
@@ -57,7 +57,7 @@ changelog:
       - Merge branch
 
 snapshot:
-  name_template: SNAPSHOT-{{ .Commit }}
+  version_template: SNAPSHOT-{{ .Commit }}
 
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
