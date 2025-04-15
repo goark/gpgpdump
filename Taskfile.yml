@@ -33,7 +33,7 @@ tasks:
       - '**/*.go'
 
   prepare:
-      - go mod tidy -v -go=1.23
+      - go mod tidy -v -go=1.24
 
   clean:
     desc: Initialize module and build cache, and remake go.sum file.
