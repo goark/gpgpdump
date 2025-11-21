@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -42,7 +43,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 		Use:   Name,
 		Short: "OpenPGP packet visualizer",
 		Long:  "OpenPGP (RFC 4880) packet visualizer by golang.",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			//options options
 			if versionFlag {
 				return debugPrint(ui, errs.Wrap(ui.OutputErrln(getVersion())))
@@ -63,11 +64,15 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 				r = cb
 				cxt.Set(context.ARMOR, true) //ASCII armor text only
 			case len(filePath) > 0:
-				file, err := os.Open(filePath)
+				file, err := os.Open(filepath.Clean(filePath))
 				if err != nil {
 					return debugPrint(ui, errs.Wrap(err))
 				}
-				defer file.Close()
+				defer func() {
+					if cerr := file.Close(); cerr != nil {
+						err = debugPrint(ui, errs.Wrap(cerr))
+					}
+				}()
 				r = file
 			default:
 				r = ui.Reader()
@@ -185,7 +190,7 @@ func Execute(ui *rwi.RWI, args []string) (exit exitcode.ExitCode) {
 	return
 }
 
-/* Copyright 2017-2023 Spiegel
+/* Copyright 2017-2025 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -17,13 +17,13 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-//Tag08 class for Compressed Data Packet
+// Tag08 class for Compressed Data Packet
 type Tag08 struct {
 	tagInfo
 	data io.Reader
 }
 
-//newTag08 return tag08 instance
+// newTag08 return tag08 instance
 func newTag08(cxt *context.Context, tag values.TagID, body []byte) Tags {
 	return &Tag08{tagInfo: tagInfo{cxt: cxt, tag: tag, reader: reader.New(body)}, data: io.NopCloser(bytes.NewReader(nil))}
 }
@@ -68,24 +68,28 @@ func (t *Tag08) Parse() (*result.Item, error) {
 	return rootInfo, nil
 }
 
-//Reader returns io.Reader of compressed data
+// Reader returns io.Reader of compressed data
 func (t *Tag08) Reader() io.Reader {
 	return t.data
 }
 
 const maxDecompressionDataSize = 1024 * 1024 * 1024 //1GB
 
-func (t *Tag08) extractZip() (io.Reader, error) {
+func (t *Tag08) extractZip() (r io.Reader, err error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
 		return nil, errs.Wrap(err)
 	}
 	zr := flate.NewReader(bytes.NewReader(zd))
-	defer zr.Close()
+	defer func() {
+		if cerr := zr.Close(); cerr != nil {
+			err = errs.Join(cerr, err)
+		}
+	}()
 	return copyFrom(zr)
 }
 
-func (t *Tag08) extractZLib() (io.Reader, error) {
+func (t *Tag08) extractZLib() (r io.Reader, err error) {
 	zd, err := t.reader.Read2EOF()
 	if err != nil {
 		return nil, errs.Wrap(err)
@@ -94,7 +98,11 @@ func (t *Tag08) extractZLib() (io.Reader, error) {
 	if err != nil {
 		return nil, errs.Wrap(err)
 	}
-	defer zr.Close()
+	defer func() {
+		if cerr := zr.Close(); cerr != nil {
+			err = errs.Join(cerr, err)
+		}
+	}()
 	return copyFrom(zr)
 }
 
@@ -117,7 +125,7 @@ func copyFrom(r io.Reader) (io.Reader, error) {
 	return nil, errs.Wrap(ecode.ErrTooLarge)
 }
 
-/* Copyright 2016-2021 Spiegel
+/* Copyright 2016-2025 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

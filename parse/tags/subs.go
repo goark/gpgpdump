@@ -79,7 +79,8 @@ var newFunctionsSub17 = SubFuncMap{
 // NewSubs returns Tags instance for pasing
 func NewSubs(cxt *context.Context, osp *packet.OpaqueSubpacket, tagID values.TagID) Subs {
 	st := osp.SubType & 0x7f
-	if tagID == 2 {
+	switch tagID {
+	case 2:
 		switch st {
 		case 32:
 			// recursive call in sub32.Parse()
@@ -90,13 +91,13 @@ func NewSubs(cxt *context.Context, osp *packet.OpaqueSubpacket, tagID values.Tag
 		default:
 			return newFunctionsSub02.Get(int(st), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 		}
-	} else if tagID == 17 {
+	case 17:
 		return newFunctionsSub17.Get(int(st), newSubReserved)(cxt, values.SuboacketID(osp.SubType), osp.Contents)
 	}
 	return nil
 }
 
-/* Copyright 2016-2019 Spiegel
+/* Copyright 2016-2025 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -5,7 +5,7 @@ tasks:
     cmds:
       - task: prepare
       - task: test
-      - task: nancy
+      # - task: nancy
       - task: graph
 
   build-all:
@@ -19,7 +19,7 @@ tasks:
       - go mod verify
       - go test -shuffle on ./...
       - govulncheck ./...
-      - golangci-lint run --enable gosec --timeout 10m0s ./...
+      - golangci-lint-v2 run --enable gosec --timeout 10m0s ./...
     sources:
       - ./go.mod
       - '**/*.go'
@@ -33,7 +33,7 @@ tasks:
       - '**/*.go'
 
   prepare:
-      - go mod tidy -v -go=1.24
+      - go mod tidy -v -go=1.25
 
   clean:
     desc: Initialize module and build cache, and remake go.sum file.
