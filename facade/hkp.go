@@ -68,7 +68,11 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 			if err != nil {
 				return debugPrint(ui, err)
 			}
-			defer resp.Close()
+			defer func() {
+				if cerr := resp.Close(); cerr != nil {
+					err = debugPrint(ui, errs.Wrap(cerr))
+				}
+			}()
 			if rawFlag {
 				return debugPrint(ui, ui.WriteFrom(resp))
 			}
@@ -97,7 +101,7 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 	return hkpCmd
 }
 
-/* Copyright 2019-2023 Spiegel
+/* Copyright 2019-2025 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

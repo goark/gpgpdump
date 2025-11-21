@@ -109,12 +109,12 @@ func TestFetch(t *testing.T) {
 			fmt.Printf("Info: %+v\n", err)
 		} else {
 			_, _ = io.Copy(os.Stdout, r)
-			r.Close()
+			_ = r.Close()
 		}
 	}
 }
 
-/* Copyright 2019-2021 Spiegel
+/* Copyright 2019-2025 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
