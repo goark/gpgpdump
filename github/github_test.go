@@ -125,7 +125,7 @@ func newtestResponse2() *testResponse {
 }
 func (r *testResponse) Request() *http.Request            { return nil }
 func (r *testResponse) Header() http.Header               { return nil }
-func (r *testResponse) Close()                            {}
+func (r *testResponse) Close() error                      { return nil }
 func (r *testResponse) Body() io.ReadCloser               { return r.reader }
 func (r *testResponse) DumpBodyAndClose() ([]byte, error) { return []byte(r.text), nil }
 
@@ -197,7 +197,7 @@ func TestGetKey(t *testing.T) {
 	}
 }
 
-/* Copyright 2020-2021 Spiegel
+/* Copyright 2020-2026 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

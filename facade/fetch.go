@@ -18,21 +18,24 @@ func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 		Aliases: []string{"fch", "f"},
 		Short:   "Dumps OpenPGP packets form the Web",
 		Long:    "Dumps OpenPGP packets form the Web.",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			cxt := parseContext(cmd)
 			//user id
 			if len(args) != 1 {
-				return debugPrint(ui, errs.Wrap(os.ErrInvalid, errs.WithContext("args", args)))
+				err = debugPrint(ui, errs.Wrap(os.ErrInvalid, errs.WithContext("args", args)))
+				return
 			}
 			u, err := fetch.URL(args[0])
 			if err != nil {
-				return debugPrint(ui, err)
+				err = debugPrint(ui, err)
+				return
 			}
 
 			//options
 			rawFlag, err := cmd.Flags().GetBool("raw")
 			if err != nil {
-				return debugPrint(ui, errs.New("error in --raw option", errs.WithCause(err)))
+				err = debugPrint(ui, errs.New("error in --raw option", errs.WithCause(err)))
+				return
 			}
 
 			//Fetch OpenPGP packets
@@ -41,27 +44,35 @@ func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 				u,
 			)
 			if err != nil {
-				return debugPrint(ui, err)
+				err = debugPrint(ui, err)
+				return
 			}
-			defer resp.Close()
+			defer func() {
+				err = errs.Join(err, resp.Close())
+			}()
 			if rawFlag {
-				return debugPrint(ui, ui.WriteFrom(resp.Body()))
+				err = debugPrint(ui, ui.WriteFrom(resp.Body()))
+				return
 			}
 
 			//parse OpenPGP packets
 			p, err := parse.New(cxt, resp.Body())
 			if err != nil {
-				return debugPrint(ui, err)
+				err = debugPrint(ui, err)
+				return
 			}
 			res, err := p.Parse()
 			if err != nil {
-				return debugPrint(ui, err)
+				err = debugPrint(ui, err)
+				return
 			}
 			r, err := marshalPacketInfo(res)
 			if err != nil {
-				return debugPrint(ui, err)
+				err = debugPrint(ui, err)
+				return
 			}
-			return debugPrint(ui, ui.WriteFrom(r))
+			err = debugPrint(ui, ui.WriteFrom(r))
+			return
 		},
 	}
 	fetchCmd.Flags().BoolP("raw", "", false, "output raw data")
@@ -69,7 +80,7 @@ func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 	return fetchCmd
 }
 
-/* Copyright 2019-2023 Spiegel
+/* Copyright 2019-2026 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
