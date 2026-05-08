@@ -12,7 +12,7 @@
 - Support [RFC 5581] and [RFC 6637]
 - Support a part of [RFC 4880bis]
 
-This package is required Go 1.16 or later.
+This package is required Go 1.26.3 or later.
 
 **Migrated repository to [github.com/goark/gpgpdump][gpgpdump]**
 

@@ -61,10 +61,12 @@ func GetKey(ctx context.Context, cli fetch.Client, username string, keyID string
 	return nil, errs.Wrap(ecode.ErrNoKey, errs.WithContext("username", username), errs.WithContext("keyID", keyID))
 }
 
-func getInPage(ctx context.Context, cli fetch.Client, username string, page int) ([]*OpenPGPKey, error) {
+func getInPage(ctx context.Context, cli fetch.Client, username string, page int) (keys []*OpenPGPKey, err error) {
+	keys = nil
 	u, err := makeURLAPI(username, page)
 	if err != nil {
-		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("username", username), errs.WithContext("page", page))
+		err = errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("username", username), errs.WithContext("page", page))
+		return
 	}
 	resp, err := cli.GetWithContext(
 		ctx,
@@ -72,13 +74,16 @@ func getInPage(ctx context.Context, cli fetch.Client, username string, page int)
 		fetch.WithRequestHeaderSet("Accept", "application/vnd.github.v3+json"),
 	)
 	if err != nil {
-		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("username", username), errs.WithContext("page", page))
+		err = errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("username", username), errs.WithContext("page", page))
+		return
 	}
-	defer resp.Close()
+	defer func() {
+		err = errs.Join(err, resp.Close())
+	}()
 
-	var keys []*OpenPGPKey
-	if err := json.NewDecoder(resp.Body()).Decode(&keys); err != nil {
-		return nil, errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("url", u.String()))
+	if err = json.NewDecoder(resp.Body()).Decode(&keys); err != nil {
+		err = errs.Wrap(ecode.ErrInvalidRequest, errs.WithCause(err), errs.WithContext("url", u.String()))
+		return
 	}
 	return keys, nil
 }
@@ -98,7 +103,7 @@ func makeURLAPI(username string, page int) (*url.URL, error) {
 	return u, nil
 }
 
-/* Copyright 2020-2023 Spiegel
+/* Copyright 2020-2026 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
