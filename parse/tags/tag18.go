@@ -79,9 +79,11 @@ func (t *tag18) parseV2(rootInfo *result.Item) (*result.Item, error) {
 	if err != nil {
 		return rootInfo, errs.New("illegal chunk size", errs.WithCause(err))
 	}
+	chunkSize := uint64(1) << (sz + 6)
 	rootInfo.Add(result.NewItem(
-		result.Name("chunk size"),
-		result.Value(strconv.Itoa(int(sz))),
+		result.Name("Chunk size"),
+		result.Value(strconv.FormatUint(chunkSize, 10)),
+		result.DumpStr(values.DumpByteString(byte(sz), true)),
 	))
 	// [04] Thirty-two octets of salt.
 	s, err := t.reader.ReadBytes(32)
