@@ -39,6 +39,45 @@ func TestTag04FingerprintVer6(t *testing.T) {
 	}
 }
 
+func TestTag01Version6UsesV5Layout(t *testing.T) {
+	// version(6), key version(6), fingerprint(32), pubid(RSA), encrypted session key MPI
+	body := []byte{0x06, 0x06}
+	body = append(body, make([]byte, 32)...)
+	body = append(body, 0x01)
+	body = append(body, []byte{0x00, 0x08, 0x01}...)
+	op := &packet.OpaquePacket{Tag: 1, Contents: body}
+	cxt := context.New(context.Set(context.DEBUG, true), context.Set(context.UTC, true))
+	item, err := NewTag(op, cxt).Parse()
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if !strings.Contains(item.String(), "Fingerprint of the public key or subkey") {
+		t.Fatal("output does not contain v5/v6 key fingerprint field")
+	}
+}
+
+func TestTag04Version6UsesV5Layout(t *testing.T) {
+	// version(6), sig type, hashid, pubid, salt(16), key version(6), fingerprint(32), flag
+	body := []byte{0x06, 0x00, 0x02, 0x01}
+	body = append(body, make([]byte, 16)...)
+	body = append(body, 0x06)
+	body = append(body, make([]byte, 32)...)
+	body = append(body, 0x01)
+	op := &packet.OpaquePacket{Tag: 4, Contents: body}
+	cxt := context.New(context.Set(context.DEBUG, true), context.Set(context.UTC, true))
+	item, err := NewTag(op, cxt).Parse()
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	out := item.String()
+	if !strings.Contains(out, "Random values used as salt") {
+		t.Fatal("output does not contain v5/v6 salt field")
+	}
+	if !strings.Contains(out, "One-pass signature chain") {
+		t.Fatal("output does not contain one-pass signature chain field")
+	}
+}
+
 func TestSub33Version6Note(t *testing.T) {
 	body := append([]byte{0x06}, make([]byte, 32)...)
 	s := newSub33(context.New(), values.SuboacketID(33), body)
