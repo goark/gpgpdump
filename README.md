@@ -1,7 +1,8 @@
 # [gpgpdump] - OpenPGP packet visualizer
 
-[![check vulns](https://github.com/goark/gpgpdump/workflows/vulns/badge.svg)](https://github.com/goark/gpgpdump/actions)
-[![lint status](https://github.com/goark/gpgpdump/workflows/lint/badge.svg)](https://github.com/goark/gpgpdump/actions)
+[![ci status](https://github.com/goark/gpgpdump/workflows/ci/badge.svg)](https://github.com/goark/gpgpdump/actions)
+[![codeql status](https://github.com/goark/gpgpdump/workflows/CodeQL/badge.svg)](https://github.com/goark/gpgpdump/actions)
+[![build status](https://github.com/goark/gpgpdump/workflows/build/badge.svg)](https://github.com/goark/gpgpdump/actions)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/goark/gpgpdump/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/goark/gpgpdump.svg)](https://github.com/goark/gpgpdump/releases/latest)
 
@@ -16,17 +17,83 @@ This package is required Go 1.26.3 or later.
 
 **Migrated repository to [github.com/goark/gpgpdump][gpgpdump]**
 
-## Download and Build
+## Design goals
 
-```
-$ go install github.com/goark/gpgpdump@latest
+- Keep packet dump behavior deterministic and stable.
+- Keep CLI options explicit for local files and command inputs.
+- Preserve compatibility of exported symbols when possible.
+- Support OpenPGP extensions incrementally, including RFC 4880bis / RFC 9580.
+
+## Development
+
+### Requirements
+
+- Go 1.26.3 or later
+- [Task](https://taskfile.dev/) command (local tool for this repository)
+
+### Local validation
+
+Run checks in this order:
+
+1. Lint and tests
+
+```text
+task test
 ```
 
-## Binaries
+2. Reachable vulnerability checks
+
+```text
+task govulncheck
+```
+
+3. All maintenance tasks
+
+```text
+task
+```
+
+## CI Workflows
+
+- `ci`: runs on `master` pushes and pull requests; includes lint (`golangci-lint` with `gosec`), tests, and `govulncheck`
+- `CodeQL`: runs on `master` pushes, pull requests, and a weekly schedule (`0 20 * * 0`)
+- `build`: runs on tag pushes matching `v*`; creates release artifacts with GoReleaser
+
+## Usage
+
+### Install
+
+```bash
+go install github.com/goark/gpgpdump@latest
+```
+
+### Binaries
 
 See [latest release](https://github.com/goark/gpgpdump/releases/latest).
 
-## Usage
+### CLI examples
+
+#### Quick start
+
+Local file input:
+
+```bash
+gpgpdump --file testdata/eccsig.asc -u --indent 2
+```
+
+Standard input:
+
+```bash
+cat testdata/eccsig.asc | gpgpdump -u --indent 2
+```
+
+JSON output:
+
+```bash
+cat testdata/eccsig.asc | gpgpdump -j -u | jq .
+```
+
+#### Show command help
 
 ```
 $ gpgpdump -h
@@ -63,7 +130,7 @@ Flags:
 Use "gpgpdump [command] --help" for more information about a command.
 ```
 
-### Output with plain text
+#### Read from local file or stdin (plain text)
 
 ```
 $ cat testdata/eccsig.asc | gpgpdump -u --indent 2
@@ -82,7 +149,7 @@ Signature Packet (tag 2) (94 bytes)
   ECDSA value s (252 bits)
 ```
 
-### Output with JSON-formatted text
+#### Read from local file or stdin (JSON)
 
 ```
 $ cat testdata/eccsig.asc | gpgpdump -j -u | jq .
@@ -147,7 +214,7 @@ $ cat testdata/eccsig.asc | gpgpdump -j -u | jq .
 }
 ```
 
-### HKP Access Mode
+#### Fetch from HKP server
 
 ```
 $ gpgpdump hkp -h
@@ -188,7 +255,7 @@ Public-Key Packet (tag 6) (269 bytes)
 ...
 ```
 
-### GitHub Access Mode
+#### Fetch from GitHub
 
 ```
 $ gpgpdump github -h
@@ -228,7 +295,7 @@ Public-Key Packet (tag 6) (51 bytes)
 ...
 ```
 
-### Fetch from the Web
+#### Fetch from the Web
 
 ```
 $ gpgpdump fetch -h
@@ -268,11 +335,11 @@ Public-Key Packet (tag 6) (1198 bytes)
 ...
 ```
 
-### Generate Shell Script for Command Completion
+#### Generate shell completion scripts
 
 Help for “gpgpdump completion -h”
 
-#### Bash
+##### Bash
 
 ```
 $ source <(gpgpdump completion bash)
@@ -284,23 +351,33 @@ or
 $ gpgpdump completion bash > /etc/bash_completion.d/gpgpdump
 ```
 
-#### Zsh
+##### Zsh
 
 ```
 $ gpgpdump completion zsh > "${fpath[1]}/_gpgpdump"
 ```
 
-#### Fish
+##### Fish
 
 ```
 $ gpgpdump completion fish > ~/.config/fish/completions/gpgpdump.fish
 ```
 
-#### PowerShell
+##### PowerShell
 
 ```
 PS> gpgpdump completion powershell | Out-String | Invoke-Expression
 ```
+
+## Behavior notes
+
+- Plain text and JSON output are different renderings of the same parser result.
+- Packet filtering flags (`--private`, `--marker`, `--literal`, `--cert`) only control output visibility.
+- `fetch`, `hkp`, and `github` can return source text without parsing when `--raw` is set.
+
+## Error handling
+
+This project wraps internal errors with `github.com/goark/errs`.
 
 ## Modules Requirement Graph
 
@@ -311,4 +388,3 @@ PS> gpgpdump completion powershell | Out-String | Invoke-Expression
 [RFC 4880bis]: https://datatracker.ietf.org/doc/draft-ietf-openpgp-rfc4880bis/
 [RFC 5581]: http://tools.ietf.org/html/rfc5581
 [RFC 6637]: http://tools.ietf.org/html/rfc6637
-[dep]: https://github.com/golang/dep "golang/dep: Go dependency management tool"
