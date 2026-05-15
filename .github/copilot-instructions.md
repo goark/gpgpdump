@@ -8,7 +8,7 @@ It supports plain-text and JSON output for packet inspection and debugging.
 ## Scope and compatibility
 
 - Keep behavior compatible with existing RFC 4880 packet parsing unless the change is explicitly for new spec support.
-- Treat RFC 4880bis / RFC 9580 related changes as additive when possible.
+- Treat RFC 9580 and LibrePGP draft related changes as additive when possible.
 - Avoid breaking exported APIs and CLI flags without clear migration notes.
 
 ## Architecture overview
@@ -36,10 +36,15 @@ Keep parsing logic in parser/tag packages and avoid pushing protocol details int
 ## Testing and validation
 
 - Add or update tests for parser and tag behavior changes.
-- Prefer local validation with Taskfile targets:
-  - `task test`
-  - `task govulncheck`
+- Prefer local validation with Taskfile. Use `task` (no arguments) as the default full check.
 - For parser-focused changes, run narrow package tests first, then full validation.
+
+## Pull request workflow
+
+- Use small, focused PR units. Avoid bundling unrelated changes.
+- Before creating a PR, run local validation with `task` by default.
+- After CI checks pass, merge to `master` and delete both remote and local working branches.
+- If GitHub Actions is degraded/stuck, prefer waiting for recovery; if needed, retrigger checks with a minimal empty commit.
 
 ## Documentation
 
