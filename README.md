@@ -6,12 +6,12 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/goark/gpgpdump/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/goark/gpgpdump.svg)](https://github.com/goark/gpgpdump/releases/latest)
 
-[gpgpdump] is a OpenPGP ([RFC 4880]) packet visualizer by [golang](https://golang.org/).
+[gpgpdump] is an OpenPGP ([RFC 9580]) packet visualizer by [golang](https://golang.org/).
 
 - Command-line interface, based on [pgpdump](https://github.com/kazu-yamamoto/pgpdump) design by [kazu-yamamoto](https://github.com/kazu-yamamoto).
 - Output with plain text or [JSON](https://tools.ietf.org/html/rfc7159)-formatted text
-- Support [RFC 5581] and [RFC 6637]
-- Support a part of [RFC 4880bis]
+- Support OpenPGP packet parsing based on [RFC 9580]
+- Support a part of [LibrePGP (draft)]
 
 This package is required Go 1.26.3 or later.
 
@@ -22,7 +22,7 @@ This package is required Go 1.26.3 or later.
 - Keep packet dump behavior deterministic and stable.
 - Keep CLI options explicit for local files and command inputs.
 - Preserve compatibility of exported symbols when possible.
-- Support OpenPGP extensions incrementally, including RFC 4880bis / RFC 9580.
+- Support OpenPGP extensions incrementally, including RFC 9580 and LibrePGP draft work.
 
 ## Architecture
 
@@ -102,7 +102,7 @@ cat testdata/eccsig.asc | gpgpdump -j -u | jq .
 
 ```
 $ gpgpdump -h
-OpenPGP (RFC 4880) packet visualizer by golang.
+OpenPGP (RFC 9580) packet visualizer by golang.
 
 Usage:
   gpgpdump [flags]
@@ -389,7 +389,5 @@ This project wraps internal errors with `github.com/goark/errs`.
 [![dependency.png](./dependency.png)](./dependency.png)
 
 [gpgpdump]: https://github.com/goark/gpgpdump "goark/gpgpdump: gpgpdump - OpenPGP packet visualizer"
-[RFC 4880]: https://tools.ietf.org/html/rfc4880
-[RFC 4880bis]: https://datatracker.ietf.org/doc/draft-ietf-openpgp-rfc4880bis/
-[RFC 5581]: http://tools.ietf.org/html/rfc5581
-[RFC 6637]: http://tools.ietf.org/html/rfc6637
+[RFC 9580]: https://www.rfc-editor.org/rfc/rfc9580.html
+[LibrePGP (draft)]: https://datatracker.ietf.org/doc/draft-koch-librepgp/

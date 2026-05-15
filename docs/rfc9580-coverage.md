@@ -1,14 +1,15 @@
 # RFC 9580 Coverage (Current State)
 
 This note summarizes current implementation status for features related to
-RFC 4880, RFC 5581, RFC 6637, and RFC 9580.
+RFC 9580 and LibrePGP (draft).
 
 ## Summary
 
-- Stable base support is present for RFC 4880, RFC 5581, and RFC 6637.
+- Stable base support is present for packet forms standardized in RFC 9580.
 - RFC 9580-related parser paths are partially implemented, including key version
   6 routing in major packet families.
-- Remaining work is mostly policy and corpus expansion (wording, vectors, docs).
+- Version wording policy is now fixed: v4/v6 are `current`, v5 is `draft`.
+- Remaining work is mostly corpus expansion and user-facing docs sync.
 
 ## Implemented (Confirmed)
 
@@ -57,30 +58,27 @@ RFC 4880, RFC 5581, RFC 6637, and RFC 9580.
 - Focused and route-level tests for v6 key-version behavior are present.
   - parse/tags/key_version_test.go
 
+7. Version wording policy (finalized)
+- v4 and v6 are treated as `current` packet versions.
+  - v4 is treated as current in this project policy.
+  - v6 aligns with RFC 9580.
+- v5 is treated as `draft` for compatibility policy reasons.
+  - RFC 9580 does not assign v5 packet versions.
+  - v5 remains associated with ongoing LibrePGP draft discussions.
+
 ## Partial / Inconsistent
 
-1. Draft-oriented wording remains in output and tests
-- Version 5 is still labeled as "draft" in output.
-  - parse/values/version.go
-- Existing expected outputs keep draft wording where v5 packets are used.
-  - parse/tags/tag05_test.go
-  - parse/tags/tag07_test.go
-
-2. Real-world v6 vector coverage is still narrow
+1. Real-world v6 vector coverage is still narrow
 - Current v6 tests are mostly focused/minimal route checks.
 - Larger corpus vectors and realistic packet snapshots are still desirable.
 
 ## Remaining Gaps (Likely Next PR Units)
 
-1. Decide and document v5/v6 wording policy
-- Keep "draft" for v5 or move to neutral/stable wording depending on project
-  compatibility policy.
-
-2. Expand v6 test corpus
+1. Expand v6 test corpus
 - Add realistic vectors for signature, key, and encrypted packet families.
 - Prefer fixture-based tests where feasible.
 
-3. Sync user-facing docs
+2. Sync user-facing docs
 - Keep README and architecture notes aligned with current parser behavior and
   RFC 9580 scope.
 

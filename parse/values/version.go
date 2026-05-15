@@ -121,6 +121,11 @@ func (v *Version) String() string {
 	return strconv.Itoa(int(v.ver))
 }
 
+// Project policy:
+//   - v4/v6 are treated as current OpenPGP packet versions.
+//   - v5 is treated as draft to keep it distinct from RFC 9580 and aligned with
+//     ongoing LibrePGP draft discussions.
+
 // PubVer is Public-Key Packet Version
 func PubVer(ver byte) *Version {
 	return NewVersionSet(ver, []byte{4, 6}, []byte{5})

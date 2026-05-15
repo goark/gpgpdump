@@ -42,7 +42,7 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   Name,
 		Short: "OpenPGP packet visualizer",
-		Long:  "OpenPGP (RFC 4880) packet visualizer by golang.",
+		Long:  "OpenPGP (RFC 9580) packet visualizer by golang.",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			//options options
 			if versionFlag {
