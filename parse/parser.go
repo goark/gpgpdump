@@ -69,7 +69,7 @@ func newReaderArmor(r io.Reader) (io.Reader, error) {
 	return block.Body, nil
 }
 
-/* Copyright 2017-2020 Spiegel
+/* Copyright 2017-2026 Spiegel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
