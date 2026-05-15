@@ -25,7 +25,7 @@ const (
 	Public-key Algorithm: DSA (Digital Signature Algorithm) (pub 17)
 		11
 	Key ID: 0xb4da3bae7e20b81c
-	Encrypted session key: other than one pass signature (flag 0x01)
+	One-pass signature chain: other than one pass signature (flag 0x01)
 `
 )
 

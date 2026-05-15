@@ -81,7 +81,7 @@ func (t *tag04) parseV3(rootInfo *result.Item) (*result.Item, error) {
 		f = "another one pass signature"
 	}
 	rootInfo.Add(result.NewItem(
-		result.Name("Encrypted session key"),
+		result.Name("One-pass signature chain"),
 		result.Value(f),
 		result.Note(fmt.Sprintf("flag %#02x", flag)),
 	))
@@ -135,7 +135,7 @@ func (t *tag04) parseV5(rootInfo *result.Item) (*result.Item, error) {
 		f = "another one pass signature"
 	}
 	rootInfo.Add(result.NewItem(
-		result.Name("Encrypted session key"),
+		result.Name("One-pass signature chain"),
 		result.Value(f),
 		result.Note(fmt.Sprintf("flag %#02x", flag)),
 	))
