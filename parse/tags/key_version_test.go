@@ -78,6 +78,58 @@ func TestTag04Version6UsesV5Layout(t *testing.T) {
 	}
 }
 
+func TestTag04Version6RejectsInvalidKeyVersion(t *testing.T) {
+	// version(6), sig type, hashid, pubid, salt(16), key version(4 invalid for v5-style)
+	body := []byte{0x06, 0x00, 0x02, 0x01}
+	body = append(body, make([]byte, 16)...)
+	body = append(body, 0x04)
+	op := &packet.OpaquePacket{Tag: 4, Contents: body}
+	cxt := context.New(context.Set(context.DEBUG, true), context.Set(context.UTC, true))
+	_, err := NewTag(op, cxt).Parse()
+	if err == nil {
+		t.Fatal("Parse() error = nil, want invalid key version error")
+	}
+	if !strings.Contains(err.Error(), "illegal key version number") {
+		t.Fatalf("Parse() error = %v, want key version error", err)
+	}
+}
+
+func TestTag05Version6UsesV5Layout(t *testing.T) {
+	body := append([]byte(nil), tag05Body4...)
+	body[0] = 0x06
+	op := &packet.OpaquePacket{Tag: 5, Contents: body}
+	cxt := context.New(context.Set(context.DEBUG, true), context.Set(context.UTC, true))
+	item, err := NewTag(op, cxt).Parse()
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	out := item.String()
+	if !strings.Contains(out, "Version: 6 (current)") {
+		t.Fatal("output does not contain version 6 current note")
+	}
+	if !strings.Contains(out, "Secret-Key") {
+		t.Fatal("output does not contain secret-key section")
+	}
+}
+
+func TestTag07Version6UsesV5Layout(t *testing.T) {
+	body := append([]byte(nil), tag07Body2...)
+	body[0] = 0x06
+	op := &packet.OpaquePacket{Tag: 7, Contents: body}
+	cxt := context.New(context.Set(context.DEBUG, true), context.Set(context.UTC, true))
+	item, err := NewTag(op, cxt).Parse()
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	out := item.String()
+	if !strings.Contains(out, "Version: 6 (current)") {
+		t.Fatal("output does not contain version 6 current note")
+	}
+	if !strings.Contains(out, "Secret-Key") {
+		t.Fatal("output does not contain secret-key section")
+	}
+}
+
 func TestSub33Version6Note(t *testing.T) {
 	body := append([]byte{0x06}, make([]byte, 32)...)
 	s := newSub33(context.New(), values.SuboacketID(33), body)
