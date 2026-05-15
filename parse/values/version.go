@@ -8,14 +8,30 @@ import (
 
 // Version - information version
 type Version struct {
-	ver   byte //version number
-	cur   byte //current version in RFC4880
-	draft byte //draft version in RFC4880bis
+	ver    byte   //version number
+	cur    byte   //current version in RFC4880 (legacy)
+	draft  byte   //draft version in RFC4880bis (legacy)
+	curSet []byte //current versions
+	drfSet []byte //draft versions
 }
 
 // NewVersion returns new Version instance
 func NewVersion(ver, cur, draft byte) *Version {
-	return &Version{ver: ver, cur: cur, draft: draft}
+	return NewVersionSet(ver, []byte{cur}, []byte{draft})
+}
+
+// NewVersionSet returns new Version instance with multiple current/draft candidates.
+func NewVersionSet(ver byte, current, draft []byte) *Version {
+	v := &Version{ver: ver}
+	if len(current) > 0 {
+		v.cur = current[0]
+		v.curSet = append(v.curSet, current...)
+	}
+	if len(draft) > 0 {
+		v.draft = draft[0]
+		v.drfSet = append(v.drfSet, draft...)
+	}
+	return v
 }
 
 // Number returns number of version
@@ -39,12 +55,31 @@ func (v *Version) IsCurrent() bool {
 	if v == nil {
 		return false
 	}
+	if len(v.curSet) > 0 {
+		for _, c := range v.curSet {
+			if v.ver == c {
+				return true
+			}
+		}
+		return false
+	}
 	return v.ver == v.cur
 }
 
 // IsDraft return true if draft version
 func (v *Version) IsDraft() bool {
 	if v == nil {
+		return false
+	}
+	if len(v.drfSet) > 0 {
+		for _, d := range v.drfSet {
+			if d == 0 {
+				continue
+			}
+			if v.ver == d {
+				return true
+			}
+		}
 		return false
 	}
 	if v.draft == 0 {
@@ -88,27 +123,27 @@ func (v *Version) String() string {
 
 // PubVer is Public-Key Packet Version
 func PubVer(ver byte) *Version {
-	return NewVersion(ver, 4, 5)
+	return NewVersionSet(ver, []byte{4, 6}, []byte{5})
 }
 
 // SigVer is Signiture Packet Version
 func SigVer(ver byte) *Version {
-	return NewVersion(ver, 4, 5)
+	return NewVersionSet(ver, []byte{4, 6}, []byte{5})
 }
 
 // OneSigVer is One-Pass Signature Packet Version
 func OneSigVer(ver byte) *Version {
-	return NewVersion(ver, 3, 5)
+	return NewVersionSet(ver, []byte{3, 6}, []byte{5})
 }
 
 // PubSessKeyVer is Public-Key Encrypted Session Key Packet Version
 func PubSessKeyVer(ver byte) *Version {
-	return NewVersion(ver, 3, 5)
+	return NewVersionSet(ver, []byte{3, 6}, []byte{5})
 }
 
 // SymSessKeyVer is Symmetric-Key Encrypted Session Key Packet Version
 func SymSessKeyVer(ver byte) *Version {
-	return NewVersion(ver, 4, 5)
+	return NewVersionSet(ver, []byte{4, 6}, []byte{5})
 }
 
 // AEADPacketVer is AEAD Encrypted Data Packet Version

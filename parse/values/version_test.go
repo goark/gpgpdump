@@ -193,6 +193,14 @@ func TestPubVer5(t *testing.T) {
 	}
 }
 
+func TestPubVer6(t *testing.T) {
+	i := PubVer(6).ToItem(true)
+
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
+	}
+}
+
 func TestSigVer5(t *testing.T) {
 	i := SigVer(5).ToItem(true)
 
@@ -203,6 +211,14 @@ func TestSigVer5(t *testing.T) {
 
 func TestSigVer4(t *testing.T) {
 	i := SigVer(4).ToItem(true)
+
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
+	}
+}
+
+func TestSigVer6(t *testing.T) {
+	i := SigVer(6).ToItem(true)
 
 	if i.Note != "current" {
 		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
@@ -225,6 +241,14 @@ func TestOneSigVer5(t *testing.T) {
 	}
 }
 
+func TestOneSigVer6(t *testing.T) {
+	i := OneSigVer(6).ToItem(true)
+
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
+	}
+}
+
 func TestPubSessKeyVer3(t *testing.T) {
 	i := PubSessKeyVer(3).ToItem(true)
 
@@ -241,6 +265,14 @@ func TestPubSessKeyVer5(t *testing.T) {
 	}
 }
 
+func TestPubSessKeyVer6(t *testing.T) {
+	i := PubSessKeyVer(6).ToItem(true)
+
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
+	}
+}
+
 func TestSymSessKeyVer4(t *testing.T) {
 	i := SymSessKeyVer(4).ToItem(true)
 
@@ -254,6 +286,14 @@ func TestSymSessKeyVer5(t *testing.T) {
 
 	if i.Note != "draft" {
 		t.Errorf("Version.Note = \"%v\", want \"draft\"", i.Note)
+	}
+}
+
+func TestSymSessKeyVer6(t *testing.T) {
+	i := SymSessKeyVer(6).ToItem(true)
+
+	if i.Note != "current" {
+		t.Errorf("Version.Note = \"%v\", want \"current\"", i.Note)
 	}
 }
 
