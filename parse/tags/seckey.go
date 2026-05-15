@@ -69,7 +69,7 @@ func (p *seckeyInfo) Parse(parent *result.Item) error {
 			parent.Add(aeadid.ToItem(p.cxt.Debug()))
 		}
 		// [Optional] Only for a version 5 packet, and if string-to-key usage octet was 255, 254, or 253, an one-octet count of the following field.
-		if p.pubVer.Number() == 5 {
+		if p.isV5Style() {
 			switch usage {
 			case 253, 254, 255:
 				ct, err := rOpt.ReadByte()
@@ -109,7 +109,7 @@ func (p *seckeyInfo) Parse(parent *result.Item) error {
 			parent.Add(iv)
 		}
 
-		if p.pubVer.Number() == 5 && usage != 0 {
+		if p.isV5Style() && usage != 0 {
 			if rOpt.Rest() > 0 {
 				parent.Add(values.RawData(rOpt, "Unknown data", p.cxt.Debug()))
 			}
@@ -162,7 +162,7 @@ func (p *seckeyInfo) Parse(parent *result.Item) error {
 		}
 	}
 
-	if p.pubVer.Number() == 5 {
+	if p.isV5Style() {
 		if p.reader.Rest() > 0 {
 			parent.Add(values.RawData(p.reader, "Unknown data", p.cxt.Debug()))
 		}
@@ -173,7 +173,7 @@ func (p *seckeyInfo) Parse(parent *result.Item) error {
 // getField1 returns reader.Reader for optional fields
 func (p *seckeyInfo) getField1(usage byte) (*reader.Reader, error) {
 	// Only for a version 5 packet where the secret key material is encrypted (that is, where the previous octet is not zero), a one-octet scalar octet count of the cumulative length of all the following optional string-to-key parameter fields.
-	if p.pubVer.Number() == 5 && usage != 0 {
+	if p.isV5Style() && usage != 0 {
 		l, err := p.reader.ReadByte()
 		if err != nil {
 			return nil, errs.New("illegal length of option field", errs.WithCause(err))
@@ -189,6 +189,11 @@ func (p *seckeyInfo) getField1(usage byte) (*reader.Reader, error) {
 		return reader.New(b), nil
 	}
 	return p.reader, nil
+}
+
+func (p *seckeyInfo) isV5Style() bool {
+	v := p.pubVer.Number()
+	return v == 5 || v == 6
 }
 
 // iv returns context.Item for Initialization Vector

@@ -34,13 +34,13 @@ func (t *tag03) Parse() (*result.Item, error) {
 	version := values.SymSessKeyVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
-	switch true {
-	case version.IsCurrent():
+	switch version.Number() {
+	case 4:
 		_, err := t.parseV4(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)
 		}
-	case version.IsDraft():
+	case 5, 6:
 		_, err := t.parseV5(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)

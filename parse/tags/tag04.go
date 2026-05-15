@@ -31,13 +31,13 @@ func (t *tag04) Parse() (*result.Item, error) {
 	}
 	version := values.OneSigVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
-	switch true {
-	case version.IsCurrent():
+	switch version.Number() {
+	case 3:
 		_, err := t.parseV3(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)
 		}
-	case version.IsDraft():
+	case 5, 6:
 		_, err := t.parseV5(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)
@@ -150,7 +150,7 @@ func (t *tag04) randomValue(rv []byte) *result.Item {
 }
 
 func (t *tag04) fingerprint(ver byte) (*result.Item, error) {
-	if ver != 5 {
+	if ver != 5 && ver != 6 {
 		return nil, errs.New("illegal key version number", errs.WithContext("key_version", int(ver)))
 	}
 	var n int64 = 32

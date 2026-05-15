@@ -32,13 +32,13 @@ func (t *tag01) Parse() (*result.Item, error) {
 	}
 	version := values.PubSessKeyVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
-	switch true {
-	case version.IsCurrent():
+	switch version.Number() {
+	case 3:
 		_, err := t.parseV3(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)
 		}
-	case version.IsDraft():
+	case 5, 6:
 		_, err := t.parseV5(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)
@@ -102,7 +102,7 @@ func (t *tag01) fingerprint(ver byte) (*result.Item, error) {
 	switch ver {
 	case 4:
 		n = 20
-	case 5:
+	case 5, 6:
 		n = 32
 	}
 	if n == 0 {

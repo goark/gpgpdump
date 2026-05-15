@@ -29,18 +29,13 @@ func newPubkey(cxt *context.Context, reader *reader.Reader, pubVer *values.Versi
 
 // Parse Public-key packet
 func (p *pubkeyInfo) Parse(parent *result.Item) error {
-	switch true {
-	case p.pubVer.IsDraft():
-		return p.parseV5(parent)
-	case p.pubVer.IsCurrent():
+	switch p.pubVer.Number() {
+	case 3:
+		return p.parseV3(parent)
+	case 4:
 		return p.parseV4(parent)
-	case p.pubVer.IsOld():
-		switch p.pubVer.Number() {
-		case 3:
-			return p.parseV3(parent)
-		default:
-		}
-	default:
+	case 5, 6:
+		return p.parseV5(parent)
 	}
 	return nil
 }

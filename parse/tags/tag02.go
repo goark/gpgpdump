@@ -34,23 +34,21 @@ func (t *tag02) Parse() (*result.Item, error) {
 	version := values.SigVer(v)
 	rootInfo.Add(version.ToItem(t.cxt.Debug()))
 
-	switch true {
-	case version.IsDraft():
-		_, err := t.parseV5(rootInfo)
+	switch version.Number() {
+	case 3:
+		_, err := t.parseV3(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)
 		}
-	case version.IsCurrent():
+	case 4:
 		_, err := t.parseV4(rootInfo)
 		if err != nil {
 			return rootInfo, errs.Wrap(err)
 		}
-	case version.IsOld():
-		if version.Number() == 3 {
-			_, err2 := t.parseV3(rootInfo)
-			if err2 != nil {
-				return rootInfo, errs.Wrap(err)
-			}
+	case 5, 6:
+		_, err := t.parseV5(rootInfo)
+		if err != nil {
+			return rootInfo, errs.Wrap(err)
 		}
 	}
 
