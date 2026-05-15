@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// newHkpCmd returns cobra.Command instance for show sub-command
+// newGitHubCmd returns cobra.Command instance for github sub-command.
 func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 	githubCmd := &cobra.Command{
 		Use:     "github [flags] GitHubUserID",
@@ -22,7 +22,10 @@ func newGitHubCmd(ui *rwi.RWI) *cobra.Command {
 		Short:   "Dumps OpenPGP keys registered on GitHub",
 		Long:    "Dumps OpenPGP keys registered on GitHub.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cxt := parseContext(cmd)
+			cxt, err := parseContext(cmd)
+			if err != nil {
+				return debugPrint(ui, err)
+			}
 			cxt.Set(contxt.ARMOR, true)
 			//user id
 			if len(args) != 1 {

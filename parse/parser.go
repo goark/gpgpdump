@@ -23,6 +23,9 @@ type Parser struct {
 
 // New creates a parser and normalizes input as armor or binary packet stream.
 func New(cxt *context.Context, reader io.Reader) (*Parser, error) {
+	if cxt == nil {
+		return nil, errs.Wrap(ecode.ErrInvalidOption, errs.WithContext("context", "nil"))
+	}
 	if reader == nil {
 		return nil, errs.Wrap(ecode.ErrNullPointer)
 	}

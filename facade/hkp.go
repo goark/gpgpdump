@@ -22,7 +22,10 @@ func newHkpCmd(ui *rwi.RWI) *cobra.Command {
 		Short:   "Dumps OpenPGP packets from the key server",
 		Long:    "Dumps OpenPGP packets from the key server.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cxt := parseContext(cmd)
+			cxt, err := parseContext(cmd)
+			if err != nil {
+				return debugPrint(ui, err)
+			}
 			cxt.Set(contxt.ARMOR, true)
 			//user id
 			if len(args) != 1 {

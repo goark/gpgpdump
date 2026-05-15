@@ -48,7 +48,10 @@ func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 			if versionFlag {
 				return debugPrint(ui, errs.Wrap(ui.OutputErrln(getVersion())))
 			}
-			cxt := parseContext(cmd)
+			cxt, err := parseContext(cmd)
+			if err != nil {
+				return debugPrint(ui, err)
+			}
 
 			//open PGP file
 			if cbFlag && len(filePath) > 0 {
@@ -136,29 +139,64 @@ func marshalPacketInfo(i *result.Info) (io.Reader, error) {
 	return i.ToString("\t"), nil
 }
 
-func getBool(cmd *cobra.Command, code context.OptCode) (context.OptCode, bool) {
+// getBool returns a parsed bool flag value for a parse option.
+func getBool(cmd *cobra.Command, code context.OptCode) (context.OptCode, bool, error) {
 	name := code.String()
 	f, err := cmd.Flags().GetBool(name)
 	if err != nil {
-		panic("invalid option: " + name)
+		return code, false, errs.Wrap(ecode.ErrInvalidOption, errs.WithCause(err), errs.WithContext("option", name))
 	}
-	return code, f
+	return code, f, nil
 }
 
-func parseContext(cmd *cobra.Command) *context.Context {
+// parseContext builds parser context from CLI flags.
+func parseContext(cmd *cobra.Command) (*context.Context, error) {
+	armorCode, armor, err := getBool(cmd, context.ARMOR)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	certCode, cert, err := getBool(cmd, context.CERT)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	debugCode, debug, err := getBool(cmd, context.DEBUG)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	integerCode, integer, err := getBool(cmd, context.INTEGER)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	literalCode, literal, err := getBool(cmd, context.LITERAL)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	markerCode, marker, err := getBool(cmd, context.MARKER)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	privateCode, private, err := getBool(cmd, context.PRIVATE)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	utcCode, utc, err := getBool(cmd, context.UTC)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+
 	cxt := context.New(
-		context.Set(getBool(cmd, context.ARMOR)),
-		context.Set(getBool(cmd, context.CERT)),
-		context.Set(getBool(cmd, context.DEBUG)), //for debug
+		context.Set(armorCode, armor),
+		context.Set(certCode, cert),
+		context.Set(debugCode, debug), //for debug
 		//context.Set(getBool(cmd, context.GDUMP)), //not use
-		context.Set(getBool(cmd, context.INTEGER)),
-		context.Set(getBool(cmd, context.LITERAL)),
-		context.Set(getBool(cmd, context.MARKER)),
-		context.Set(getBool(cmd, context.PRIVATE)),
-		context.Set(getBool(cmd, context.UTC)),
+		context.Set(integerCode, integer),
+		context.Set(literalCode, literal),
+		context.Set(markerCode, marker),
+		context.Set(privateCode, private),
+		context.Set(utcCode, utc),
 	)
 	debugFlag = cxt.Debug()
-	return cxt
+	return cxt, nil
 }
 
 // Execute is the top-level CLI entry point called from main.

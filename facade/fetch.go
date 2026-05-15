@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// newHkpCmd returns cobra.Command instance for show sub-command
+// newFetchCmd returns cobra.Command instance for fetch sub-command.
 func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 	fetchCmd := &cobra.Command{
 		Use:     "fetch [flags] URL",
@@ -19,7 +19,11 @@ func newFetchCmd(ui *rwi.RWI) *cobra.Command {
 		Short:   "Dumps OpenPGP packets form the Web",
 		Long:    "Dumps OpenPGP packets form the Web.",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			cxt := parseContext(cmd)
+			cxt, err := parseContext(cmd)
+			if err != nil {
+				err = debugPrint(ui, err)
+				return
+			}
 			//user id
 			if len(args) != 1 {
 				err = debugPrint(ui, errs.Wrap(os.ErrInvalid, errs.WithContext("args", args)))
