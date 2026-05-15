@@ -1,13 +1,14 @@
 # RFC 9580 Coverage (Current State)
 
 This note summarizes current implementation status for features related to
-RFC 4880, RFC 5581, RFC 6637, and draft RFC 4880bis / RFC 9580.
+RFC 4880, RFC 5581, RFC 6637, and RFC 9580.
 
 ## Summary
 
 - Stable base support is present for RFC 4880, RFC 5581, and RFC 6637.
-- Partial support for draft RFC 4880bis features is present (mainly version 5 era features).
-- RFC 9580 finalization coverage is incomplete, especially around version 6 semantics.
+- RFC 9580-related parser paths are partially implemented, including key version
+  6 routing in major packet families.
+- Remaining work is mostly policy and corpus expansion (wording, vectors, docs).
 
 ## Implemented (Confirmed)
 
@@ -18,80 +19,70 @@ RFC 4880, RFC 5581, RFC 6637, and draft RFC 4880bis / RFC 9580.
 - Subpacket 39 Preferred AEAD Ciphersuites exists.
   - parse/tags/sub39.go
   - parse/values/subpacketid.go
-- Subpacket 33 Issuer Fingerprint exists with v4/v5 handling notes.
+- Subpacket 33 Issuer Fingerprint and Subpacket 35 Intended Recipient Fingerprint
+  support key version 4/5/6 length notes.
   - parse/tags/sub33.go
+  - parse/tags/sub35.go
 
-2. AEAD algorithm model
+2. AEAD and S2K model coverage
 - AEAD algorithm IDs and IV/tag lengths are modeled.
   - parse/values/aeadid.go
-
-3. S2K Argon2 support
 - S2K ID 4 Argon2 parsing exists.
   - parse/s2k/s2k.go
   - parse/values/s2kid.go
 
-4. Version 5 packet handling (draft marker)
-- Version model treats 5 as draft for multiple packet families.
+3. Version model and v6-aware helpers
+- Version helpers are v6-aware for major packet families.
   - parse/values/version.go
-- Secret key and secret subkey tests include Version 5 (draft) examples.
-  - parse/tags/tag05_test.go
-  - parse/tags/tag07_test.go
+- Current helper mapping includes v6 in "current" sets, while v5 remains
+  "draft" by current project policy.
+  - parse/values/version.go
 
-5. SEIPD v2 parser path exists
-- Tag 18 supports version 1 and version 2 parsing branches.
+4. Key-version dependent parser routing
+- v6 routes are handled in v5-style parsing paths where packet layout matches.
+  - parse/tags/tag01.go
+  - parse/tags/tag02.go
+  - parse/tags/tag03.go
+  - parse/tags/tag04.go
+  - parse/tags/pubkey.go
+  - parse/tags/seckey.go
+
+5. SEIPD v2 chunk-size rendering alignment
+- Tag 18 now renders chunk size consistently with Tag 20 semantics
+  ($2^{c+6}$, with raw octet dump retained).
   - parse/tags/tag18.go
+  - parse/tags/tag18_test.go
+
+6. v6-focused tests
+- Focused and route-level tests for v6 key-version behavior are present.
+  - parse/tags/key_version_test.go
 
 ## Partial / Inconsistent
 
-1. Chunk size interpretation differs between Tag 18 and Tag 20
-- Tag 20 converts encoded chunk parameter to actual size (1 << (c + 6)).
-  - parse/tags/tag20.go
-- Tag 18 currently exposes the raw one-octet value as plain integer.
-  - parse/tags/tag18.go
-
-2. Draft-oriented wording remains in output and tests
-- Version 5 is labeled as draft in the Version model.
+1. Draft-oriented wording remains in output and tests
+- Version 5 is still labeled as "draft" in output.
   - parse/values/version.go
-- Existing expected outputs in tests reflect draft wording.
+- Existing expected outputs keep draft wording where v5 packets are used.
   - parse/tags/tag05_test.go
   - parse/tags/tag07_test.go
 
-## Missing / Likely Gaps for RFC 9580
+2. Real-world v6 vector coverage is still narrow
+- Current v6 tests are mostly focused/minimal route checks.
+- Larger corpus vectors and realistic packet snapshots are still desirable.
 
-1. Version 6-oriented paths are not visible in version helpers
-- Current helper constructors only encode old/current/draft sets around v4/v5.
-  - parse/values/version.go
+## Remaining Gaps (Likely Next PR Units)
 
-2. Key-version gated fingerprint handling may be too narrow
-- One-pass signature packet path currently only accepts key version 5.
-  - parse/tags/tag04.go
-- Public-key encrypted session key packet path recognizes key version 4/5 only.
-  - parse/tags/tag01.go
+1. Decide and document v5/v6 wording policy
+- Keep "draft" for v5 or move to neutral/stable wording depending on project
+  compatibility policy.
 
-3. No obvious v6-focused tests or test vectors in parser tests
-- Current tests include v5 vectors and draft labels.
-  - parse/tags/tag02_test.go
-  - parse/tags/tag05_test.go
-  - parse/tags/tag07_test.go
+2. Expand v6 test corpus
+- Add realistic vectors for signature, key, and encrypted packet families.
+- Prefer fixture-based tests where feasible.
 
-## Proposed Implementation Order (Small PR Units)
-
-1. Normalize feature inventory in docs and wording
-- Decide whether Version 5 should still be surfaced as draft in user-visible output.
-
-2. Align chunk size behavior
-- Make Tag 18 chunk-size rendering consistent with Tag 20.
-- Add/adjust tests for expected value format.
-
-3. Add v6 version model and packet handling gates
-- Extend version helpers for v6-aware labeling where required.
-- Update tag01/tag04 key-version checks and fingerprint-length logic as needed.
-
-4. Add test vectors for v6 paths
-- Introduce focused parser tests before broad refactors.
-
-5. Update README and architecture notes
-- Keep claimed support level synchronized with actual parser behavior.
+3. Sync user-facing docs
+- Keep README and architecture notes aligned with current parser behavior and
+  RFC 9580 scope.
 
 ## Validation Checklist per PR
 
