@@ -7,6 +7,7 @@ import (
 	"github.com/goark/gpgpdump/facade"
 )
 
+// main keeps process-level IO wiring separate from CLI/parsing logic.
 func main() {
 	facade.Execute(
 		rwi.New(
