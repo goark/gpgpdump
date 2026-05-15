@@ -22,9 +22,9 @@ import (
 )
 
 var (
-	//Name is applicatin name
+	// Name is application name.
 	Name = "gpgpdump"
-	//Version is version for applicatin
+	// Version is application version.
 	Version = "dev-version"
 )
 
@@ -37,7 +37,7 @@ var (
 	filePath    string
 )
 
-// newRootCmd returns cobra.Command instance for root command
+// newRootCmd builds the CLI command tree and keeps packet decoding in parse packages.
 func newRootCmd(ui *rwi.RWI, args []string) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   Name,
@@ -161,7 +161,7 @@ func parseContext(cmd *cobra.Command) *context.Context {
 	return cxt
 }
 
-// Execute is called from main function
+// Execute is the top-level CLI entry point called from main.
 func Execute(ui *rwi.RWI, args []string) (exit exitcode.ExitCode) {
 	defer func() {
 		//panic hundling

@@ -10,7 +10,7 @@ import (
 	"github.com/goark/errs"
 )
 
-//Info is information class for OpenPGP packets
+// Info is the root result model for parsed OpenPGP packets.
 type Info struct {
 	Packets []*Item `toml:"Packet,omitempty" json:"Packet,omitempty"`
 }
@@ -20,7 +20,7 @@ func New() *Info {
 	return &Info{}
 }
 
-//Add add item in Packets.
+// Add appends one parsed packet item.
 func (i *Info) Add(a *Item) {
 	if i == nil {
 		return
@@ -30,7 +30,7 @@ func (i *Info) Add(a *Item) {
 	}
 }
 
-//JSON returns JSON formated string
+// JSON serializes the parsed result model.
 func (i *Info) JSON(indent int) (io.Reader, error) {
 	if i == nil {
 		return bytes.NewReader([]byte{}), nil
@@ -43,7 +43,7 @@ func (i *Info) JSON(indent int) (io.Reader, error) {
 	return bytes.NewReader(b), errs.Wrap(err)
 }
 
-//ToString returns string buffer
+// ToString renders the parsed result model as plain text.
 func (i *Info) ToString(indent string) *bytes.Buffer {
 	buf := &bytes.Buffer{}
 	if i == nil {
@@ -58,12 +58,12 @@ func (i *Info) ToString(indent string) *bytes.Buffer {
 	return buf
 }
 
-//Stringer as TOML format
+// String renders plain text with tab indentation.
 func (i *Info) String() string {
 	return i.ToString("\t").String()
 }
 
-//Item is information item class
+// Item is one node in the hierarchical packet output model.
 type Item struct {
 	Name  string  `toml:"name" json:"name"`
 	Value string  `toml:"value,omitempty" json:"value,omitempty"`
@@ -72,7 +72,7 @@ type Item struct {
 	Items []*Item `toml:"Item,omitempty" json:"Item,omitempty"`
 }
 
-//ItemOpt is self-referential function for functional options pattern
+// ItemOpt is a functional option for Item.
 type ItemOpt func(*Item)
 
 // NewItem returns a new Item instance
@@ -90,7 +90,7 @@ func (i *Item) optins(opts ...ItemOpt) {
 	}
 }
 
-//Add add sub-item in item.
+// Add appends one child item.
 func (i *Item) Add(a *Item) {
 	if a != nil && i != nil {
 		i.Items = append(i.Items, a)

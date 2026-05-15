@@ -24,6 +24,11 @@ This package is required Go 1.26.3 or later.
 - Preserve compatibility of exported symbols when possible.
 - Support OpenPGP extensions incrementally, including RFC 4880bis / RFC 9580.
 
+## Architecture
+
+See [docs/architecture.md](./docs/architecture.md) for package boundaries,
+data flow, and parser extension points.
+
 ## Development
 
 ### Requirements

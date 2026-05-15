@@ -8,7 +8,7 @@ import (
 	"github.com/goark/gpgpdump/parse/result"
 )
 
-//Parse returns packet result.
+// Parse iterates all packets and returns a single aggregated result model.
 func (p *Parser) Parse() (*result.Info, error) {
 	if p == nil {
 		return result.New(), nil

@@ -8,7 +8,7 @@ import (
 	"github.com/goark/gpgpdump/parse/values"
 )
 
-// tagInfo class as packet result. for all tags
+// tagInfo is a shared base for packet tag parsing results.
 type tagInfo struct {
 	cxt    *context.Context
 	tag    values.TagID
@@ -20,7 +20,7 @@ func (t *tagInfo) ToItem() *result.Item {
 	return t.tag.ToItem(t.reader, t.cxt.Debug())
 }
 
-// Tags parsing interface
+// Tags is the packet-tag parsing interface.
 type Tags interface {
 	Parse() (*result.Item, error)
 }
@@ -65,7 +65,7 @@ var newFunctions = FuncMap{
 	63: newTagPrivate, //Private or Experimental Values
 }
 
-// NewTag returns Tags instance for pasing
+// NewTag dispatches packet tags to tag-specific parser constructors.
 func NewTag(op *packet.OpaquePacket, cxt *context.Context) Tags {
 	if op.Tag == 2 {
 		// recursive call in tag02.Parse() -> sub32.Parse()

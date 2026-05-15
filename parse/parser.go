@@ -15,13 +15,13 @@ import (
 	"github.com/goark/gpgpdump/parse/tags"
 )
 
-//Parser class for pasing packet
+// Parser holds packet iterator state and accumulated parse results.
 type Parser struct {
 	pct  *tags.Packets
 	info *result.Info
 }
 
-//New returns Parser instance
+// New creates a parser and normalizes input as armor or binary packet stream.
 func New(cxt *context.Context, reader io.Reader) (*Parser, error) {
 	if reader == nil {
 		return nil, errs.Wrap(ecode.ErrNullPointer)
@@ -44,7 +44,7 @@ func New(cxt *context.Context, reader io.Reader) (*Parser, error) {
 	return newParser(cxt, r, result.New())
 }
 
-//NewBytes returns Parser instance
+// NewBytes creates a parser from a byte slice.
 func NewBytes(cxt *context.Context, data []byte) (*Parser, error) {
 	return New(cxt, bytes.NewReader(data))
 }
